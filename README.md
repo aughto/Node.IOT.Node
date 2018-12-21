@@ -19,12 +19,11 @@ The Node.IOT.OS operating system handles the real time network and hardware inte
 
 A minimum web server runs on the OS to serve the static HTML and process AJAX/WebSockets requests.   The static HTML and config files are stored in onboard flash and accessed through the XXX filesystem.  The javascript portion of the web interface runs on the client browser.
 
+The ESP32 core is arduino compatable so that the project can be compiled with the normal Arduino IDE and work with Arduino libraries.
 
 Todo:
 Add install instructions
-
-
-
+Need to set sketchbook location
 
 
 

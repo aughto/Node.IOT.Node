@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>Node.IOT</title>
+  <link rel="stylesheet" href="style/style.css">
+
+  	<script type="text/javascript" src="script/WL_Utility.js"></script>	
+	<script type="text/javascript" src="script/WL_Graphics.js"></script>		
+	<script type="text/javascript" src="script/WL_NodeTypes.js"></script>
+	<script type="text/javascript" src="script/WL_CPU.js"></script>	
+	<script type="text/javascript" src="script/WL_LogicEngine.js"></script>
+	<script type="text/javascript" src="script/WL_UI.js"></script>
+	<script type="text/javascript" src="script/WL_Main.js"></script>  
+	<script type="text/javascript" src="script/main.js"></script>
+  
+</head>
+<body onload=init();>
+
+<div id="header" onclick=location.reload();><span id=banner>Node.IOT</span></div>
+<div id="content">
+ <div id="sidebar" id=nav>
+  <ul>
+  <li> <a href="#" onclick=load_page("live.html","liveview");>Live View</a></li>
+  <li> <a href="#" onclick=load_page("weblogix.html","weblogix");>WebLogix</a></li>
+  <li> <a href="#" onclick=load_page("variables.html","variables");>Variables</a></li>
+  <li> <a href="#" onclick=load_page("io.html","ioconfig");>IO Setup</a></li>
+  <li> <a href="#" onclick=load_page("config.html","mainconfig");>Config</a></li>
+  <li> <a href="#" onclick=load_page("system.html");>System</a></li>
+  </ul>
+ </div>
+<div id="maincontent"></div>
+<div class="clear"></div>
+</div>
+</body>
+</html>

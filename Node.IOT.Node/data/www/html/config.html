@@ -1,0 +1,54 @@
+<h2>Config</h2>
+<form id=mainconfig  action="javascript:void(0);" onsubmit="event.preventDefault(); save_config('mainconfig');">
+
+<table class=config_table border=1>
+
+<tr><th colspan = 2><b>General</b></th></tr>
+<tr><td>Node Name</td><td><input name="network_node_name" value=""></td></tr>
+
+<tr><th colspan = 2><b>Network</b></th></tr>
+<tr><td>DHCP</td><td><input type="checkbox" name="network_dhcp_enabled"></td></tr>
+<tr><td>IP Address</td><td><input name="network_ip"></td></tr>
+<tr><td>Subnet Mask</td><td><input name="network_mask"></td></tr>
+<tr><td>Gateway</td><td><input name="network_gw"></td></tr>
+<tr><td>DNS</td><td><input name="network_dns"></td></tr>
+
+<tr><th colspan = 2><b>Ethernet</b></th></tr>
+<tr><td>Enabled</td><td><input type="checkbox" name="network_eth_enabled"></td></tr>
+
+<tr><th colspan = 2><b>Wireless</b></th></tr>
+<tr><td>Enabled</td><td><input type="checkbox" name="network_wifi_enabled"></td></tr>
+<tr><td>SSID</td><td><input name="network_wifi_ssid"></td></tr>
+<tr><td>Password</td><td><input name="network_wifi_pass"></td></tr>
+
+<tr><th colspan = 2><b>Webserver</b></th></tr>
+<tr><td>Port</td><td><input name="http_port"></td></tr>
+<tr><td>Username</td><td><input name="http_user"></td></tr>
+<tr><td>Password</td><td><input name="http_pass"></td></tr>
+
+<tr><th colspan = 2><b>MQTT</b></th></tr>
+<tr><td>Enabled</td><td><input type="checkbox" name="mqtt_enabled"></td></tr>
+<tr><td>Client ID</td><td><input name="mqtt_client_id"></td></tr>
+<tr><td>Username</td><td><input name="mqtt_user"></td></tr>
+<tr><td>Password</td><td><input name="mqtt_pass"></td></tr>
+<tr><td>Broker</td><td><input name="mqtt_host"></td></tr>
+<tr><td>Pub Topic</td><td><input name="mqtt_pub_topic"></td></tr>
+<tr><td>Sub Topic</td><td><input name="mqtt_sub_topic"></td></tr>
+
+<tr><th colspan = 2><b>AWS</b></th></tr>
+<tr><td>Enabled</td><td><input type="checkbox" name="aws_enabled"></td></tr>
+<tr><td>Client ID</td><td><input name="aws_client_id"></td></tr>
+<tr><td>Broker</td><td><input name="aws_host"></td></tr>
+<tr><td>Pub Topic</td><td><input name="aws_pub_topic"></td></tr>
+<tr><td>Sub Topic</td><td><input name="aws_sub_topic"></td></tr>
+
+<tr><th colspan = 2><b>RestAPI</b></th></tr>
+<tr><td>Enabled</td><td><input type="checkbox" name="rest_enabled"></td></tr>
+
+
+</table>
+
+<input type=submit value=Save>
+
+
+</form>

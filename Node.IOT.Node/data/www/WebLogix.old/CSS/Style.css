@@ -1,0 +1,54 @@
+html 
+{
+  /*overflow-y: hidden;*/
+  overflow-x: hidden;
+  
+}
+
+body
+{
+  
+  padding: 0px;
+   margin: 0px;  
+}
+
+.display_class
+{
+  border-style: solid;
+  padding: 0px;
+  margin: 0px;
+  border:1px solid #000000;
+    
+}
+
+.context_edit_class
+{
+	border:1px solid #000000;
+}
+
+.context_float_class
+{
+	border:1px solid #000000;
+	opacity:0.90;
+    filter:alpha(opacity=40);
+    z-index: 1000; 
+	background: #eeeeee;
+}
+
+
+
+#properties_container {
+    position: fixed;
+    top: 20%;
+    left: 20%;
+    width: 60%;
+    height: 60%;
+    z-index:99;
+	display:none;
+	
+	background: #ffffff;
+	
+	border:1px solid #000000;
+}
+
+

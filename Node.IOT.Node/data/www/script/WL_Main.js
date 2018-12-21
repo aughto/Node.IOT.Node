@@ -110,9 +110,9 @@ function init_global()
 }
 
 
-function update_timer()
+function logic_ui_update_timer()
 {
-	cpu_update(100);
+
 	render();
 }
 
@@ -195,12 +195,11 @@ function system_start()
 	
 	ui_init();
 	
-	init_logic();
+	//init_logic();
 
-
-	setInterval(function() {update_timer()}, 100);	// Setup timer
+	setInterval(function() {logic_ui_update_timer()}, 100);	// Setup timer
 	
-	test_logic();
+	//test_logic();
 
 	render();									// Render
 }

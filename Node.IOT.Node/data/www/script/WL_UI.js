@@ -474,9 +474,28 @@ function render()
 		//if (is_operation(n.type))
 		{
 			//if (!check_var(n.op1)) 
-			{
+		
+			//console.log(n.op1);
+	
 
-		var idx = -1;
+			if (n.op1_index != -1)
+			{
+				var value = cpu_get_byte(n.op1);
+	
+				var color = (value == 0) ?  "#ff0000" : "#0000ff" ;
+				var name = variable_list.variables[n.op1_index].name;
+			//var name = variable_listidx].name;
+			
+					
+				draw_text(main_context, n.x*symbol_x+symbol_x * 0.2, 
+										n.y*symbol_y+symbol_y*0.05, 	
+										10, 10,color, name);		
+			}
+		
+		
+		
+		
+		/*var idx = -1;
 		
 		for (var j = 0; j < variable_table.length; j++)
 			if (variable_table[j].index == n.op1)
@@ -485,13 +504,15 @@ function render()
 			if (idx != -1)
 			{
 			var color = (variable_table[idx].value == 0) ?  "#ff0000" : "#0000ff" ;
-			var name = variable_table[idx].name;
+			//var name = variable_table[idx].name;
+			var name = variable_listidx].name;
+			
 					
 			draw_text(main_context, n.x*symbol_x+symbol_x * 0.2, 
 									n.y*symbol_y+symbol_y*0.05, 
 									10, 10,color, name);
 			}
-			}
+			}*/
 		}
 	}
 		
@@ -1107,11 +1128,16 @@ function toggle_node(ni)
 	
 	if (n.op1 == -1) return;
 
-	var f = variable_find(n.op1);
+	//var f = variable_find(n.op1);
 		
-	if (f == -1) return;
+	//if (f == -1) return;
 
-	variable_table[f].value = variable_table[f].value == 0 ? 1 : 0;
+	//variable_table[f].value = variable_table[f].value == 0 ? 1 : 0;
+	
+	cpu_toggle_byte(n.op1);
+	
+	
+	//variables[n.op1] = variables[n.op1]  == 0 ? 1 : 0;
 	
 	
 	cpu_update(100);
@@ -1170,13 +1196,15 @@ function prop_ok_click(ix, iy)
 	{
 		var c1  = document.getElementById("variable_select");	
 		
-		var variable_index = c1.value;
+		var variable_offset = c1.value;
 
-		console.log("Variable select: " + variable_index);
+		//console.log("Variable select: " + variable_offset);
 	
-		if (variable_index != "")
+		if (variable_offset != "")
 		{
-			n.op1 = variable_index;
+			n.op1 = parseInt(variable_offset);
+			
+			n.op1_index =  find_variable_index(n.op1); // relink index
 			//assemble();
 		}
 	}
@@ -1224,7 +1252,7 @@ function select_cell(ix, iy)
 
 	s += "<td><select id=variable_select>";
 	// Create variable list
-	for (var i = 0; i < variable_table.length; i++)
+	/*for (var i = 0; i < variable_table.length; i++)
 	{
 		var name = variable_table[i].name;
 		var index = variable_table[i].index;
@@ -1233,7 +1261,24 @@ function select_cell(ix, iy)
 		var sel = n.op1 == index;
 		
 		s += "<option value="+index+" "+ (sel ? "selected":"") + "> " + name + "</option> \n";
+	}*/
+	
+		// Create variable list
+	for (var i = 0; i < variable_list.variables.length; i++)
+	{
+		var name = variable_list.variables[i].name;
+		var offset = variable_list.variables[i].offset;
+		
+		
+		var sel = n.op1 == offset;
+		
+		s += "<option value="+offset+" "+ (sel ? "selected":"") + "> " + name + "</option> \n";
 	}
+	
+	
+	
+	
+	
 	s += "</select></td>";
 	
 	s += "</tr>";

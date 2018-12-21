@@ -31,6 +31,7 @@ function init()
 	
 	websocket_init();
 	
+	init_logic();
 }
 
 
@@ -646,25 +647,6 @@ function parse_formdata(config_type, data, evt)
 }
 
 
-
-var VAR_TYPES = 	{VAR_BIT		: 0x01, 
-					 VAR_TMR		: 0x10 };
-
-
-var io_list = {num_inputs:4, 
-				   inputs:[{name:"Input 1"}, {name:"Input 2"}, {name:"Input 3"}, {name:"Input 4"}, ],
-				   num_outputs:4, num_remotedevice:1};
-
-
-var variable_list = [{name:"Bit 1", type:VAR_TYPES.VAR_BIT},
-					 {name:"Bit 2", type:VAR_TYPES.VAR_BIT},
-					 {name:"Bit 3", type:VAR_TYPES.VAR_BIT},
-					 {name:"Bit 4", type:VAR_TYPES.VAR_BIT},
-					 {name:"Bit 5", type:VAR_TYPES.VAR_BIT}, 
-					 {name:"Tmr 1", type:VAR_TYPES.VAR_TMR}, 
-					 {name:"Tmr 2", type:VAR_TYPES.VAR_TMR}, 
-					 {name:"Tmr 3", type:VAR_TYPES.VAR_TMR}];
-					
 				 
 
 				   
@@ -699,6 +681,12 @@ function generate_iolist()
 
 function get_var_type_string(v)
 {
+	
+	if (v.type == VAR_TYPES.VAR_DIN)  return "Digial Input";
+	if (v.type == VAR_TYPES.VAR_DOUT) return "Digial Output";
+	if (v.type == VAR_TYPES.VAR_AIN)  return "Analog Input";
+	if (v.type == VAR_TYPES.VAR_AOUT) return "Analog Output";
+	
 	if (v.type == VAR_TYPES.VAR_BIT) return "Bit";
 	if (v.type == VAR_TYPES.VAR_TMR) return "Timer";
 	
@@ -753,9 +741,9 @@ function checkVariableName(name)
 	}
 		
 	// Check existing names
-	for (var i = 0; i < variable_list.length; i++)
+	for (var i = 0; i < variable_list.variables.length; i++)
 	{
-		if (variable_list[i].name.toUpperCase() == name.toUpperCase())
+		if (variable_list.variables[i].name.toUpperCase() == name.toUpperCase())
 		{
 			alert("Variable name already exists");
 			return true;
@@ -766,15 +754,34 @@ function checkVariableName(name)
 }
 
 
-function remove_variable(i)
+function remove_variable(offset)
 {
 	
+	// need to null all node refernces
 	
 	
-	variable_list.splice(i, 1);
+	var index = find_variable_index(offset);
 	
-	assign_variable_list();
-		load_variables();	
+	
+	
+	
+	var v = variable_list.variables[index];
+	
+	if (v.type == VAR_TYPES.VAR_DIN ||
+		v.type == VAR_TYPES.VAR_DOUT ||
+		v.type == VAR_TYPES.VAR_AIN ||
+		v.type == VAR_TYPES.VAR_AOUT)
+	{
+		alert("Cannot delete IO");
+		return;	
+	}
+	
+
+	cpu_remove_variable(index);
+	logic_remove_variable(index);
+		
+	
+	load_variables();	
 	
 }
 
@@ -810,7 +817,7 @@ function add_variable()
 	v.name = var_name;
 	v.type = var_type;
 		
-	variable_list.push(v);
+	variable_list.variables.push(v);
 		
 	assign_variable_list();
 	
@@ -821,71 +828,13 @@ function add_variable()
 
 
 
-// Name compare for variables
-function variable_compare_type(a,b) 
-{
-	// Sory by type first
-	
-	if (a.type < b.type) return -1;
-	if (a.type > b.type) return 1;
-	
-	// Then sort by name	
-		
-	
-  if (a.name.toUpperCase()  < b.name.toUpperCase() )    return -1;
-  if (a.name.toUpperCase()  > b.name.toUpperCase() )    return 1;
-  return 0;
-}
-
-// Name compare for variables
-function variable_compare_name(a,b) 
-{
-	
-	//  sort by name	
-		
-	
-  if (a.name.toUpperCase()  < b.name.toUpperCase() )    return -1;
-  if (a.name.toUpperCase()  > b.name.toUpperCase() )    return 1;
-  return 0;
-}
-
-
-
-function assign_variable_list()
-{
-// Variables are sorted by type and then by name to assign index
-
-	variable_list.sort(variable_compare_type);
-	
-	
-	for (var i = 0; i < variable_list.length; i++)
-		variable_list[i].index = i;
-	
-	
-	// Sort by name for display
-	variable_list.sort(variable_compare_name);
-	
-	
-}
-
-
-
-
-
-
-
-
-
-
-
 
 
 function load_variables()
 {
 	
-	assign_variable_list();
-	
-
+	// sort variable list by name for display
+	variable_list.variables.sort(variable_compare_name);
 	
 	
 	var out = "";
@@ -900,20 +849,23 @@ function load_variables()
 	
 	
 	out += "<table border=1>";
-	out += "<tr><th>Variable</th><th>Type</th><th>Value</th><th>Index</th><th>+/-</th></tr>";
+	out += "<tr><th>Variable</th><th>Type</th><th>Value</th><th>Index</th><th>Offset</th><th>+/-</th></tr>";
 
-	for (var i = 0; i < variable_list.length; i++)
+	for (var i = 0; i < variable_list.variables.length; i++)
 	{
 		out += "<tr>";
 		
-		out += "<td> <b>" + variable_list[i].name + "</b></td>";
-		out += "<td> <b>" + get_var_type_string(variable_list[i]) + "</b></td>";
+		out += "<td> <b>" + variable_list.variables[i].name + "</b></td>";
+		out += "<td> <b>" + get_var_type_string(variable_list.variables[i]) + "</b></td>";
 		
 		out += "<td>x</td>";
 
-		out += "<td>"+variable_list[i].index+"</td>";
+		out += "<td>"+variable_list.variables[i].index+"</td>";
+		out += "<td>"+variable_list.variables[i].offset+"</td>";
 		
-		out += "<td><input type=button class=var_button value='(-)' onclick='remove_variable("+i+");'></td>";
+		var offset = variable_list.variables[i].offset;
+		
+		out += "<td><input type=button class=var_button value='(-)' onclick='remove_variable("+offset+");'></td>";
 		
 		out += "</tr>";
 	}
@@ -947,7 +899,9 @@ function load_variables()
 	var  a= document.getElementById("variablelist");
 	a.innerHTML = out;
 	
-	
+		// sort variable list by type for system use
+	variable_list.variables.sort(variable_compare_type);
+
 	
 	
 	

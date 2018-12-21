@@ -1,13 +1,19 @@
 /*
 	Ladder Logic Engine
 	2018 nulluser@gmail.com
+
+	
+	The CPU is abstracted from the user interface and logic compiler
+	it deals only with the instruction list, the raw memory, and the io interface	
+	
 */
+
 
 "use strict";
 
-
 /* CPU */
 
+// Instruction types
 var INST_TYPES = 	{INST_NONE		: 0x00, 
 					INST_CLEAR		: 0x10, 
 					INST_PUSHCR		: 0x11, 
@@ -21,20 +27,45 @@ var INST_TYPES = 	{INST_NONE		: 0x00,
 					INST_OTU		: 0x42, 
 					INST_TMR		: 0x80};
 
+// Variable types
+var VAR_TYPES = 	{VAR_NONE		: 0x00, 
+					 VAR_DIN		: 0x10, 
+					 VAR_DOUT		: 0x20, 
+					 VAR_AIN		: 0x30, 
+					 VAR_AOUT		: 0x40, 
+					 VAR_BIT		: 0x50, 
+					 VAR_TMR		: 0x60 };
+					
+					
+// Variable sizes					
+var VAR_SIZE = 	{ VAR_DIN		: 1, 
+				 VAR_DOUT		: 1, 
+				 VAR_AIN		: 2, 
+				 VAR_AOUT		: 2, 
+				 VAR_BIT		: 1, 
+				 VAR_TMR		: 10 };
+						
+					
 
 var inst_list = [];
-var variable_table = [];
 
-var BRANCH_NONE = 0;
-var BRANCH_OPEN = 1;
-var BRANCH_CLOSE = 2;
 
-var logic_ok = false;
+var logic_ok = false;		// true if logic is ok to process
+
+var variable_data = null; //  Raw byte data for variable storage 
 
 
 /* 
 	CPU
 */
+
+
+function cpu_init()
+{
+	setup_variable_list();
+
+}
+
 
 function cpu_update(dt)
 {
@@ -42,81 +73,105 @@ function cpu_update(dt)
 }
 
 
-function variable_find(idx)
+
+function cpu_get_byte(offset)
 {
-	// find index
-	for (var i = 0; i < variable_table.length; i++)
+
+	if (offset < 0 || offset >= variable_data.length)
 	{
-		if (variable_table[i].index == idx)
-			return i;
+		console.log("cpu_get_byte: Invalid location ("+offset+")\n");
+		return 0;
 	}
-	return -1;
+
+	return variable_data[offset];
 }
 
 
-
-
-function variable_update(idx, v)
+function cpu_set_byte(offset, v)
 {
-	for (var i = 0; i < variable_table.length; i++)
+	if (offset < 0 || offset >= variable_data.length)
 	{
-		if (variable_table[i].index == idx)
-		{
-			variable_table[i].value = v;
-		}
+		console.log("cpu_set_byte: Invalid location ("+offset+")\n");
+		return 0;
 	}
-	
+
+	variable_data[offset] = v;
 }
 
 
 
-
-
-function setup_variable_table()
+// Extract timer from memory array 
+//  Would be a type case in C
+function cpu_get_timer(offset)
 {
-	variable_table = [];
+	var t = {};
 	
+	t.value = variable_data[offset];
+	t.pre = (variable_data[offset+1] << 8) + variable_data[offset+2];
+	t.acc = (variable_data[offset+3] << 8) + variable_data[offset+4];
 	
-	
-	variable_table.push( { index:0, name:"Input 1", value:0} );
-	variable_table.push( { index:1, name:"Input 2", value:0} );
-	variable_table.push( { index:2, name:"Input 3", value:0} );
-	variable_table.push( { index:3, name:"Input 4", value:0} );
-	
-	variable_table.push( { index:64, name:"Output 1", value:0} );
-	variable_table.push( { index:65, name:"Output 2", value:0} );
-	variable_table.push( { index:66, name:"Output 3", value:0} );
-	variable_table.push( { index:67, name:"Output 4", value:0} );
-	
-	
-	for (var i = 0; i < 32; i++)
-	{
-		var n = "Bit_"+i;
-		variable_table.push({ index:i+128, name:n, value:0});
-		
-	}		
-	
-	console.log(variable_table);
-	
-	
-/*	
-	
-	
-	for (var i = 0; i < 36; i++)
-	{
-		var n = "Test"+i;
-		variable_table[i] = { name:n, value:0} ;
-		
-	}	*/
+	return t;
+}
+
+
+//  Would be a type case in C
+function cpu_set_timer(offset, t)
+{
+	variable_data[offset+0] = t.value
+	variable_data[offset+1] = t.pre >> 8;
+	variable_data[offset+2] = t.pre & 0xff;
+	variable_data[offset+3] = t.acc >> 8;
+	variable_data[offset+4] = t.acc & 0xff;
 	
 }
 
+
+
+
+
+
+
+
+
+
+function cpu_toggle_byte(offset)
+{
+//	variable_table[i].value = v;
+	//var mem_idx = cpu_get_mem_index(idx);
+	
+	//if (mem_idx == -1) return;
+	
+	variable_data[offset] = !variable_data[offset];	
+	
+}
+
+
+function show_memory()
+{
+	console.log("Memory:");
+	
+	var s = "";
+	
+	for (var i = 0; i < variable_data.length; i++)
+	{
+		//console.log("["+ i + "]" + variable_table[i].value);		
+		s +=  variables_data[i] + " " ;		
+		
+	}	
+	
+	console.log(s);
+}
+
+
+
+
+/* End of memory */
 
 
 function clear_bits()
 {
-	//for (var i = 0; i < 100; i++)
-//		variable_table[i].value = 0;
+	for (var i = 0; i < variable_data.length; i++)
+		variable_data[i] = 0;
 }
 
 
@@ -185,55 +240,21 @@ function show_inst_list()
 
 
 
-function show_memory()
-{
-	console.log("Memory:");
-	
-	var s = "";
-	
-	for (var i = 0; i < 15; i++)
-	{
-		//console.log("["+ i + "]" + variable_table[i].value);		
-		s +=  variable_table[i].value + " " ;		
-		
-	}	
-	
-	console.log(s);
-}
-
-
 
 
 function check_var(idx)
 {
-	var i = variable_find(idx)
+	/*var i = variable_find(idx)
 		
 	if (variable_table[i] == undefined) 
 	{
 		console.log("Undf\n");return true;
 	}
-	
+	*/
 	return false;
 }
 
 
-function cpu_get_value(idx)
-{
-	var i = variable_find(idx)
-
-	if (i == -1) return r;
-	
-	return variable_table[i].value;
-}
-
-function cpu_set_value(idx, v)
-{
-	var i = variable_find(idx)
-
-	if (i == -1) return;
-	
-	variable_table[i].value = v;
-}
 
 
 
@@ -314,7 +335,7 @@ function solve_logic(dt)
 			
 			//cr = cr & !variable_table[inst.op1].value;
 			
-			cr = cr & !cpu_get_value(inst.op1);
+			cr = cr & !cpu_get_byte(inst.op1);
 			
 		} else
 		
@@ -323,7 +344,7 @@ function solve_logic(dt)
 			if (check_var(inst.op1)) return;
 
 			//cr = cr & variable_table[inst.op1].value;
-			cr = cr & cpu_get_value(inst.op1);
+			cr = cr & cpu_get_byte(inst.op1);
 		} else		
 		
 		if (inst.inst == INST_TYPES.INST_OTE)
@@ -331,7 +352,7 @@ function solve_logic(dt)
 			if (check_var(inst.op1)) return;
 
 			//variable_table[inst.op1].value = cr;
-			cpu_set_value(inst.op1, cr);			
+			cpu_set_byte(inst.op1, cr);			
 		} else		
 		
 		if (inst.inst == INST_TYPES.INST_OTL)
@@ -341,7 +362,7 @@ function solve_logic(dt)
 
 			//if (cr) variable_table[inst.op1].value = 1;
 			
-			if (cr)	cpu_set_value(inst.op1, 1);			
+			if (cr)	cpu_set_byte(inst.op1, 1);			
 		} else		
 		
 		if (inst.inst == INST_TYPES.INST_OTU)
@@ -349,50 +370,37 @@ function solve_logic(dt)
 			if (check_var(inst.op1)) return;
 
 			//if (cr) variable_table[inst.op1].value = 0;
-			if (cr)	cpu_set_value(inst.op1, 0);			
+			if (cr)	cpu_set_byte(inst.op1, 0);			
 		} else	
 		
 		if (inst.inst == INST_TYPES.INST_TMR)
 		{
 			if (check_var(inst.op1)) return;
 			
+			var timer = cpu_get_timer(inst.op1);
 			
-			var idx = variable_find(inst.op1);
-			if (idx == -1) 
-			{
-				console.log("Cant find timer var\n");
-				return;
-			}
-			
-//			console.log("timer cr: " + cr + " " + inst.op);
-			variable_table[idx].preset = 1000;
-
-			if (variable_table[idx].acc == undefined) 
-				variable_table[idx].acc = 0;
+			timer.pre = 1000;
 			
 			if (cr)
 			{
-				variable_table[idx].acc += dt;
+				timer.acc += dt;
 
-				if (variable_table[idx].acc > variable_table[idx].preset)
-					variable_table[idx].acc = variable_table[idx].preset;
+				if (timer.acc > timer.pre)
+					timer.acc = timer.pre;
 			
-				cr = variable_table[idx].acc >= variable_table[idx].preset;
+				cr = timer.acc >=timer.pre;
 			
 			} else
-				variable_table[idx].acc = 0;
+				timer.acc = 0;
 			
-			variable_table[idx].value  = cr;
+			timer.value = cr;
 			
-			
-			//console.log("acc: " + variable_table[inst.op1].acc + " C" + cr + " dt" + dt);
+			cpu_set_timer(inst.op1, timer);
 		}	
 		else
 		{	
 			console.log("CPU: Unknown Inst:" + inst.inst);
 		}
-	
-		
 		
 		//if (log) console.log("CR " + cr);
 		
@@ -400,10 +408,7 @@ function solve_logic(dt)
 	
 	//if (log) console.log("Memory After:");
 	//if (log) show_memory()
-	
 }
-
-
 
 
 

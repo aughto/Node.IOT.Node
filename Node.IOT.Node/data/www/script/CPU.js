@@ -18,7 +18,7 @@ var INST_TYPES = 	{INST_NONE		: 0x00,
 					 INST_PUSHCR	: 0x11, 
 					 INST_POPCR		: 0x12,
 					 INST_PUSHOR	: 0x13, 
-					 INST_COLLECT	: 0x14, 
+					 INST_POPOR	: 0x14, 
 					 INST_XIO		: 0x30, 
 					 INST_XIC		: 0x31,
 					 INST_OTE		: 0x40, 
@@ -191,7 +191,7 @@ function decode_inst(n, inst, op1, op2)
 	if (inst == INST_TYPES.INST_PUSHCR)  console.log("["+n+"] PUSHCR ");    else 
 	if (inst == INST_TYPES.INST_POPCR)   console.log("["+n+"] POPCR ");     else 
 	if (inst == INST_TYPES.INST_PUSHOR)  console.log("["+n+"] PUSHOR ");    else 
-	if (inst == INST_TYPES.INST_COLLECT) console.log("["+n+"] COLLECT ");   else 
+	if (inst == INST_TYPES.INST_POPOR) console.log("["+n+"] COLLECT ");   else 
 	if (inst == INST_TYPES.INST_XIC)     console.log("["+n+"] XIC " + op1); else 
 	if (inst == INST_TYPES.INST_XIO)     console.log("["+n+"] XIO " + op1); else
 	if (inst == INST_TYPES.INST_OTE)     console.log("["+n+"] OTE " + op1); else	
@@ -298,14 +298,10 @@ function solve_logic(dt)
 		} else
 
 		// Collect OR stack values
-		if (inst.inst == INST_TYPES.INST_COLLECT)
+		if (inst.inst == INST_TYPES.INST_POPOR)
 		{
 			or_ptr--;
-
 			if (or_ptr < 0) {console.log("[" + i + "] COLLECT ERROR"); return; }
-			
-			var v = or_stack[or_ptr];
-			
 			cr = cr | or_stack[or_ptr];
 		} else		
 		

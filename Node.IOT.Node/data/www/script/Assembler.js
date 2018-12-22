@@ -264,10 +264,6 @@ function resolve_chain(prev_ni, x, y)
 
 
 
-
-
-
-
 /* 
 	Node tree assembly 
 */
@@ -305,24 +301,6 @@ function assemble_nodes()
 }
 
 
-
-/* Decode symbol to instruction and add to instruction list */
-/*function add_operation(o, op1, op2)
-{
-	
-	
-	
-	if (o == SYM.NO) add_inst(INST_TYPES.INST_XIO, op1);
-	if (o == SYM.NC) add_inst(INST_TYPES.INST_XIC, op1);
-	if (o == SYM.OTE) add_inst(INST_TYPES.INST_OTE, op1);
-	if (o == SYM.OTL) add_inst(INST_TYPES.INST_OTL, op1);
-	if (o == SYM.OTU) add_inst(INST_TYPES.INST_OTU, op1);
-	if (o == SYM.TMR) add_inst(INST_TYPES.INST_TMR, op1);
-	
-	
-}
-*/
-
 /* Assemble parsed node tree to instruction list */
 function assemble_tree(level, node)
 {
@@ -346,6 +324,7 @@ function assemble_tree(level, node)
 	var pn = -1; // previous node index
 	
 	var next = -1;
+	
 	while (np != -1 && n.type != SYM.E && l--)
 	{
 		var n = nodes[np];
@@ -359,15 +338,8 @@ function assemble_tree(level, node)
 		{
 			var offset1 = find_variable_offset(n.op1);
 			var offset2 = find_variable_offset(n.op2);
-			
-			
 
 			add_inst(n.type_inst, offset1, offset1);
-			
-			
-			
-			
-//			add_operation(n.type, n.op1, n.op2);
 
 			//console.log("N: [" + np + "] " + n.type_text + "(" + n.op1 + ") " + n.x + " " + n.y + "\n");
 		}	
@@ -381,7 +353,7 @@ function assemble_tree(level, node)
 			if ((pn !=-1) && (pn == n.prev)) 
 			{
 				//console.log("N: [" + np + "] COLLECT "+ n.x + " " + n.y + " \n");
-				add_inst(INST_TYPES.INST_COLLECT, 0, 0);
+				add_inst(INST_TYPES.INST_POPOR, 0, 0);
 			}
 			else // Otherwise done with segment
 			{

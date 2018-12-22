@@ -60,12 +60,6 @@ function logic_add_variable(name, type)
 
 }
 
-
-
-
-
-
-
 	
 function logic_remove_variable(index)
 {

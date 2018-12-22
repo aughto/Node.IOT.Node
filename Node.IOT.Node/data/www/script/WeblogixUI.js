@@ -1075,7 +1075,7 @@ function toggle_node(ni)
 	//variables[n.op1] = variables[n.op1]  == 0 ? 1 : 0;
 	
 	
-	cpu_update(100);
+	solve_logic(100);
 }
 	
 

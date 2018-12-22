@@ -51,7 +51,7 @@ var icon_pad = 10;
 
 var update_grid = true;
 
-var sel_icon = 3; // toggle mode
+var sel_icon = 1; // toggle mode
 
 var sel_color = "#5050ff";
 
@@ -298,10 +298,8 @@ function toggle_click()
 {
 	console.log("ix toggle Mode " + mode);
 		
-		
-		
 		mode = MODE_TYPES.MODE_TOGGLE; 
-		//show_logic();
+//show_logic();
 	
 }
 

@@ -12,7 +12,7 @@
 */
 
 // Add a new node and re-link 
-function create_node(x, y, type, op1)
+function create_node(x, y, type, op1, op2)
 {
 	var n;
 		
@@ -45,19 +45,25 @@ function create_node(x, y, type, op1)
 	n.sx = symbol_x;
 	n.sy = symbol_y;
 	
+	n.branch_x = -1;
+	n.branch_y = -1;
+	
 	n.consumed = 0;
 	
 	n.op1 = op1;
+	n.op2 = op2;
+	
 
 	return n;
 }
 
-function add_node(x, y, type, op1)
+function add_node(x, y, type, op1, op2)
 {
+	if (op1 == undefined) op1 = -1;
+	if (op2 == undefined) op2 = -1;
 	
-	var n = create_node(x, y, type, op1);
+	var n = create_node(x, y, type, op1, op2);
 	nodes.push(n);
-	link_node(n);
 	
 	return nodes.length - 1;		
 }
@@ -93,38 +99,6 @@ function set_node(x, y, s)
 */
 
 
-function link_node(n)
-{
-	//console.log("Link node: " + n);
-	
-	//n.up_x = n.x;		n.up_y = n.y-1;
-	//n.down_x = n.x;		n.down_y = n.y+1;
-	//n.left_x = n.x-1;	n.left_y = n.y;
-	//n.right_x = n.x+1;	n.right_y = n.y;
-	
-	n.branch_x = -1;
-	n.branch_y = -1;
-	
-	//n.op1_index = find_variable_index(n.op1);
-}
-
-
-function resolve_links()
-{
-	for (var i = 0; i < nodes.length; i++)
-	{
-		var n = nodes[i];
-		
-		n.up = find_node(n.up_x, n.up_y);
-		n.down = find_node(n.down_x, n.down_y);
-		n.left = find_node(n.left_x, n.left_y);
-		n.right = find_node(n.right_x, n.right_y);
-		
-		n.next = find_node(nodes[i].next_x, nodes[i].next_y);
-		n.branch = find_node(nodes[i].branch_x, nodes[i].branch_y);
-		n.prev = find_node(nodes[i].prev_x, nodes[i].prev_y);
-	}
-}
 
 function clear_nodes()
 {

@@ -58,11 +58,9 @@ var sel_color = "#5050ff";
 
 function ui_init()
 {
-	
+	console.log("UI Init");	
+
 	load_icons();
-	
-	
-	
 }
 
 

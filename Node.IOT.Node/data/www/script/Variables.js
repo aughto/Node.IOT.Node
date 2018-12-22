@@ -194,12 +194,12 @@ function assign_variable_list()
 	for (var i = 0; i < variable_data.length; i++)
 		variable_data[i] = 0;
 	
-	console.log("Memory: " + variable_data.length);
-	console.log(variable_list);
-	console.log(variable_data);
+	//console.log("Memory: " + variable_data.length);
+	//console.log(variable_list);
+	//console.log(variable_data);
 	
 	
-	console.log(nodes);
+	//console.log(nodes);
 
 	set_variable_values();
 }
@@ -210,28 +210,22 @@ function assign_variable_list()
 function variable_compare_type(a,b) 
 {
 	// Sory by type first
-	
 	if (a.type < b.type) return -1;
 	if (a.type > b.type) return 1;
 	
 	// Then sort by name	
-		
-	
-  if (a.name.toUpperCase()  < b.name.toUpperCase() )    return -1;
-  if (a.name.toUpperCase()  > b.name.toUpperCase() )    return 1;
-  return 0;
+	if (a.name.toUpperCase() < b.name.toUpperCase() )    return -1;
+	if (a.name.toUpperCase() > b.name.toUpperCase() )    return 1;
+	return 0;
 }
 
 // Name compare for variables
 function variable_compare_name(a,b) 
 {
-	
 	//  sort by name	
-		
-	
-  if (a.name.toUpperCase()  < b.name.toUpperCase() )    return -1;
-  if (a.name.toUpperCase()  > b.name.toUpperCase() )    return 1;
-  return 0;
+	if (a.name.toUpperCase() < b.name.toUpperCase() )    return -1;
+	if (a.name.toUpperCase() > b.name.toUpperCase() )    return 1;
+	return 0;
 }
 
 
@@ -240,14 +234,11 @@ function variable_compare_name(a,b)
 function store_variablelist()
 {
 	console.log("Saving variablelist ");
-
 	
 	var tmp_list = {};
 	tmp_list.vars = [];
 	
 	// Build temp variable list
-
-	
 	for (var i = 0; i < variable_list.variables.length; i++)
 	{
 		tmp_list.vars[i] = {name:variable_list.variables[i].name, type:variable_list.variables[i].type};
@@ -263,15 +254,7 @@ function store_variablelist()
 	
 	var variable_list_str = JSON.stringify(tmp_list);
 	
-	
 	console.log("Variable list string: " + variable_list_str);
-	
-	
-	
-	
-	
-	
-	
 
 	var XHR = get_request();
 
@@ -292,14 +275,13 @@ function store_variablelist()
 
 
 
-
 function set_variable_values()
 {
 	load_test_variables();
 }
 
 	
-	/* End of memory */
+/* End of memory */
 	
 	
 	

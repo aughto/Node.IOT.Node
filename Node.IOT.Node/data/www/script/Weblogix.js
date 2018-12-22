@@ -8,6 +8,8 @@
 
 function weblogix_init()
 {
+	console.log("Weblogix Init");	
+
 	init_global();								// Globals
 	setInterval(function() {logic_ui_update_timer()}, 100);	// Setup timer
 }

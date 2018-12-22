@@ -18,6 +18,8 @@ var values = []; // local copy of current values
 // Display all current values 
 function load_liveview()
 {
+	console.log("Liveview Init");	
+		
 	for (var i in values) refresh_value(i);
 }
 
@@ -46,7 +48,7 @@ function refresh_value(item)
 // Apply new value to item
 function update_value(item, value) 
 { 
-	log(`Update ${item} = ${value}`);
+	console.log(`Update ${item} = ${value}`);
 	
 	//variable_update
 	

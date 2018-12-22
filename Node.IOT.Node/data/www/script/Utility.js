@@ -29,7 +29,7 @@ function get_hex8(num)
 	var len = 2;
     var str = num.toString(16);
 	
-	console.log("Geth8 " + num + " str: " + str + "\n");
+	//console.log("Geth8 " + num + " str: " + str + "\n");
 	
 	
     return "0".repeat(len - str.length) + str;

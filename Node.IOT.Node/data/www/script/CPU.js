@@ -40,7 +40,7 @@ var VAR_SIZE = 		{VAR_DIN		: 1,
 					 VAR_AIN		: 2, 
 					 VAR_AOUT		: 2, 
 					 VAR_BIT		: 1, 
-					 VAR_TMR		: 10};
+					 VAR_TMR		: 6};
 						
 
 
@@ -57,6 +57,8 @@ var inst_table = [];		// Instruction jump table
 // Core CPU init 
 function cpu_init()
 {
+	console.log("CPU Init");	
+	
 	// Setup jump table
 	inst_table[INST_TYPES.INST_CLEAR]  = function(state) { inst_clear(state); }; 
 	inst_table[INST_TYPES.INST_PUSHCR] = function(state) { inst_pushcr(state);}; 
@@ -69,12 +71,6 @@ function cpu_init()
 	inst_table[INST_TYPES.INST_OTL]    = function(state) { inst_otl(state);   }; 
 	inst_table[INST_TYPES.INST_OTU]    = function(state) { inst_otu(state);   }; 
 	inst_table[INST_TYPES.INST_TMR]    = function(state) { inst_tmr(state);   };
-		
-	console.log(inst_table);
-	
-	var s = {cr_stack:[], cr_ptr:0};
-	inst_table[INST_TYPES.INST_POPCR](s);
-	
 
 	setInterval(function() {cpu_update_timer()}, 100);	// Setup timer
 }

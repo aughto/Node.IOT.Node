@@ -19,8 +19,8 @@ function Node(type)
 	n.draw = function(ctx, x, y, sx, sy) {};	
 	n.type = type;
 				
-	n.op1 = 0;
-	n.op2 = 0;
+	n.op1 = -1;
+	n.op2 = -1;
 	
 	n.branch_type = BRANCH_NONE;
 	

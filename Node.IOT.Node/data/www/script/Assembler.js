@@ -49,7 +49,7 @@ function logic_assemble()
 	
 	console.log("Nodes: ");
 	
-	if (enagle_log) show_nodes();
+	//if (enagle_log) show_nodes();
 
 	if (assemble_nodes())
 	{
@@ -64,6 +64,24 @@ function logic_assemble()
 	//solve_logic();
 }
 
+
+// Node pointers.
+function resolve_links()
+{
+	for (var i = 0; i < nodes.length; i++)
+	{
+		var n = nodes[i];
+		
+		//n.up = find_node(n.up_x, n.up_y);
+		//n.down = find_node(n.down_x, n.down_y);
+		//n.left = find_node(n.left_x, n.left_y);
+		//n.right = find_node(n.right_x, n.right_y);
+		
+		n.next = find_node(nodes[i].next_x, nodes[i].next_y);
+		n.branch = find_node(nodes[i].branch_x, nodes[i].branch_y);
+		n.prev = find_node(nodes[i].prev_x, nodes[i].prev_y);
+	}
+}
 
 
 /* 

@@ -22,6 +22,8 @@ var keepalive_time = 0;
 /* Init websocket and connect */
 function websocket_init()
 {
+	console.log("Websocket Init");	
+
 	//log("Websocket Start");
 	
 	setInterval(function(){ websocket_timer() }, 1000);
@@ -83,10 +85,9 @@ function websocket_connect()
 		socket.close();
 	}
 	
-	
 	socket = null;
 	
-	log("WebSocket Connecting...");
+	console.log("WebSocket Connecting...");
 
 	// Check for IP override
 	if (websocket_ip == '')
@@ -103,7 +104,7 @@ function websocket_connect()
 	}
 	catch(exception) 
 	{
-		log(exception);
+		console.log("Unable to connect: " + exception);
 		return;
 	}
 		
@@ -114,7 +115,7 @@ function websocket_connect()
 			//socket = null;
 		    //connected = false;
 			////connecting = false;
-			log("WebSocket Error");
+			console.log("WebSocket Error");
 			//location.reload(true);
 		}
 			
@@ -123,7 +124,7 @@ function websocket_connect()
 			//socket = null;
 		    //connected = false;
 			//connecting = false;
-			log("WebSocket Disconnected");
+			console.log("WebSocket Disconnected");
 		}	
 		
 	    socket.onopen = function() 
@@ -131,7 +132,7 @@ function websocket_connect()
 			keepalive_time = 0;
 		    connected = true;
 			//connecting = false
-			log("WebSocket Connected");
+			console.log("WebSocket Connected");
 			
 		
 		}
@@ -145,7 +146,7 @@ function websocket_connect()
 	
 	catch(exception) 
 	{
-		log(exception);
+		console.log(exception);
 		//socket = null;
 		//connected = false;
 		//connecting = false;
@@ -165,7 +166,7 @@ function websocket_send(data)
 	catch(exception) 
 	{
 		connected == false;
-		log(exception);
+		console.log(exception);
 		return;
 	}
 	

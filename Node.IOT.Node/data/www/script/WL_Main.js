@@ -1,23 +1,23 @@
 /*
-	Ladder Logic Engine
-	2018 nulluser@gmail.com
+	Node.IOT
+	2018 Aughto Inc
+	Jason Hunt - nulluser@gmail.com
 */
 
 "use strict";
 
+function weblogix_init()
+{
+	init_global();								// Globals
+}
 
 
-
+// Called when clicking on 
 function load_weblogix()
 {
 	console.log("Load weblogix");
 	system_start();
 }
-
-
-
-
-
 
 
 
@@ -188,7 +188,6 @@ function setup_canvas()
 // Main init
 function system_start()
 {	
-	init_global();								// Globals
 	
 	setup_canvas();								// Canvas
 	

@@ -1,9 +1,7 @@
-
-/* 
-    JS Vector Engine
-	2015 Jason Hunt
-	
-	File: Graphics.js
+/*
+	Node.IOT
+	2018 Aughto Inc
+	Jason Hunt - nulluser@gmail.com
 */
 
 "use strict";

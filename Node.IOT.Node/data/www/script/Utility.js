@@ -8,6 +8,15 @@
 
 "use strict";
 
+function log(s)
+{
+	console.log(s);
+//	var a = document.getElementById("data_area");
+//	a.innerHTML = s + "<br>" + a.innerHTML ;
+}
+
+
+
 
 /* 
 	System

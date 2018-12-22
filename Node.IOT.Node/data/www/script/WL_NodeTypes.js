@@ -1,6 +1,7 @@
 /*
-	Ladder Logic Engine
-	2018 nulluser@gmail.com
+	Node.IOT
+	2018 Aughto Inc
+	Jason Hunt - nulluser@gmail.com
 */
 
 "use strict";

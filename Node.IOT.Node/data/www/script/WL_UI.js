@@ -1,8 +1,8 @@
 /*
-	Ladder Logic Engine
-	2018 nulluser@gmail.com
+	Node.IOT
+	2018 Aughto Inc
+	Jason Hunt - nulluser@gmail.com
 */
-
 "use strict";
 
 // UI Symbol types 
@@ -282,7 +282,7 @@ function save_click()
 }
 
 
-function mode_click()
+/*function mode_click()
 {
 		console.log("is Mode button Mode " + mode);
 		
@@ -295,18 +295,18 @@ function mode_click()
 		}
 		else
 		{
-			show_logic();
+			//show_logic();
 			mode = MODE_TYPES.MODE_TOGGLE;
 			sel_icon = 3;
 		}
 	
-}
+}*/
 
 
 function select_click()
 {
 			console.log("Select Mode " + mode);
-		show_logic();
+		//show_logic();
 		mode = MODE_TYPES.MODE_SELECT;
 		
 		
@@ -320,7 +320,7 @@ function toggle_click()
 		
 		
 		mode = MODE_TYPES.MODE_TOGGLE; 
-		show_logic();
+		//show_logic();
 	
 }
 
@@ -328,7 +328,7 @@ function clear_click()
 {
 			mode = MODE_TYPES.MODE_EDIT;
 		current_tool = SYM.NONE;
-			show_logic();
+		//	show_logic();
 	
 }
 
@@ -471,48 +471,21 @@ function render()
 		//draw_text(main_context, n.x*symbol_x+symbol_x*0.6+3, n.y*symbol_y+3 +symbol_y*0.6,10, 10,"#000000", n.order);
 		
 		if (n.is_operation())
-		//if (is_operation(n.type))
 		{
-			//if (!check_var(n.op1)) 
-		
-			//console.log(n.op1);
-	
-
 			if (n.op1 != -1)
 			{
-				var value = cpu_get_byte(n.op1);
-	
+				var offset = variable_list.variables[n.op1].offset;
+				
+				var value = cpu_get_byte(offset);
+				
 				var color = (value == 0) ?  "#ff0000" : "#0000ff" ;
 				var name = variable_list.variables[n.op1].name;
-			//var name = variable_listidx].name;
-			
-					
+				
 				draw_text(main_context, n.x*symbol_x+symbol_x * 0.2, 
 										n.y*symbol_y+symbol_y*0.05, 	
 										10, 10,color, name);		
 			}
-		
-		
-		
-		
-		/*var idx = -1;
-		
-		for (var j = 0; j < variable_table.length; j++)
-			if (variable_table[j].index == n.op1)
-				idx = j;
-		
-			if (idx != -1)
-			{
-			var color = (variable_table[idx].value == 0) ?  "#ff0000" : "#0000ff" ;
-			//var name = variable_table[idx].name;
-			var name = variable_listidx].name;
-			
-					
-			draw_text(main_context, n.x*symbol_x+symbol_x * 0.2, 
-									n.y*symbol_y+symbol_y*0.05, 
-									10, 10,color, name);
-			}
-			}*/
+
 		}
 	}
 		
@@ -564,18 +537,7 @@ function find_index(x, y)
 */
 
 
-/*
-function edit_click()
-{
-	mode = MODE_TYPES.MODE_EDIT;
-}
 
-
-function toggle_click()
-{
-	mode = MODE_TYPES.MODE_TOGGLE;
-}
-*/
 
 /*
 	UI Actions
@@ -742,7 +704,7 @@ function action_mouse_wheel(x, y, delta)
 
 function action_move(delta_x, delta_y)
 {
-	// drag single object (selected flag is not set for single)
+	/*// drag single object (selected flag is not set for single)
 	if (click_index != INVALID_OBJECT && num_selected == 0)
 	{
 		var tx = objects[click_index].x_start - delta_x / zoom_scale;
@@ -751,7 +713,7 @@ function action_move(delta_x, delta_y)
 		objects[click_index].x = grid_round(tx);
 		objects[click_index].y = grid_round(ty);
 	}
-				
+				*/
 	ui_mode = UIMODE.MOVE;
 			
 }
@@ -759,11 +721,11 @@ function action_move(delta_x, delta_y)
 
 function action_resize(delta_x, delta_y)
 {
-	objects[object_selected].w = grid_round(objects[object_selected].w_start - delta_x / zoom_scale);
+	/*objects[object_selected].w = grid_round(objects[object_selected].w_start - delta_x / zoom_scale);
 	objects[object_selected].h = grid_round(objects[object_selected].h_start - delta_y / zoom_scale);
 			
 	if (objects[object_selected].w < MIN_SIZE) objects[object_selected].w  = MIN_SIZE;
-	if (objects[object_selected].h < MIN_SIZE) objects[object_selected].h  = MIN_SIZE;
+	if (objects[object_selected].h < MIN_SIZE) objects[object_selected].h  = MIN_SIZE;*/
 }
 
 
@@ -1112,14 +1074,8 @@ function onToolMouseDown(event)
 
 
 
-function show_logic()
-{
-	document.getElementById("canvas_container").style.display = "block";
-	document.getElementById("memory_container").style.display = "none";
-}
-
-
-
+// Toggle node value
+// Should this be in logic?
 function toggle_node(ni)
 {
 	if (ni < 0) return;

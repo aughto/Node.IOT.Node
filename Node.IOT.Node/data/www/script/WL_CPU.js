@@ -1,8 +1,8 @@
 /*
-	Ladder Logic Engine
-	2018 nulluser@gmail.com
+	Node.IOT
+	2018 Aughto Inc
+	Jason Hunt - nulluser@gmail.com
 
-	
 	The CPU is abstracted from the user interface and logic compiler
 	it deals only with the instruction list, the raw memory, and the io interface	
 	
@@ -45,13 +45,10 @@ var VAR_SIZE = 	{ VAR_DIN		: 1,
 				 VAR_BIT		: 1, 
 				 VAR_TMR		: 10 };
 						
-					
-
-var inst_list = [];
 
 
 var logic_ok = false;		// true if logic is ok to process
-
+var inst_list = [];			// Instruction list
 var variable_data = null; //  Raw byte data for variable storage 
 
 
@@ -62,18 +59,18 @@ var variable_data = null; //  Raw byte data for variable storage
 
 function cpu_init()
 {
-	setup_variable_list();
+
 
 }
 
-
+// Solve logic
 function cpu_update(dt)
 {
 	solve_logic(dt);	
 }
 
 
-
+// Get byte from memory location
 function cpu_get_byte(offset)
 {
 
@@ -86,7 +83,7 @@ function cpu_get_byte(offset)
 	return variable_data[offset];
 }
 
-
+// Set byte at memory location
 function cpu_set_byte(offset, v)
 {
 	if (offset < 0 || offset >= variable_data.length)
@@ -101,7 +98,7 @@ function cpu_set_byte(offset, v)
 
 
 // Extract timer from memory array 
-//  Would be a type case in C
+//  Would be a type cast in C
 function cpu_get_timer(offset)
 {
 	var t = {};
@@ -109,9 +106,6 @@ function cpu_get_timer(offset)
 	t.value = variable_data[offset];
 	t.pre = (variable_data[offset+1] << 8) + variable_data[offset+2];
 	t.acc = (variable_data[offset+3] << 8) + variable_data[offset+4];
-	
-	
-	
 	
 	return t;
 }
@@ -125,18 +119,10 @@ function cpu_set_timer(offset, t)
 	variable_data[offset+2] = t.pre & 0xff;
 	variable_data[offset+3] = t.acc >> 8;
 	variable_data[offset+4] = t.acc & 0xff;
-	
 }
 
 
-
-
-
-
-
-
-
-
+// Toggle memory byte at location
 function cpu_toggle_byte(offset)
 {
 //	variable_table[i].value = v;
@@ -145,10 +131,9 @@ function cpu_toggle_byte(offset)
 	//if (mem_idx == -1) return;
 	
 	variable_data[offset] = !variable_data[offset];	
-	
 }
 
-
+// Display raw memory
 function show_memory()
 {
 	console.log("Memory:");
@@ -173,11 +158,11 @@ function show_memory()
 
 function clear_bits()
 {
-	for (var i = 0; i < variable_data.length; i++)
-		variable_data[i] = 0;
+	//for (var i = 0; i < variable_data.length; i++)
+//		variable_data[i] = 0;
 }
 
-
+// Add instruction to instruction list
 function add_inst(inst, op1, op2)
 {
 	var i = {inst:inst, op1:op1, op2:op2};
@@ -382,7 +367,6 @@ function solve_logic(dt)
 			
 			var timer = cpu_get_timer(inst.op1);
 			
-			//console.log("op1: " + inst.op1 + " Val: " + timer.value + " Pre: " + timer.pre + " Acc:" + timer.acc);
 
 			if (cr)
 			{
@@ -391,12 +375,14 @@ function solve_logic(dt)
 				if (timer.acc > timer.pre)
 					timer.acc = timer.pre;
 			
-				cr = timer.acc >=timer.pre;
+				cr = (timer.acc >= timer.pre) ? 1 : 0;
 			
 			} else
 				timer.acc = 0;
 			
 			timer.value = cr;
+			
+			//console.log("cr: " + cr + " value: " + timer.value + " op1: " + inst.op1 + " Val: " + timer.value + " Pre: " + timer.pre + " Acc:" + timer.acc);
 			
 			cpu_set_timer(inst.op1, timer);
 		}	

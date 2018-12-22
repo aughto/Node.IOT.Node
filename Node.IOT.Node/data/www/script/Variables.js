@@ -6,235 +6,296 @@
 
 "use strict";
 
-				   
-/*function add_device()
+
+
+
+
+
+/* memory */
+
+
+
+function logic_add_variable(name, type)
 {
+	var v = {};
 	
-	io_list.num_remotedevice++;
-	load_variables()
-}
-				   
-				   
-function remove_device(i)
-{
+	v.name = name;
+	v.type = type;
+		
 	
-	//io_list.
+	// Find splice point
 	
+	var splice = 0;
 	
-	io_list.num_remotedevice--;
-	
-	
-	load_variables();
-}
-	
-
-function generate_iolist()
-{
-
-
-	
-}*/
-
-
-function get_var_type_string(v)
-{
-	
-	if (v.type == VAR_TYPES.VAR_DIN)  return "Digial Input";
-	if (v.type == VAR_TYPES.VAR_DOUT) return "Digial Output";
-	if (v.type == VAR_TYPES.VAR_AIN)  return "Analog Input";
-	if (v.type == VAR_TYPES.VAR_AOUT) return "Analog Output";
-	
-	if (v.type == VAR_TYPES.VAR_BIT) return "Bit";
-	if (v.type == VAR_TYPES.VAR_TMR) return "Timer";
-	
-	return "x";	
-}
-
-
-
-
-
-// Check is char is a numerical digit 
-function isValidNum(c) { return c >= '0' && c <= '9' }
-
-// Check is char is valid alphanumeric value
-function isValidAlpha(c) { return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') }
-
-// Check is charchar is valid symbol
-function isValidSymbol(c) { return c == '_' }
-
-
-// Check name for valid format. Fails if name invalid
-// Ignores case for check but case conserved
-// Valid format
-// is_valid(n) = n[0] in (['a'..'z'] || ['A'..'Z'] || '_') and n[1..N-1] in (['a'..'z'] || ['A'..'Z'] || ['0'..'9'] || '_')
-function checkVariableName(name)
-{
-	console.log("name (" + name + ") " + "  len: " + name.length);
-
-	// Need a name
-	if (name == "")
-	{	
-		alert("No name supplied");
-		return true;
-	}
-
-	// Make sure first char is not a number
-	if (isValidNum(name[0]))
+	for (var i = 0; i < variable_list.variables.length && splice==0; i++)
 	{
-		alert("First letter of variable cannot be a number (" +name[0] + ")");
-	
-		return true;
-	}
 
-	// Make sure all chars in name are valid
-	for (var i = 0; i < name.length; i++)
-	{
-		if (!isValidAlpha(name[i]) && !isValidNum(name[i]) && !isValidSymbol(name[i]))
+		if (variable_compare_type(v, variable_list.variables[i]) < 0)
 		{
-			alert("Invalid character in name (" + name[i] + ")");
-			return true;
+			splice = i;
 		}
 	}
 		
-	// Check existing names
-	for (var i = 0; i < variable_list.variables.length; i++)
+	console.log("Splice: " + splice);
+		
+		
+	variable_list.variables.splice(splice, 0, v);
+		
+		
+	// adjust all indexes after splice
+	
+	for (var i = 0; i < nodes.length; i++)
 	{
-		if (variable_list.variables[i].name.toUpperCase() == name.toUpperCase())
+		
+		if (nodes[i].op1 > splice)
+			nodes[i].op1 += 1;
+		
+	}
+		
+	assign_variable_list();
+}
+
+
+
+
+
+
+
+	
+function logic_remove_variable(index)
+{
+	
+	for (var i = 0; i < nodes.length; i++)
+	{
+		if (nodes[i].op1 == index)
 		{
-			alert("Variable name already exists");
-			return true;
-		}
+			
+			nodes[i].op1 = -1;
+			
+		}else
+		// reassign variable indexes to account for missing variable
+		if (nodes[i].op1 > index)
+			nodes[i].op1--;
+		
 	}
-	
-	return false;
-}
-
-
-function remove_variable(index)
-{
-	
-	// need to null all node refernces
-	
-	
-	//var index = find_variable_index(offset);
-	
-	
-	
-	
-	var v = variable_list.variables[index];
-	
-	if (v.type == VAR_TYPES.VAR_DIN ||
-		v.type == VAR_TYPES.VAR_DOUT ||
-		v.type == VAR_TYPES.VAR_AIN ||
-		v.type == VAR_TYPES.VAR_AOUT)
-	{
-		alert("Cannot delete IO");
-		return;	
-	}
-	
-
-	cpu_remove_variable(index);
-	logic_remove_variable(index);
 		
+		
+//	n.op1_index = find_variable_index(n.op1);
 	
-	load_variables();	
+	
 	
 }
-
-
-
-function add_variable()
+	
+	
+function cpu_remove_variable(index)
 {
-	var var_name= document.getElementById("var_name").value;	
-	var var_type = document.getElementById("var_type").value;	
-	var var_value = document.getElementById("var_val").value;	
 	
-	console.log("Add variable: " + var_name + " " + var_type + " " + var_value);
-
-	// Remove trailing spaces
+	variable_list.variables.splice(index, 1);
 	
-	// Turn spaces into underscores
-	var_name = var_name.replace(/ /g, "_");
+	assign_variable_list();
 	
 	
-	if (checkVariableName(var_name)) return;
-
-		
-	logic_add_variable(var_name, var_type);
-		
-	load_variables();	
 }
+	
+	
 
-
-
-
-
-function load_variables()
+// Find offset for variable by index
+function find_variable_offset(index)
 {
-	
-	// sort variable list by name for display
-	variable_list.variables.sort(variable_compare_name);
-	
-	
-	var out = "";
-
-	
-	out += "<h2>Variables</h2>";
-
-	
-	
-	
-	//variable_list
-	
-	
-	out += "<table border=1>";
-	out += "<tr><th>Variable</th><th>Type</th><th>Value</th><th>Index</th><th>Offset</th><th>+/-</th></tr>";
-
 	for (var i = 0; i < variable_list.variables.length; i++)
 	{
-		out += "<tr>";
+		if (variable_list.variables[i].index == index)
+			return variable_list.variables[i].offset;
 		
-		out += "<td> <b>" + variable_list.variables[i].name + "</b></td>";
-		out += "<td> <b>" + get_var_type_string(variable_list.variables[i]) + "</b></td>";
-		
-		out += "<td>x</td>";
-
-		out += "<td>"+variable_list.variables[i].index+"</td>";
-		out += "<td>"+variable_list.variables[i].offset+"</td>";
-		
-		var index = variable_list.variables[i].index;
-		
-		out += "<td><input type=button class=var_button value='(-)' onclick='remove_variable("+index+");'></td>";
-		
-		out += "</tr>";
 	}
-
-	out += "<tr>";
-
-	out += "<td><input type=text id=var_name></td> ";
-
-	out += "<td><select id=var_type>";
 		
-	out += "<option value='" + VAR_TYPES.VAR_BIT + "'> Bit </option> \n";
-	out += "<option value='" + VAR_TYPES.VAR_TMR + "'> Timer </option> \n";
-	
-	out += "</select></td>";
-	
-	out += "<td><input type=text size=4  id=var_val></td> ";
-	out += "<td>&nbsp</td> ";
-	
-	
-	out += "<td><input type=button class=var_button value='(+)' onclick='add_variable();'></td>";
-	
-	out += "</tr>";
+	return -1;
+}
+		
+		
+// Find index for variable by name
+function find_variable_index(n)
+{
+	for (var i = 0; i < variable_list.variables.length; i++)
+	{
+		if (variable_list.variables[i].name == n)
+			return i;
+		
+	}
+		
+	return -1;
+}		
+		
+		
+		
 
-	out += "</table>";
+// Find index of variable by offset
+// used for node linking		
+/*function find_variable_index(offset)
+{
 	
-	var  a= document.getElementById("variablelist");
-	a.innerHTML = out;
+	// Compute memory offsets
+	for (var i = 0; i < variable_list.variables.length; i++)
+	{
+		
+		if (variable_list.variables[i].offset == offset) return i;
+	}
 	
-		// sort variable list by type for system use
+	return -1;
+}
+*/
+
+
+
+
+
+
+
+
+
+function assign_variable_list()
+{
+// Variables are sorted by type and then by name to assign index
+
+
+	console.log("Assign variable table");
+
 	variable_list.variables.sort(variable_compare_type);
+	
+	
+	
+	
+	variable_list.num_din = 0;
+	variable_list.num_dout = 0;
+	variable_list.num_ain = 0;
+	variable_list.num_aout = 0;
+	variable_list.num_bit = 0;
+	variable_list.num_tmr = 0;
+	
+	var offset = 0;
+	// Compute memory offsets
+	for (var i = 0; i < variable_list.variables.length; i++)
+	{
+		variable_list.variables[i].index = i; // Save index for when list is sorted for viewing
+		variable_list.variables[i].offset = offset;
+		
+		if (variable_list.variables[i].type == VAR_TYPES.VAR_DIN)  {variable_list.num_din++; offset += VAR_SIZE.VAR_DIN; } 
+		if (variable_list.variables[i].type == VAR_TYPES.VAR_DOUT) {variable_list.num_dout++; offset += VAR_SIZE.VAR_DOUT; } 
+		if (variable_list.variables[i].type == VAR_TYPES.VAR_AIN)  {variable_list.num_ain++; offset += VAR_SIZE.VAR_AIN; } 
+		if (variable_list.variables[i].type == VAR_TYPES.VAR_AOUT) {variable_list.num_aout++; offset += VAR_SIZE.VAR_AOUT; } 
+		if (variable_list.variables[i].type == VAR_TYPES.VAR_BIT)  {variable_list.num_bit++; offset += VAR_SIZE.VAR_BIT; } 
+		if (variable_list.variables[i].type == VAR_TYPES.VAR_TMR)  {variable_list.num_tmr++; offset += VAR_SIZE.VAR_TMR; } 
+	}
+	
+	variable_list.mem_size = offset;
+	
+	variable_data = new Uint8Array(variable_list.mem_size);
+	
+	
+	for (var i = 0; i < variable_data.length; i++)
+		variable_data[i] = 0;
+	
+	console.log("Memory: " + variable_data.length);
+	console.log(variable_list);
+	console.log(variable_data);
+	
+	
+	console.log(nodes);
+	
 }
 
+
+
+// Name compare for variables
+function variable_compare_type(a,b) 
+{
+	// Sory by type first
+	
+	if (a.type < b.type) return -1;
+	if (a.type > b.type) return 1;
+	
+	// Then sort by name	
+		
+	
+  if (a.name.toUpperCase()  < b.name.toUpperCase() )    return -1;
+  if (a.name.toUpperCase()  > b.name.toUpperCase() )    return 1;
+  return 0;
+}
+
+// Name compare for variables
+function variable_compare_name(a,b) 
+{
+	
+	//  sort by name	
+		
+	
+  if (a.name.toUpperCase()  < b.name.toUpperCase() )    return -1;
+  if (a.name.toUpperCase()  > b.name.toUpperCase() )    return 1;
+  return 0;
+}
+
+
+
+// Save bytecode to device
+function store_variablelist()
+{
+	console.log("Saving variablelist ");
+
+	
+	var tmp_list = {};
+	tmp_list.vars = [];
+	
+	// Build temp variable list
+
+	
+	for (var i = 0; i < variable_list.variables.length; i++)
+	{
+		tmp_list.vars[i] = {name:variable_list.variables[i].name, type:variable_list.variables[i].type};
+	}
+	
+	tmp_list.config = {};
+	tmp_list.config.num_din = variable_list.num_din;
+	tmp_list.config.num_dout = variable_list.num_dout;
+	tmp_list.config.num_ain = variable_list.num_ain;
+	tmp_list.config.num_aout = variable_list.num_aout;
+	tmp_list.config.num_bit = variable_list.num_bit;
+	tmp_list.config.num_tmr = variable_list.num_tmr;
+	
+	var variable_list_str = JSON.stringify(tmp_list);
+	
+	
+	console.log("Variable list string: " + variable_list_str);
+	
+	
+	
+	
+	
+	
+	
+
+	var XHR = get_request();
+
+    XHR.addEventListener("load", function(event) 
+	{
+      console.log(event.target.responseText);
+    });
+
+    XHR.addEventListener("error", function(event) 
+	{
+      alert('Unable to save logic to device');
+    });
+
+	XHR.open("POST", "/save_variablelist"); 
+		
+    XHR.send(variable_list_str);
+}
+
+
+	
+	/* End of memory */
+	
+	
+	
+
+	
+	

@@ -226,24 +226,22 @@ function draw_rectangle(x,y,w,h, text, color, border)
 }
 
 // Draw circle at position
-function draw_circle(x1,y1, r, color)
+/*function draw_circle(x1,y1, r, color)
 {
 	context.beginPath();
 	context.arc(x1, y1, r, 0, 2 * Math.PI, false);
 	
 	context.lineWidth = 0;
 	
-	
 	context.fillStyle = color;
     context.fill();	
 	
-	
 	context.closePath();	
 	//context.stroke();
-}
+}*/
 
 // Draw image at position
-function draw_image()
+/*function draw_image()
 {	
 	// draw image
 	//if (current_layer == "All" || current_layer == '1')
@@ -258,5 +256,5 @@ function draw_image()
 		context.drawImage(imageObj,bx,by);
 		context.restore();
 	}
-	
-}
+}*/
+

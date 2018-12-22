@@ -38,7 +38,7 @@ var VAR_TYPES = 	{VAR_NONE		: 0x00,
 					
 					
 // Variable sizes					
-var VAR_SIZE = 	{ VAR_DIN		: 1, 
+var VAR_SIZE = 	{VAR_DIN		: 1, 
 				 VAR_DOUT		: 1, 
 				 VAR_AIN		: 2, 
 				 VAR_AOUT		: 2, 
@@ -187,18 +187,18 @@ function get_ops(inst)
 // Decode and display
 function decode_inst(n, inst, op1, op2)
 {
-	if (inst == INST_TYPES.INST_NONE) console.log("["+n+"] NONE "); else 
-	if (inst == INST_TYPES.INST_CLEAR) console.log("["+n+"] CLEAR "); else 
-	if (inst == INST_TYPES.INST_PUSHCR) console.log("["+n+"] PUSHCR "); else 
-	if (inst == INST_TYPES.INST_POPCR) console.log("["+n+"] POPCR "); else 
-	if (inst == INST_TYPES.INST_PUSHOR) console.log("["+n+"] PUSHOR "); else 
+	if (inst == INST_TYPES.INST_NONE)    console.log("["+n+"] NONE "); else 
+	if (inst == INST_TYPES.INST_CLEAR)   console.log("["+n+"] CLEAR "); else 
+	if (inst == INST_TYPES.INST_PUSHCR)  console.log("["+n+"] PUSHCR "); else 
+	if (inst == INST_TYPES.INST_POPCR)   console.log("["+n+"] POPCR "); else 
+	if (inst == INST_TYPES.INST_PUSHOR)  console.log("["+n+"] PUSHOR "); else 
 	if (inst == INST_TYPES.INST_COLLECT) console.log("["+n+"] COLLECT "); else 
-	if (inst == INST_TYPES.INST_XIC) console.log("["+n+"] XIC " + op1); else 
-	if (inst == INST_TYPES.INST_XIO) console.log("["+n+"] XIO " + op1);else
-	if (inst == INST_TYPES.INST_OTE) console.log("["+n+"] OTE " + op1);else	
-	if (inst == INST_TYPES.INST_OTL) console.log("["+n+"] OTL " + op1);else	
-	if (inst == INST_TYPES.INST_OTU) console.log("["+n+"] OTU " + op1);else	
-	if (inst == INST_TYPES.INST_TMR) console.log("["+n+"] TMR " + op1);else
+	if (inst == INST_TYPES.INST_XIC)     console.log("["+n+"] XIC " + op1); else 
+	if (inst == INST_TYPES.INST_XIO)     console.log("["+n+"] XIO " + op1);else
+	if (inst == INST_TYPES.INST_OTE)     console.log("["+n+"] OTE " + op1);else	
+	if (inst == INST_TYPES.INST_OTL)     console.log("["+n+"] OTL " + op1);else	
+	if (inst == INST_TYPES.INST_OTU)     console.log("["+n+"] OTU " + op1);else	
+	if (inst == INST_TYPES.INST_TMR)     console.log("["+n+"] TMR " + op1);else
 	{
 		console.log("Unknown inst: " + inst);
 	}

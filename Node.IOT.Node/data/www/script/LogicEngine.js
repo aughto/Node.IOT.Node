@@ -12,8 +12,6 @@ var BRANCH_OPEN = 1;
 var BRANCH_CLOSE = 2;
 
 
-
-
 var enagle_log = true;
 //var log = false;
 

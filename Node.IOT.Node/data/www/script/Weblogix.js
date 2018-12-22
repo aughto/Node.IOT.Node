@@ -9,6 +9,7 @@
 function weblogix_init()
 {
 	init_global();								// Globals
+	setInterval(function() {logic_ui_update_timer()}, 100);	// Setup timer
 }
 
 
@@ -16,9 +17,13 @@ function weblogix_init()
 function load_weblogix()
 {
 	console.log("Load weblogix");
-	system_start();
-}
+	
+	setup_canvas();								// Canvas
+	
+	ui_init();
 
+	render();									// Render
+}
 
 
 
@@ -184,24 +189,6 @@ function setup_canvas()
 	window.onresize = function(event) { resize_canvas(); render();}
 }
 
-
-// Main init
-function system_start()
-{	
-	
-	setup_canvas();								// Canvas
-	
-	
-	ui_init();
-	
-	//init_logic();
-
-	setInterval(function() {logic_ui_update_timer()}, 100);	// Setup timer
-	
-	//test_logic();
-
-	render();									// Render
-}
 
 /* 
 	End of System

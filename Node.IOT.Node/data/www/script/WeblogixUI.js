@@ -104,22 +104,6 @@ function menu_logic_download()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* 
 	Icons 
 */
@@ -131,9 +115,6 @@ function set_tool(t)
 	
 	console.log("Set tool: " + t);
 }
-
-
-
 
 
 function add_icon(draw, click)
@@ -446,7 +427,7 @@ function render()
 {
 	draw_count = 0;
 	
-	if (main_canvas == null) {alert("Unable to load canvas"); return; }
+	if (main_canvas == null) return; // {("Unable to load canvas"); return; }
 	
 	main_context.clearRect(0, 0, main_canvas.width, main_canvas.height); 	// Clear
 

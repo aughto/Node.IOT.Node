@@ -9,9 +9,7 @@
 const BGCOLOR_VALUES = ["#404040", "#5555ff"];
 const FGCOLOR_VALUES = ["#ffffff", "#ffffff"];
 
-
 var values = []; // local copy of current values
-
 
 /*
   Live View 
@@ -45,17 +43,12 @@ function refresh_value(item)
 }
 
 
-
 // Apply new value to item
 function update_value(item, value) 
 { 
 	log(`Update ${item} = ${value}`);
-
-	
 	
 	//variable_update
-	
-	
 	
 	values[item] = value;
 	refresh_value(item);
@@ -66,9 +59,6 @@ function update_value(item, value)
 function set_value(item, value)
 {
 	//console.log(`SET ${item} ${value}`);
-	
-	
-	
 	
 	update_value(item, value);	// local update
 	

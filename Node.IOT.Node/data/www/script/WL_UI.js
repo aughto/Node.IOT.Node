@@ -478,12 +478,12 @@ function render()
 			//console.log(n.op1);
 	
 
-			if (n.op1_index != -1)
+			if (n.op1 != -1)
 			{
 				var value = cpu_get_byte(n.op1);
 	
 				var color = (value == 0) ?  "#ff0000" : "#0000ff" ;
-				var name = variable_list.variables[n.op1_index].name;
+				var name = variable_list.variables[n.op1].name;
 			//var name = variable_listidx].name;
 			
 					
@@ -1204,7 +1204,7 @@ function prop_ok_click(ix, iy)
 		{
 			n.op1 = parseInt(variable_offset);
 			
-			n.op1_index =  find_variable_index(n.op1); // relink index
+			//n.op1_index =  find_variable_index(n.op1); // relink index
 			//assemble();
 		}
 	}

@@ -110,6 +110,9 @@ function cpu_get_timer(offset)
 	t.pre = (variable_data[offset+1] << 8) + variable_data[offset+2];
 	t.acc = (variable_data[offset+3] << 8) + variable_data[offset+4];
 	
+	
+	
+	
 	return t;
 }
 
@@ -380,6 +383,10 @@ function solve_logic(dt)
 			var timer = cpu_get_timer(inst.op1);
 			
 			timer.pre = 1000;
+
+			console.log("op1: " + inst.op1 + " Val: " + timer.value + " Pre: " + timer.pre + " Acc:" + timer.acc);
+
+
 			
 			if (cr)
 			{

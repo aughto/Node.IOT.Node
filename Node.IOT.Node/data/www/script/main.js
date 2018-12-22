@@ -754,13 +754,13 @@ function checkVariableName(name)
 }
 
 
-function remove_variable(offset)
+function remove_variable(index)
 {
 	
 	// need to null all node refernces
 	
 	
-	var index = find_variable_index(offset);
+	//var index = find_variable_index(offset);
 	
 	
 	
@@ -812,14 +812,11 @@ function add_variable()
 	if (checkVariableName(var_name)) return;
 
 	
-	var v = {};
-	
-	v.name = var_name;
-	v.type = var_type;
+
+
 		
-	variable_list.variables.push(v);
-		
-	assign_variable_list();
+	logic_add_variable(var_name, var_type);
+
 	
 		
 	load_variables();	
@@ -863,9 +860,9 @@ function load_variables()
 		out += "<td>"+variable_list.variables[i].index+"</td>";
 		out += "<td>"+variable_list.variables[i].offset+"</td>";
 		
-		var offset = variable_list.variables[i].offset;
+		var index = variable_list.variables[i].index;
 		
-		out += "<td><input type=button class=var_button value='(-)' onclick='remove_variable("+offset+");'></td>";
+		out += "<td><input type=button class=var_button value='(-)' onclick='remove_variable("+index+");'></td>";
 		
 		out += "</tr>";
 	}

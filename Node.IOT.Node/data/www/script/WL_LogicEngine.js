@@ -170,7 +170,7 @@ function link_node(n)
 	n.branch_y = -1;
 	
 	
-	n.op1_index = find_variable_index(n.op1);
+	//n.op1_index = find_variable_index(n.op1);
 	
 	
 /*
@@ -264,19 +264,25 @@ function show_nodes()
 		var s = "";
 		s += "N " + i + " " + n.type_text + " (" + n.x + "," + n.y + ") ";
 		
-		s += "Next: " + nodes[i].next + " " ;
+		//s += "Next: " + nodes[i].next + " " ;
 		
-		if (nodes[i].branch != -1)
-			s += "Branch: " + nodes[i].branch + " " ;
+		//if (nodes[i].branch != -1)
+//			s += "Branch: " + nodes[i].branch + " " ;
 
-		if (nodes[i].branch != -1)
-			s += "Type: " + nodes[i].branch_type + " " ;
+		//if (nodes[i].branch != -1)
+//			s += "Type: " + nodes[i].branch_type + " " ;
 		
-		if (nodes[i].prev != -1)
-			s += "Prev: " + nodes[i].prev + " " ;
+		//if (nodes[i].prev != -1)
+//			s += "Prev: " + nodes[i].prev + " " ;
+		
+			
+			s += "Op1: " + nodes[i].op1 + " " ;
+			//s += "Op1_index: " + nodes[i].op1_index + " " ;
 		
 		console.log(s);
 	}
+	
+	console.log(nodes);
 }
 
 
@@ -325,7 +331,7 @@ function logic_assemble()
 	
 	console.log("Nodes: ");
 	
-	//if (enagle_log) show_nodes();
+	if (enagle_log) show_nodes();
 
 	if (assemble_nodes())
 	{
@@ -638,7 +644,15 @@ function assemble_tree(level, node)
 		// Map operation to instructon
 		if (n.is_operation()) 
 		{
-			add_inst(n.type_inst, n.op1, n.op2);
+			var offset1 = find_variable_offset(n.op1);
+			var offset2 = find_variable_offset(n.op2);
+			
+			
+
+			add_inst(n.type_inst, offset1, offset1);
+			
+			
+			
 			
 //			add_operation(n.type, n.op1, n.op2);
 
@@ -710,6 +724,11 @@ function logic_download()
 
 	store_bytecode(bytecode);
 	
+	
+	store_variablelist();
+	
+	
+	
 }
 
 
@@ -772,6 +791,19 @@ function store_bytecode(bytecode)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* Test data */
 function test_logic()
 {
@@ -781,38 +813,38 @@ function test_logic()
 	var x=0;
 	var y=0;
 	add_node(x++, y, SYM.B);
-	add_node(x++, y, SYM.XIC, find_variable_offset("Bit 01"));
-	add_node(x++, y, SYM.XIC, find_variable_offset("Bit 02"));
+	add_node(x++, y, SYM.XIC, find_variable_index("Bit_01"));
+	add_node(x++, y, SYM.XIC, find_variable_index("Bit_02"));
 	add_node(x++, y, SYM.BRDOWN);
-	add_node(x++, y, SYM.XIC, find_variable_offset("Bit 03"));
+	add_node(x++, y, SYM.XIC, find_variable_index("Bit_03"));
 	add_node(x++, y, SYM.BRDOWN);
 	add_node(x++, y, SYM.BRDOWN);	
 	add_node(x++, y, SYM.HORZ);	
 	add_node(x++, y, SYM.HORZ);	
 	add_node(x++, y, SYM.HORZ);	
-	add_node(x++, y, SYM.XIO, find_variable_offset("Bit 04"));	
+	add_node(x++, y, SYM.XIO, find_variable_index("Bit_04"));	
 	add_node(x++, y, SYM.HORZ);	
 	add_node(x++, y, SYM.HORZ);	
 	add_node(x++, y, SYM.HORZ);	
 	add_node(x++, y, SYM.HORZ);	
 	add_node(x++, y, SYM.HORZ);		
-	add_node(x++, y, SYM.OTE, find_variable_offset("Bit 05"));	
+	add_node(x++, y, SYM.OTE, find_variable_index("Bit_05"));	
 	add_node(x++, y, SYM.E);	
 	
 	x=3; y=1;
 	add_node(x++, y, SYM.BRRIGHT);
-	add_node(x++, y, SYM.XIC, find_variable_offset("Bit 06"));	
+	add_node(x++, y, SYM.XIC, find_variable_index("Bit_06"));	
 	add_node(x++, y, SYM.BRLEFT);
 
 	x=3; y=2;
 	add_node(x++, y, SYM.BRRIGHT);
-	add_node(x++, y, SYM.XIC, find_variable_offset("Bit 07"));	
+	add_node(x++, y, SYM.XIC, find_variable_index("Bit_07"));	
 	add_node(x++, y, SYM.CAPLEFT);
 
 	x=3; y=3;
 	add_node(x++, y, SYM.CAPRIGHT);
-	add_node(x++, y, SYM.XIC, find_variable_offset("Bit 08"));	
-	add_node(x++, y, SYM.XIO, find_variable_offset("Bit 09"));
+	add_node(x++, y, SYM.XIC, find_variable_index("Bit_08"));	
+	add_node(x++, y, SYM.XIO, find_variable_index("Bit_09"));
 	add_node(x,   y,   SYM.CAPLEFT);
 	add_node(x,   y-1, SYM.VERT);
 	add_node(x,   y-2, SYM.VERT);
@@ -820,45 +852,42 @@ function test_logic()
 
 	x=0; y=5;
 	add_node(x++, y, SYM.B);
-	add_node(x++, y, SYM.XIC, find_variable_offset("Input 1"));
-	add_node(x++, y, SYM.XIC, find_variable_offset("Input 2"));
-	add_node(x++, y, SYM.OTE, find_variable_offset("Output 1"));
+	add_node(x++, y, SYM.XIC, find_variable_index("Input_1"));
+	add_node(x++, y, SYM.XIC, find_variable_index("Input_2"));
+	add_node(x++, y, SYM.OTE, find_variable_index("Output_1"));
 	add_node(x++, y, SYM.E, 3);
 
 	x=10; y=5;
 	add_node(x++, y, SYM.B);
 	add_node(x++, y, SYM.BRDOWN);
-	add_node(x++, y, SYM.XIC, find_variable_offset("Input 3"));
+	add_node(x++, y, SYM.XIC, find_variable_index("Input_3"));
 	add_node(x++, y, SYM.BRDOWN);
-	add_node(x++, y, SYM.OTE, find_variable_offset("Output 2"));
+	add_node(x++, y, SYM.OTE, find_variable_index("Output_2"));
 	add_node(x++, y, SYM.E);
 
 	x=11; y=6;
 	add_node(x++, y, SYM.CAPRIGHT);
-	add_node(x++, y, SYM.XIC, find_variable_offset("Input 4"));
+	add_node(x++, y, SYM.XIC, find_variable_index("Input_4"));
 	add_node(x++, y, SYM.CAPLEFT);	
 	
 	x=0; y=8;
 	add_node(x++, y, SYM.B);
 	add_node(x++, y, SYM.HORZ);
 	add_node(x++, y, SYM.BRDOWN);
-	add_node(x++, y, SYM.XIC, find_variable_offset("Bit 10"));
-	add_node(x++, y, SYM.TMR, find_variable_offset("Tmr 1"));
-	add_node(x++, y, SYM.OTU, find_variable_offset("Bit 10"));
+	add_node(x++, y, SYM.XIC, find_variable_index("Bit_10"));
+	add_node(x++, y, SYM.TMR, find_variable_index("Tmr_1"));
+	add_node(x++, y, SYM.OTU, find_variable_index("Bit_10"));
 	add_node(x++, y, SYM.BRDOWN);
 	add_node(x++, y, SYM.HORZ);	
 	add_node(x++, y, SYM.E);	
 	
 	x=2; y=9;
 	add_node(x++, y, SYM.CAPRIGHT);
-	add_node(x++, y, SYM.XIO, find_variable_offset("Bit 10"));
-	add_node(x++, y, SYM.TMR, find_variable_offset("Tmr 2"));
-	add_node(x++, y, SYM.OTL, find_variable_offset("Bit 10"));
+	add_node(x++, y, SYM.XIO, find_variable_index("Bit_10"));
+	add_node(x++, y, SYM.TMR, find_variable_index("Tmr_2"));
+	add_node(x++, y, SYM.OTL, find_variable_index("Bit_10"));
 	add_node(x++, y, SYM.CAPLEFT);
 
-
-	
-	
 
 
 	
@@ -898,21 +927,69 @@ function test_logic()
 
 /* memory */
 
+
+
+function logic_add_variable(name, type)
+{
+	var v = {};
+	
+	v.name = name;
+	v.type = type;
+		
+	
+	// Find splice point
+	
+	var splice = 0;
+	
+	for (var i = 0; i < variable_list.variables.length && splice==0; i++)
+	{
+
+		if (variable_compare_type(v, variable_list.variables[i]) < 0)
+		{
+			splice = i;
+		}
+	}
+		
+	console.log("Splice: " + splice);
+		
+		
+	variable_list.variables.splice(splice, 0, v);
+		
+		
+	// adjust all indexes after splice
+	
+	for (var i = 0; i < nodes.length; i++)
+	{
+		
+		if (nodes[i].op1 > splice)
+			nodes[i].op1 += 1;
+		
+	}
+		
+	assign_variable_list();
+}
+
+
+
+
+
+
+
 	
 function logic_remove_variable(index)
 {
 	
 	for (var i = 0; i < nodes.length; i++)
 	{
-		if (nodes[i].op1_index == index)
+		if (nodes[i].op1 == index)
 		{
 			
-			nodes[i].op1_index = -1;
 			nodes[i].op1 = -1;
+			
 		}else
 		// reassign variable indexes to account for missing variable
-		if (nodes[i].op1_index > index)
-			nodes[i].op1_index--;
+		if (nodes[i].op1 > index)
+			nodes[i].op1--;
 		
 	}
 		
@@ -936,12 +1013,12 @@ function cpu_remove_variable(index)
 	
 	
 
-// Find offset for variable by name
-function find_variable_offset(n)
+// Find offset for variable by index
+function find_variable_offset(index)
 {
 	for (var i = 0; i < variable_list.variables.length; i++)
 	{
-		if (variable_list.variables[i].name == n)
+		if (variable_list.variables[i].index == index)
 			return variable_list.variables[i].offset;
 		
 	}
@@ -949,10 +1026,26 @@ function find_variable_offset(n)
 	return -1;
 }
 		
+		
+// Find index for variable by name
+function find_variable_index(n)
+{
+	for (var i = 0; i < variable_list.variables.length; i++)
+	{
+		if (variable_list.variables[i].name == n)
+			return i;
+		
+	}
+		
+	return -1;
+}		
+		
+		
+		
 
 // Find index of variable by offset
 // used for node linking		
-function find_variable_index(offset)
+/*function find_variable_index(offset)
 {
 	
 	// Compute memory offsets
@@ -964,7 +1057,7 @@ function find_variable_index(offset)
 	
 	return -1;
 }
-
+*/
 
 
 function setup_variable_list()
@@ -979,40 +1072,40 @@ function setup_variable_list()
 	
 	
 	// Needs to come from IO config
-	variable_list.variables.push({name:"Input 1", type:VAR_TYPES.VAR_DIN});
-	variable_list.variables.push({name:"Input 2", type:VAR_TYPES.VAR_DIN});
-	variable_list.variables.push({name:"Input 3", type:VAR_TYPES.VAR_DIN});
-	variable_list.variables.push({name:"Input 4", type:VAR_TYPES.VAR_DIN});
+	variable_list.variables.push({name:"Input_1", type:VAR_TYPES.VAR_DIN});
+	variable_list.variables.push({name:"Input_2", type:VAR_TYPES.VAR_DIN});
+	variable_list.variables.push({name:"Input_3", type:VAR_TYPES.VAR_DIN});
+	variable_list.variables.push({name:"Input_4", type:VAR_TYPES.VAR_DIN});
 
-	variable_list.variables.push({name:"Output 1", type:VAR_TYPES.VAR_DOUT});
-	variable_list.variables.push({name:"Output 2", type:VAR_TYPES.VAR_DOUT});
-	variable_list.variables.push({name:"Output 3", type:VAR_TYPES.VAR_DOUT});
-	variable_list.variables.push({name:"Output 4", type:VAR_TYPES.VAR_DOUT});
+	variable_list.variables.push({name:"Output_1", type:VAR_TYPES.VAR_DOUT});
+	variable_list.variables.push({name:"Output_2", type:VAR_TYPES.VAR_DOUT});
+	variable_list.variables.push({name:"Output_3", type:VAR_TYPES.VAR_DOUT});
+	variable_list.variables.push({name:"Output_4", type:VAR_TYPES.VAR_DOUT});
 
 	
 	
 	// Setup demo variables
 	
-	variable_list.variables.push({name:"Bit 01", type:VAR_TYPES.VAR_BIT});
-	variable_list.variables.push({name:"Bit 02", type:VAR_TYPES.VAR_BIT});
-	variable_list.variables.push({name:"Bit 03", type:VAR_TYPES.VAR_BIT});
-	variable_list.variables.push({name:"Bit 04", type:VAR_TYPES.VAR_BIT});
-	variable_list.variables.push({name:"Bit 05", type:VAR_TYPES.VAR_BIT});
-	variable_list.variables.push({name:"Bit 06", type:VAR_TYPES.VAR_BIT});
-	variable_list.variables.push({name:"Bit 07", type:VAR_TYPES.VAR_BIT});
-	variable_list.variables.push({name:"Bit 08", type:VAR_TYPES.VAR_BIT});
-	variable_list.variables.push({name:"Bit 09", type:VAR_TYPES.VAR_BIT});
-	variable_list.variables.push({name:"Bit 10", type:VAR_TYPES.VAR_BIT});
-	variable_list.variables.push({name:"Bit 11", type:VAR_TYPES.VAR_BIT});
-	variable_list.variables.push({name:"Bit 12", type:VAR_TYPES.VAR_BIT});
-	variable_list.variables.push({name:"Bit 13", type:VAR_TYPES.VAR_BIT});
-	variable_list.variables.push({name:"Bit 14", type:VAR_TYPES.VAR_BIT});
+	variable_list.variables.push({name:"Bit_01", type:VAR_TYPES.VAR_BIT});
+	variable_list.variables.push({name:"Bit_02", type:VAR_TYPES.VAR_BIT});
+	variable_list.variables.push({name:"Bit_03", type:VAR_TYPES.VAR_BIT});
+	variable_list.variables.push({name:"Bit_04", type:VAR_TYPES.VAR_BIT});
+	variable_list.variables.push({name:"Bit_05", type:VAR_TYPES.VAR_BIT});
+	variable_list.variables.push({name:"Bit_06", type:VAR_TYPES.VAR_BIT});
+	variable_list.variables.push({name:"Bit_07", type:VAR_TYPES.VAR_BIT});
+	variable_list.variables.push({name:"Bit_08", type:VAR_TYPES.VAR_BIT});
+	variable_list.variables.push({name:"Bit_09", type:VAR_TYPES.VAR_BIT});
+	variable_list.variables.push({name:"Bit_10", type:VAR_TYPES.VAR_BIT});
+	variable_list.variables.push({name:"Bit_11", type:VAR_TYPES.VAR_BIT});
+	variable_list.variables.push({name:"Bit_12", type:VAR_TYPES.VAR_BIT});
+	variable_list.variables.push({name:"Bit_13", type:VAR_TYPES.VAR_BIT});
+	variable_list.variables.push({name:"Bit_14", type:VAR_TYPES.VAR_BIT});
 	
-	variable_list.variables.push({name:"Tmr 1", type:VAR_TYPES.VAR_TMR});
-	variable_list.variables.push({name:"Tmr 2", type:VAR_TYPES.VAR_TMR});
-	variable_list.variables.push({name:"Tmr 3", type:VAR_TYPES.VAR_TMR});
-	variable_list.variables.push({name:"Tmr 4", type:VAR_TYPES.VAR_TMR});
-	variable_list.variables.push({name:"Tmr 5", type:VAR_TYPES.VAR_TMR});
+	variable_list.variables.push({name:"Tmr_1", type:VAR_TYPES.VAR_TMR});
+	variable_list.variables.push({name:"Tmr_2", type:VAR_TYPES.VAR_TMR});
+	variable_list.variables.push({name:"Tmr_3", type:VAR_TYPES.VAR_TMR});
+	variable_list.variables.push({name:"Tmr_4", type:VAR_TYPES.VAR_TMR});
+	variable_list.variables.push({name:"Tmr_5", type:VAR_TYPES.VAR_TMR});
 
 	// Create variables
 	//for (var i = 0; i < variable_list.variables.length; i++)
@@ -1080,6 +1173,9 @@ function assign_variable_list()
 	console.log(variable_list);
 	console.log(variable_data);
 	
+	
+	console.log(nodes);
+	
 }
 
 
@@ -1110,6 +1206,62 @@ function variable_compare_name(a,b)
   if (a.name.toUpperCase()  < b.name.toUpperCase() )    return -1;
   if (a.name.toUpperCase()  > b.name.toUpperCase() )    return 1;
   return 0;
+}
+
+
+
+// Save bytecode to device
+function store_variablelist()
+{
+	console.log("Saving variablelist ");
+
+	
+	var tmp_list = {};
+	tmp_list.vars = [];
+	
+	// Build temp variable list
+
+	
+	for (var i = 0; i < variable_list.variables.length; i++)
+	{
+		tmp_list.vars[i] = {name:variable_list.variables[i].name, type:variable_list.variables[i].type};
+	}
+	
+	tmp_list.config = {};
+	tmp_list.config.num_din = variable_list.num_din;
+	tmp_list.config.num_dout = variable_list.num_dout;
+	tmp_list.config.num_ain = variable_list.num_ain;
+	tmp_list.config.num_aout = variable_list.num_aout;
+	tmp_list.config.num_bit = variable_list.num_bit;
+	tmp_list.config.num_tmr = variable_list.num_tmr;
+	
+	var variable_list_str = JSON.stringify(tmp_list);
+	
+	
+	console.log("Variable list string: " + variable_list_str);
+	
+	
+	
+	
+	
+	
+	
+
+	var XHR = get_request();
+
+    XHR.addEventListener("load", function(event) 
+	{
+      console.log(event.target.responseText);
+    });
+
+    XHR.addEventListener("error", function(event) 
+	{
+      alert('Unable to save logic to device');
+    });
+
+	XHR.open("POST", "/save_variablelist"); 
+		
+    XHR.send(variable_list_str);
 }
 
 

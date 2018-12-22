@@ -78,19 +78,19 @@ function load_test_variables()
 	
 	// Load some timer data
 	var i = find_variable_index("Tmr_1")
-	cpu_set_timer(variable_list.variables[i].offset, {value:0, acc:0, pre:3000} );
+	cpu_set_timer(variable_list.variables[i].offset, {value:0, acc:0, pre:500} );
 
 	var i = find_variable_index("Tmr_2")
-	cpu_set_timer(variable_list.variables[i].offset, {value:0, acc:0, pre:3000} );
+	cpu_set_timer(variable_list.variables[i].offset, {value:0, acc:0, pre:500} );
 
 	var i = find_variable_index("Tmr_3")
-	cpu_set_timer(variable_list.variables[i].offset, {value:0, acc:0, pre:3000} );
+	cpu_set_timer(variable_list.variables[i].offset, {value:0, acc:0, pre:500} );
 
 	var i = find_variable_index("Tmr_4")
-	cpu_set_timer(variable_list.variables[i].offset, {value:0, acc:0, pre:3000} );
+	cpu_set_timer(variable_list.variables[i].offset, {value:0, acc:0, pre:500} );
 
 	var i = find_variable_index("Tmr_5")
-	cpu_set_timer(variable_list.variables[i].offset, {value:0, acc:0, pre:3000} );
+	cpu_set_timer(variable_list.variables[i].offset, {value:0, acc:0, pre:500} );
 		
 }
 

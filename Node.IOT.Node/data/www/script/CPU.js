@@ -98,6 +98,20 @@ function cpu_get_byte(offset)
 	return variable_data[offset];
 }
 
+// Get word from memory location
+function cpu_get_word(offset)
+{
+	if (offset < 0 || offset + 1 >= variable_data.length)
+	{
+		console.log("cpu_get_byte: Invalid location ("+offset+")\n");
+		return 0;
+	}
+
+	return (variable_data[offset] << 8) + variable_data[offset+1];
+}
+
+
+
 // Set byte at memory location
 function cpu_set_byte(offset, v)
 {
@@ -111,30 +125,37 @@ function cpu_set_byte(offset, v)
 }
 
 
+// Set word at memory location
+function cpu_set_word(offset, v)
+{
+	if (offset < 0 || offset + 1 >= variable_data.length)
+	{
+		console.log("cpu_set_byte: Invalid location ("+offset+")\n");
+		return 0;
+	}
+
+	variable_data[offset] = v >> 8;
+	variable_data[offset+1] = v & 0xff;
+}
+
 // Extract timer from memory array 
 //  Would be a type cast in C
 function cpu_get_timer(offset)
 {
-	var t = {};
-	
-	t.value = variable_data[offset];
-	t.pre = (variable_data[offset+1] << 8) + variable_data[offset+2];
-	t.acc = (variable_data[offset+3] << 8) + variable_data[offset+4];
-	
-	return t;
+	return {value : cpu_get_byte(offset+0),
+			base  : cpu_get_byte(offset+1),
+			pre   : cpu_get_word(offset+2),
+			acc   : cpu_get_word(offset+4)};
 }
-
 
 //  Would be a type case in C
 function cpu_set_timer(offset, t)
 {
-	variable_data[offset+0] = t.value
-	variable_data[offset+1] = t.pre >> 8;
-	variable_data[offset+2] = t.pre & 0xff;
-	variable_data[offset+3] = t.acc >> 8;
-	variable_data[offset+4] = t.acc & 0xff;
+	cpu_set_byte(offset+0, t.value);
+	cpu_set_byte(offset+1, t.base);
+	cpu_set_word(offset+2, t.pre);
+	cpu_set_word(offset+4, t.acc);
 }
-
 
 // Toggle memory byte at location
 function cpu_toggle_byte(offset)
@@ -152,8 +173,7 @@ function show_memory()
 	for (var i = 0; i < variable_data.length; i++)
 	{
 		//console.log("["+ i + "]" + variable_table[i].value);		
-		s +=  variables_data[i] + " " ;		
-		
+		s +=  variables_data[i] + " " ;				
 	}	
 	
 	console.log(s);
@@ -206,8 +226,6 @@ function decode_inst(n, inst, op1, op2)
 		console.log("Unknown inst: " + inst);
 	}
 }
-
-
 
 // Show instruction list
 function show_inst_list()
@@ -317,7 +335,6 @@ function inst_tmr(state)
 		
 	cpu_set_timer(state.inst.op1, timer);
 }
-
 
 // Core Solver
 function solve_logic(dt)

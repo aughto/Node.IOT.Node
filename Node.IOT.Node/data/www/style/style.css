@@ -67,7 +67,7 @@ h2
 
 #content 
 {
-	padding: 3px 3px 0 0;
+	padding: 1px 1px 0 0;
 	/*background: url(../images/nav.png) left repeat-y #ffffff;*/
 }
 
@@ -76,7 +76,7 @@ h2
 
 	margin-left: 135px;
 	max-width: 600px;
-	padding: 3px 0 0 0;
+	padding: 1px 0 0 0;
 }
 
 #sidebar 
@@ -247,7 +247,7 @@ body
 background-color: #3498DB;
   
   color: white;
-  padding: 8px;
+  padding: 2px;
   font-size: 16px;
   border: none;
 }
@@ -290,10 +290,6 @@ background-color: #3498DB;
 
 
 background-color: #2980B9;} 
-
-
-
-
 
 
 .var_button

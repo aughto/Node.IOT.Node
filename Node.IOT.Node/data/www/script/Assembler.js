@@ -11,6 +11,11 @@ var BRANCH_NONE = 0;
 var BRANCH_OPEN = 1;
 var BRANCH_CLOSE = 2;
 
+var stack = [];
+var stack_ptr = 0;
+
+var nodes = [];
+var root_node = {};;
 
 
 
@@ -54,12 +59,7 @@ function logic_assemble()
 	
 	logic_ok = true;
 	
-	
-	
-	
-	
-	
-	cpu_update(100);
+	solve_logic(100);
 	
 	//solve_logic();
 }
@@ -97,7 +97,7 @@ function resolve_nodes(x, y)
 }
 		
 	
-
+// add to branch stack
 function add_stack(pn, x, y)
 {
 	stack[stack_ptr] = {};
@@ -110,7 +110,7 @@ function add_stack(pn, x, y)
 	stack_ptr++;
 }
 
-
+// Follow flor direction and set node links
 function resolve_chain(prev_ni, x, y)
 {
 	//if (enagle_log) console.log(" Assemble Row ("+x+","+y+")");

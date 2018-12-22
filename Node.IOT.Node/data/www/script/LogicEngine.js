@@ -9,15 +9,8 @@
 
 var enagle_log = true;
 //var log = false;
+//var INVALID_NODE = -1;
 
-/* Assembly */
-var INVALID_NODE = -1;
-var stack = [];
-var stack_ptr = 0;
-var nodes = [];
-var root_node = {};;
-
-var variable_list = {};  // Variable name list
 
 
 function logic_init()
@@ -27,15 +20,10 @@ function logic_init()
 		
 	logic_test();
 	
-	setInterval(function() {logic_update_timer()}, 100);	// Setup timer
+
 }
 
 
-function logic_update_timer()
-{
-	cpu_update(100);
-	
-}
 
 
 
@@ -43,7 +31,6 @@ function logic_update_timer()
 function logic_download()
 {
 	console.log("Saving logic:");
-
 	
 	logic_assemble();
 		
@@ -51,11 +38,7 @@ function logic_download()
 
 	store_bytecode(bytecode);
 	
-	
 	store_variablelist();
-	
-	
-	
 }
 
 

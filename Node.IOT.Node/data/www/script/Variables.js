@@ -10,6 +10,7 @@
 
 /* memory */
 
+var variable_list = {};  // Variable name list
 
 
 

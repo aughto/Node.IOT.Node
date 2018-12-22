@@ -8,24 +8,23 @@
 	
 */
 
-
 "use strict";
 
 /* CPU */
 
 // Instruction types
 var INST_TYPES = 	{INST_NONE		: 0x00, 
-					INST_CLEAR		: 0x10, 
-					INST_PUSHCR		: 0x11, 
-					INST_POPCR		: 0x12,
-					INST_PUSHOR		: 0x13, 
-					INST_COLLECT	: 0x14, 
-					INST_XIO		: 0x30, 
-					INST_XIC		: 0x31,
-					INST_OTE		: 0x40, 
-					INST_OTL		: 0x41, 
-					INST_OTU		: 0x42, 
-					INST_TMR		: 0x80};
+					 INST_CLEAR		: 0x10, 
+					 INST_PUSHCR	: 0x11, 
+					 INST_POPCR		: 0x12,
+					 INST_PUSHOR	: 0x13, 
+					 INST_COLLECT	: 0x14, 
+					 INST_XIO		: 0x30, 
+					 INST_XIC		: 0x31,
+					 INST_OTE		: 0x40, 
+					 INST_OTL		: 0x41, 
+					 INST_OTU		: 0x42, 
+					 INST_TMR		: 0x80};
 
 // Variable types
 var VAR_TYPES = 	{VAR_NONE		: 0x00, 
@@ -36,14 +35,13 @@ var VAR_TYPES = 	{VAR_NONE		: 0x00,
 					 VAR_BIT		: 0x50, 
 					 VAR_TMR		: 0x60 };
 					
-					
 // Variable sizes					
-var VAR_SIZE = 	{VAR_DIN		: 1, 
-				 VAR_DOUT		: 1, 
-				 VAR_AIN		: 2, 
-				 VAR_AOUT		: 2, 
-				 VAR_BIT		: 1, 
-				 VAR_TMR		: 10 };
+var VAR_SIZE = 		{VAR_DIN		: 1, 
+					 VAR_DOUT		: 1, 
+					 VAR_AIN		: 2, 
+					 VAR_AOUT		: 2, 
+					 VAR_BIT		: 1, 
+					 VAR_TMR		: 10};
 						
 
 
@@ -59,15 +57,16 @@ var variable_data = null; //  Raw byte data for variable storage
 
 function cpu_init()
 {
-
-
+	setInterval(function() {cpu_update_timer()}, 100);	// Setup timer
 }
 
-// Solve logic
-function cpu_update(dt)
+
+// Logic update timer
+function cpu_update_timer()
 {
-	solve_logic(dt);	
+	solve_logic(100);
 }
+
 
 
 // Get byte from memory location
@@ -187,18 +186,18 @@ function get_ops(inst)
 // Decode and display
 function decode_inst(n, inst, op1, op2)
 {
-	if (inst == INST_TYPES.INST_NONE)    console.log("["+n+"] NONE "); else 
-	if (inst == INST_TYPES.INST_CLEAR)   console.log("["+n+"] CLEAR "); else 
-	if (inst == INST_TYPES.INST_PUSHCR)  console.log("["+n+"] PUSHCR "); else 
-	if (inst == INST_TYPES.INST_POPCR)   console.log("["+n+"] POPCR "); else 
-	if (inst == INST_TYPES.INST_PUSHOR)  console.log("["+n+"] PUSHOR "); else 
-	if (inst == INST_TYPES.INST_COLLECT) console.log("["+n+"] COLLECT "); else 
+	if (inst == INST_TYPES.INST_NONE)    console.log("["+n+"] NONE ");      else 
+	if (inst == INST_TYPES.INST_CLEAR)   console.log("["+n+"] CLEAR ");     else 
+	if (inst == INST_TYPES.INST_PUSHCR)  console.log("["+n+"] PUSHCR ");    else 
+	if (inst == INST_TYPES.INST_POPCR)   console.log("["+n+"] POPCR ");     else 
+	if (inst == INST_TYPES.INST_PUSHOR)  console.log("["+n+"] PUSHOR ");    else 
+	if (inst == INST_TYPES.INST_COLLECT) console.log("["+n+"] COLLECT ");   else 
 	if (inst == INST_TYPES.INST_XIC)     console.log("["+n+"] XIC " + op1); else 
-	if (inst == INST_TYPES.INST_XIO)     console.log("["+n+"] XIO " + op1);else
-	if (inst == INST_TYPES.INST_OTE)     console.log("["+n+"] OTE " + op1);else	
-	if (inst == INST_TYPES.INST_OTL)     console.log("["+n+"] OTL " + op1);else	
-	if (inst == INST_TYPES.INST_OTU)     console.log("["+n+"] OTU " + op1);else	
-	if (inst == INST_TYPES.INST_TMR)     console.log("["+n+"] TMR " + op1);else
+	if (inst == INST_TYPES.INST_XIO)     console.log("["+n+"] XIO " + op1); else
+	if (inst == INST_TYPES.INST_OTE)     console.log("["+n+"] OTE " + op1); else	
+	if (inst == INST_TYPES.INST_OTL)     console.log("["+n+"] OTL " + op1); else	
+	if (inst == INST_TYPES.INST_OTU)     console.log("["+n+"] OTU " + op1); else	
+	if (inst == INST_TYPES.INST_TMR)     console.log("["+n+"] TMR " + op1); else
 	{
 		console.log("Unknown inst: " + inst);
 	}
@@ -267,13 +266,13 @@ function solve_logic(dt)
 		
 		//if (log)  decode_inst(i, inst.inst, inst.op);
 		
-		
+		// Reset CR
 		if (inst.inst == INST_TYPES.INST_CLEAR)
 		{
 			cr = 1;
 		} else		
 		
-		
+		// Push CR to CR stack
 		if (inst.inst == INST_TYPES.INST_PUSHCR)
 		{
 			cr_stack[cr_ptr] = cr;
@@ -282,6 +281,7 @@ function solve_logic(dt)
 			
 		} else
 
+		// Pop from cr stack
 		if (inst.inst == INST_TYPES.INST_POPCR)
 		{
 			cr_ptr--;
@@ -290,12 +290,14 @@ function solve_logic(dt)
 			
 		} else
 		
+		// Push to or stack
 		if (inst.inst == INST_TYPES.INST_PUSHOR)
 		{
 			or_stack[or_ptr] = cr;
 			or_ptr++;
 		} else
 
+		// Collect OR stack values
 		if (inst.inst == INST_TYPES.INST_COLLECT)
 		{
 			or_ptr--;
@@ -307,6 +309,7 @@ function solve_logic(dt)
 			cr = cr | or_stack[or_ptr];
 		} else		
 		
+		// Examine if open
 		if (inst.inst == INST_TYPES.INST_XIO)
 		{
 			if (check_var(inst.op1)) return;
@@ -317,6 +320,7 @@ function solve_logic(dt)
 			
 		} else
 		
+		// Examine if closed
 		if (inst.inst == INST_TYPES.INST_XIC)
 		{
 			if (check_var(inst.op1)) return;
@@ -325,6 +329,7 @@ function solve_logic(dt)
 			cr = cr & cpu_get_byte(inst.op1);
 		} else		
 		
+		// Output energize
 		if (inst.inst == INST_TYPES.INST_OTE)
 		{
 			if (check_var(inst.op1)) return;
@@ -332,7 +337,8 @@ function solve_logic(dt)
 			//variable_table[inst.op1].value = cr;
 			cpu_set_byte(inst.op1, cr);			
 		} else		
-		
+
+		// Output latch
 		if (inst.inst == INST_TYPES.INST_OTL)
 		{
 			if (check_var(inst.op1)) return;
@@ -342,7 +348,8 @@ function solve_logic(dt)
 			
 			if (cr)	cpu_set_byte(inst.op1, 1);			
 		} else		
-		
+			
+		// Output unlatch		
 		if (inst.inst == INST_TYPES.INST_OTU)
 		{
 			if (check_var(inst.op1)) return;
@@ -350,7 +357,8 @@ function solve_logic(dt)
 			//if (cr) variable_table[inst.op1].value = 0;
 			if (cr)	cpu_set_byte(inst.op1, 0);			
 		} else	
-		
+			
+		// Timer
 		if (inst.inst == INST_TYPES.INST_TMR)
 		{
 			if (check_var(inst.op1)) return;

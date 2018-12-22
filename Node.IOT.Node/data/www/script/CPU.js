@@ -5,7 +5,6 @@
 
 	The CPU is abstracted from the user interface and logic compiler
 	it deals only with the instruction list, the raw memory, and the io interface	
-	
 */
 
 "use strict";
@@ -18,7 +17,7 @@ var INST_TYPES = 	{INST_NONE		: 0x00,
 					 INST_PUSHCR	: 0x11, 
 					 INST_POPCR		: 0x12,
 					 INST_PUSHOR	: 0x13, 
-					 INST_POPOR	: 0x14, 
+					 INST_POPOR		: 0x14, 
 					 INST_XIO		: 0x30, 
 					 INST_XIC		: 0x31,
 					 INST_OTE		: 0x40, 
@@ -33,7 +32,7 @@ var VAR_TYPES = 	{VAR_NONE		: 0x00,
 					 VAR_AIN		: 0x30, 
 					 VAR_AOUT		: 0x40, 
 					 VAR_BIT		: 0x50, 
-					 VAR_TMR		: 0x60 };
+					 VAR_TMR		: 0x60};
 					
 // Variable sizes					
 var VAR_SIZE = 		{VAR_DIN		: 1, 
@@ -47,16 +46,36 @@ var VAR_SIZE = 		{VAR_DIN		: 1,
 
 var logic_ok = false;		// true if logic is ok to process
 var inst_list = [];			// Instruction list
-var variable_data = null; //  Raw byte data for variable storage 
+var variable_data = null; 	//  Raw byte data for variable storage 
+var inst_table = [];		// Instruction jump table
 
 
 /* 
 	CPU
 */
 
-
+// Core CPU init 
 function cpu_init()
 {
+	// Setup jump table
+	inst_table[INST_TYPES.INST_CLEAR]  = function(state) { inst_clear(state); }; 
+	inst_table[INST_TYPES.INST_PUSHCR] = function(state) { inst_pushcr(state);}; 
+	inst_table[INST_TYPES.INST_POPCR]  = function(state) { inst_popcr(state); }; 
+	inst_table[INST_TYPES.INST_PUSHOR] = function(state) { inst_pushor(state);}; 
+	inst_table[INST_TYPES.INST_POPOR]  = function(state) { inst_popor(state); }; 
+	inst_table[INST_TYPES.INST_XIC]    = function(state) { inst_xic(state);   }; 
+	inst_table[INST_TYPES.INST_XIO]    = function(state) { inst_xio(state);   }; 
+	inst_table[INST_TYPES.INST_OTE]    = function(state) { inst_ote(state);   }; 
+	inst_table[INST_TYPES.INST_OTL]    = function(state) { inst_otl(state);   }; 
+	inst_table[INST_TYPES.INST_OTU]    = function(state) { inst_otu(state);   }; 
+	inst_table[INST_TYPES.INST_TMR]    = function(state) { inst_tmr(state);   };
+		
+	console.log(inst_table);
+	
+	var s = {cr_stack:[], cr_ptr:0};
+	inst_table[INST_TYPES.INST_POPCR](s);
+	
+
 	setInterval(function() {cpu_update_timer()}, 100);	// Setup timer
 }
 
@@ -67,12 +86,9 @@ function cpu_update_timer()
 	solve_logic(100);
 }
 
-
-
 // Get byte from memory location
 function cpu_get_byte(offset)
 {
-
 	if (offset < 0 || offset >= variable_data.length)
 	{
 		console.log("cpu_get_byte: Invalid location ("+offset+")\n");
@@ -93,7 +109,6 @@ function cpu_set_byte(offset, v)
 
 	variable_data[offset] = v;
 }
-
 
 
 // Extract timer from memory array 
@@ -124,11 +139,6 @@ function cpu_set_timer(offset, t)
 // Toggle memory byte at location
 function cpu_toggle_byte(offset)
 {
-//	variable_table[i].value = v;
-	//var mem_idx = cpu_get_mem_index(idx);
-	
-	//if (mem_idx == -1) return;
-	
 	variable_data[offset] = !variable_data[offset];	
 }
 
@@ -148,12 +158,6 @@ function show_memory()
 	
 	console.log(s);
 }
-
-
-
-
-/* End of memory */
-
 
 function clear_variables()
 {
@@ -191,7 +195,7 @@ function decode_inst(n, inst, op1, op2)
 	if (inst == INST_TYPES.INST_PUSHCR)  console.log("["+n+"] PUSHCR ");    else 
 	if (inst == INST_TYPES.INST_POPCR)   console.log("["+n+"] POPCR ");     else 
 	if (inst == INST_TYPES.INST_PUSHOR)  console.log("["+n+"] PUSHOR ");    else 
-	if (inst == INST_TYPES.INST_POPOR) console.log("["+n+"] COLLECT ");   else 
+	if (inst == INST_TYPES.INST_POPOR)   console.log("["+n+"] COLLECT ");   else 
 	if (inst == INST_TYPES.INST_XIC)     console.log("["+n+"] XIC " + op1); else 
 	if (inst == INST_TYPES.INST_XIO)     console.log("["+n+"] XIO " + op1); else
 	if (inst == INST_TYPES.INST_OTE)     console.log("["+n+"] OTE " + op1); else	
@@ -221,180 +225,139 @@ function show_inst_list()
 }
 
 
+/* 
+	Instructions
+*/
 
-// Check variable for valid offset
-function check_var(idx)
+// Reset CR
+function inst_clear(state)
 {
-	/*var i = variable_find(idx)
+	state.cr = 1;
+}
+	
+// Push cr to stack
+function inst_pushcr(state)	
+{
+	state.cr_stack[state.cr_ptr] = state.cr;
+	state.cr_ptr++;
+}
+
+// Pop from cr stack
+function inst_popcr(state)	
+{
+	state.cr_ptr--;
+	if (state.cr_ptr < 0) { console.log("[] POPCR ERROR"); return; }
+	state.cr = state.cr_stack[state.cr_ptr];
+}
+
+// Push to or stack		
+function inst_pushor(state)	
+{	
+	state.or_stack[state.or_ptr] = state.cr;
+	state.or_ptr++;
+}
+
+function inst_popor(state)	
+{
+	state.or_ptr--;
+	if (state.or_ptr < 0) {console.log("[] COLLECT ERROR"); return; }
+	state.cr = state.cr | state.or_stack[state.or_ptr];
+}
 		
-	if (variable_table[i] == undefined) 
+// Examine if closed
+function inst_xic(state)	
+{	
+	state.cr = state.cr & cpu_get_byte(state.inst.op1);
+}
+			
+// Examine if open
+function inst_xio(state)	
+{	
+	state.cr = state.cr & !cpu_get_byte(state.inst.op1);
+}
+
+// Output energize			
+function inst_ote(state)		
+{
+	cpu_set_byte(state.inst.op1, state.cr);			
+}
+
+// Output latch
+function inst_otl(state)				
+{
+	if (state.cr) cpu_set_byte(state.inst.op1, 1);			
+}
+			
+// Output unlatch			
+function inst_otu(state)	
+{		
+	if (state.cr) cpu_set_byte(state.inst.op1, 0);			
+}
+
+// Timer
+function inst_tmr(state)				
+{
+	var timer = cpu_get_timer(state.inst.op1);
+			
+	if (state.cr)
 	{
-		console.log("Undf\n");return true;
-	}
-	*/
-	return false;
+		timer.acc += state.dt;
+
+		if (timer.acc > timer.pre)
+			timer.acc = timer.pre;
+			
+		state.cr = (timer.acc >= timer.pre) ? 1 : 0;
+
+	} else
+		timer.acc = 0;
+			
+	timer.value = state.cr;
+			
+	//console.log("cr: " + cr + " value: " + timer.value + " op1: " + inst.op1 + " Val: " + timer.value + " Pre: " + timer.pre + " Acc:" + timer.acc);
+		
+	cpu_set_timer(state.inst.op1, timer);
 }
 
 
 // Core Solver
 function solve_logic(dt)
 {
-	
 	if (!logic_ok) 
 	{
 		console.log("Solve: Logic not ok");
 		return;
 	}
-
-	//console.log("Solve:");
+	
+	var state = { cr_stack : [],
+				  cr_ptr : 0,
+				  or_stack : [],
+				  or_ptr : 0,
+				  cr : 1,
+				  dt : dt};
 		
-	//if (log) console.log("Memory Before:");
-	//if (log) show_memory()
-	
-	
-	var cr_stack = [];
-	var cr_ptr = 0;
-	
-	var or_stack = [];
-	var or_ptr = 0;
-	
-	var cr = 1;
-	
 	for (var i = 0; i < inst_list.length; i++)
 	{
-		var inst = inst_list[i];
+		state.inst = inst_list[i];
 		
-		//if (log)  decode_inst(i, inst.inst, inst.op);
+		//console.log("Inst: " + inst.inst);
 		
-		// Reset CR
-		if (inst.inst == INST_TYPES.INST_CLEAR)
+		try
 		{
-			cr = 1;
-		} else		
-		
-		// Push CR to CR stack
-		if (inst.inst == INST_TYPES.INST_PUSHCR)
+			inst_table[state.inst.inst](state);
+		}
+		catch(ex)
 		{
-			cr_stack[cr_ptr] = cr;
-			cr_ptr++;
-			
-			
-		} else
-
-		// Pop from cr stack
-		if (inst.inst == INST_TYPES.INST_POPCR)
-		{
-			cr_ptr--;
-			if (cr_ptr < 0) { console.log("[" + i + "] POPCR ERROR"); return; }
-			cr = cr_stack[cr_ptr];
-			
-		} else
-		
-		// Push to or stack
-		if (inst.inst == INST_TYPES.INST_PUSHOR)
-		{
-			or_stack[or_ptr] = cr;
-			or_ptr++;
-		} else
-
-		// Collect OR stack values
-		if (inst.inst == INST_TYPES.INST_POPOR)
-		{
-			or_ptr--;
-			if (or_ptr < 0) {console.log("[" + i + "] COLLECT ERROR"); return; }
-			cr = cr | or_stack[or_ptr];
-		} else		
-		
-		// Examine if open
-		if (inst.inst == INST_TYPES.INST_XIO)
-		{
-			if (check_var(inst.op1)) return;
-			
-			//cr = cr & !variable_table[inst.op1].value;
-			
-			cr = cr & !cpu_get_byte(inst.op1);
-			
-		} else
-		
-		// Examine if closed
-		if (inst.inst == INST_TYPES.INST_XIC)
-		{
-			if (check_var(inst.op1)) return;
-
-			//cr = cr & variable_table[inst.op1].value;
-			cr = cr & cpu_get_byte(inst.op1);
-		} else		
-		
-		// Output energize
-		if (inst.inst == INST_TYPES.INST_OTE)
-		{
-			if (check_var(inst.op1)) return;
-
-			//variable_table[inst.op1].value = cr;
-			cpu_set_byte(inst.op1, cr);			
-		} else		
-
-		// Output latch
-		if (inst.inst == INST_TYPES.INST_OTL)
-		{
-			if (check_var(inst.op1)) return;
-
-
-			//if (cr) variable_table[inst.op1].value = 1;
-			
-			if (cr)	cpu_set_byte(inst.op1, 1);			
-		} else		
-			
-		// Output unlatch		
-		if (inst.inst == INST_TYPES.INST_OTU)
-		{
-			if (check_var(inst.op1)) return;
-
-			//if (cr) variable_table[inst.op1].value = 0;
-			if (cr)	cpu_set_byte(inst.op1, 0);			
-		} else	
-			
-		// Timer
-		if (inst.inst == INST_TYPES.INST_TMR)
-		{
-			if (check_var(inst.op1)) return;
-			
-			var timer = cpu_get_timer(inst.op1);
-			
-
-			if (cr)
-			{
-				timer.acc += dt;
-
-				if (timer.acc > timer.pre)
-					timer.acc = timer.pre;
-			
-				cr = (timer.acc >= timer.pre) ? 1 : 0;
-			
-			} else
-				timer.acc = 0;
-			
-			timer.value = cr;
-			
-			//console.log("cr: " + cr + " value: " + timer.value + " op1: " + inst.op1 + " Val: " + timer.value + " Pre: " + timer.pre + " Acc:" + timer.acc);
-			
-			cpu_set_timer(inst.op1, timer);
-		}	
-		else
-		{	
-			console.log("CPU: Unknown Inst:" + inst.inst);
+			console.log("Invalid instruction " + state.inst.inst.toString(16));
+			console.log(inst_table);
+			return;
 		}
 		
 		//if (log) console.log("CR " + cr);
-		
 	}
 	
 	//if (log) console.log("Memory After:");
 	//if (log) show_memory()
 }
-
-
-
 
 /* 
 	End CPU

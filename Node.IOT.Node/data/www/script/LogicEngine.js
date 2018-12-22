@@ -314,7 +314,7 @@ function logic_assemble()
 {
 	console.log("Assemble");
 	
-	assign_variable_list();
+	//assign_variable_list();
 	
 
 	logic_ok = false;

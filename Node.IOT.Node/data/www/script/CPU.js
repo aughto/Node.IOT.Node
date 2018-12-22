@@ -156,7 +156,7 @@ function show_memory()
 /* End of memory */
 
 
-function clear_bits()
+function clear_variables()
 {
 	//for (var i = 0; i < variable_data.length; i++)
 //		variable_data[i] = 0;
@@ -170,10 +170,9 @@ function add_inst(inst, op1, op2)
 }
 
 
-
+// Get number of operands
 function get_ops(inst)
 {
-	
 	if (inst == INST_TYPES.INST_XIC) return 1;
 	if (inst == INST_TYPES.INST_XIO) return 1;
 	if (inst == INST_TYPES.INST_OTE) return 1;
@@ -185,11 +184,7 @@ function get_ops(inst)
 }
 
 
-
-
-
-
-
+// Decode and display
 function decode_inst(n, inst, op1, op2)
 {
 	if (inst == INST_TYPES.INST_NONE) console.log("["+n+"] NONE "); else 
@@ -211,7 +206,7 @@ function decode_inst(n, inst, op1, op2)
 
 
 
-
+// Show instruction list
 function show_inst_list()
 {
 	console.log("Instruction list:");
@@ -228,8 +223,7 @@ function show_inst_list()
 
 
 
-
-
+// Check variable for valid offset
 function check_var(idx)
 {
 	/*var i = variable_find(idx)
@@ -243,11 +237,7 @@ function check_var(idx)
 }
 
 
-
-
-
-
-
+// Core Solver
 function solve_logic(dt)
 {
 	
@@ -382,7 +372,7 @@ function solve_logic(dt)
 			
 			timer.value = cr;
 			
-			//console.log("cr: " + cr + " value: " + timer.value + " op1: " + inst.op1 + " Val: " + timer.value + " Pre: " + timer.pre + " Acc:" + timer.acc);
+			console.log("cr: " + cr + " value: " + timer.value + " op1: " + inst.op1 + " Val: " + timer.value + " Pre: " + timer.pre + " Acc:" + timer.acc);
 			
 			cpu_set_timer(inst.op1, timer);
 		}	

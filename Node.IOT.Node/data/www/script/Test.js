@@ -90,7 +90,7 @@ function logic_test_variables()
 /* Test data */
 function logic_test_ladder()
 {
-	clear_bits();
+//	clear_bits();
 	clear_nodes();
 	
 	var x=0;
@@ -170,9 +170,5 @@ function logic_test_ladder()
 	add_node(x++, y, SYM.TMR, find_variable_index("Tmr_2"));
 	add_node(x++, y, SYM.OTL, find_variable_index("Bit_10"));
 	add_node(x++, y, SYM.CAPLEFT);
-
-
-
-
-
 }
+

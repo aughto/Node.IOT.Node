@@ -890,6 +890,16 @@ function test_logic()
 
 
 
+	// Load some timer data
+	
+	var i = find_variable_index("Tmr_1")
+	cpu_set_timer(variable_list.variables[i].offset, {value:0, acc:0, pre:1000} );
+
+	var i = find_variable_index("Tmr_2")
+	cpu_set_timer(variable_list.variables[i].offset, {value:0, acc:0, pre:3000} );
+	
+	
+	
 	
 	
 	/*

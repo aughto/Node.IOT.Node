@@ -382,12 +382,8 @@ function solve_logic(dt)
 			
 			var timer = cpu_get_timer(inst.op1);
 			
-			timer.pre = 1000;
+			//console.log("op1: " + inst.op1 + " Val: " + timer.value + " Pre: " + timer.pre + " Acc:" + timer.acc);
 
-			console.log("op1: " + inst.op1 + " Val: " + timer.value + " Pre: " + timer.pre + " Acc:" + timer.acc);
-
-
-			
 			if (cr)
 			{
 				timer.acc += dt;

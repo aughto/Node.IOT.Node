@@ -39,9 +39,6 @@ function logic_add_variable(name, type)
 	console.log("Splice: " + splice);
 		
 		
-	variable_list.variables.splice(splice, 0, v);
-		
-		
 	// adjust all indexes after splice
 	
 	for (var i = 0; i < nodes.length; i++)
@@ -51,8 +48,14 @@ function logic_add_variable(name, type)
 			nodes[i].op1 += 1;
 		
 	}
+				
 		
+	variable_list.variables.splice(splice, 0, v);
+		
+		
+
 	assign_variable_list();
+	logic_assemble();
 
 }
 
@@ -80,7 +83,7 @@ function logic_remove_variable(index)
 		
 	}
 		
-		
+	logic_assemble();		
 //	n.op1_index = find_variable_index(n.op1);
 	
 	

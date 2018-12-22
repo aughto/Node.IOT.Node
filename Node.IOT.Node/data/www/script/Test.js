@@ -68,7 +68,15 @@ function logic_test_variables()
 
 	assign_variable_list();
 
-		// Load some timer data
+
+	
+}
+
+function load_test_variables()
+{
+	console.log("Load test variable data");
+	
+	// Load some timer data
 	var i = find_variable_index("Tmr_1")
 	cpu_set_timer(variable_list.variables[i].offset, {value:0, acc:0, pre:3000} );
 
@@ -83,8 +91,9 @@ function logic_test_variables()
 
 	var i = find_variable_index("Tmr_5")
 	cpu_set_timer(variable_list.variables[i].offset, {value:0, acc:0, pre:3000} );
-	
+		
 }
+
 
 
 /* Test data */

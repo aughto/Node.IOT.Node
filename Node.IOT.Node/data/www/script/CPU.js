@@ -372,7 +372,7 @@ function solve_logic(dt)
 			
 			timer.value = cr;
 			
-			//console.log("cr: " + cr + " value: " + timer.value + " op1: " + inst.op1 + " Val: " + timer.value + " Pre: " + timer.pre + " Acc:" + timer.acc);
+			console.log("cr: " + cr + " value: " + timer.value + " op1: " + inst.op1 + " Val: " + timer.value + " Pre: " + timer.pre + " Acc:" + timer.acc);
 			
 			cpu_set_timer(inst.op1, timer);
 		}	

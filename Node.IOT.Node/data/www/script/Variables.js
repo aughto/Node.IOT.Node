@@ -8,13 +8,13 @@
 
 
 
-
-
-
 /* memory */
 
 
 
+
+// Merge in a new variable
+// Must be able to keep existing links and values
 function logic_add_variable(name, type)
 {
 	var v = {};
@@ -47,12 +47,13 @@ function logic_add_variable(name, type)
 	for (var i = 0; i < nodes.length; i++)
 	{
 		
-		if (nodes[i].op1 > splice)
+		if (nodes[i].op1 >= splice)
 			nodes[i].op1 += 1;
 		
 	}
 		
 	assign_variable_list();
+
 }
 
 
@@ -201,7 +202,8 @@ function assign_variable_list()
 	
 	
 	console.log(nodes);
-	
+
+	set_variable_values();
 }
 
 
@@ -291,8 +293,16 @@ function store_variablelist()
 }
 
 
+
+
+function set_variable_values()
+{
+	load_test_variables();
+}
+
 	
 	/* End of memory */
+	
 	
 	
 	

@@ -47,11 +47,20 @@ class HTTP
    
   //void process_saveconfig(AsynchttpRequest *request int config_type );
 
+  void load_handlers(AsyncWebServer *server);
+
+  // Need to refactor this garbage
   void process_saveconfig_post(AsyncWebServerRequest *request, const char *filename );
   void process_saveconfig_body(AsyncWebServerRequest *request, const char *filename,  uint8_t *data, size_t len, size_t index, size_t total);
 
   void process_savebytecode_post(AsyncWebServerRequest *request, const char *filename);
   void process_savebytecode_body(AsyncWebServerRequest *request, const char *filename, uint8_t *data, size_t len, size_t index, size_t total);
+
+  void process_savesystemfile_post(AsyncWebServerRequest *request);
+  void process_savesystemfile_body(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total);
+
+
+  //void save_systemfile(const char *filename, uint8_t *data, size_t len, int mode);
 
 
   //typedef std::function<void(AsynchttpRequest *request, const String& filename, size_t index, uint8_t *data, size_t len, bool final)> ArUploadHandlerFunction

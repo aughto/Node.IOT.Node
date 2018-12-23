@@ -152,6 +152,7 @@
 #define MAINCONFIG_FILENAME "/mainconfig.txt"
 #define IOCONFIG_FILENAME "/ioconfig.txt"
 #define BYTECODE_FILENAME "/bytecode.txt"
+#define LOGIC_FILENAME "/logic.txt"
 
 
 #define CONFIG_NULL "Unset"

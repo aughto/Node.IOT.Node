@@ -27,11 +27,11 @@ function logic_download()
 		
 	store_nodelist();
 		
-	var bytecode = generate_bytecode();
+	//var bytecode = generate_bytecode();
 
-	store_bytecode(bytecode);
+	//store_bytecode(bytecode);
 	
-	store_variablelist();
+	//store_variablelist();
 }
 
 
@@ -60,32 +60,42 @@ function store_bytecode(bytecode)
 
 
 
-// Save bytecode to device
-function store_nodelist()
+// Create JSON string from node list
+// Only extract needed elements for rebuilding
+function get_nodelist_str()
 {
-	console.log("Saving nodelist ");
-
-	
-	var tmp_list = {};
-	tmp_list.nodes = [];
-	
-	// Build temp variable list
-
-	console.log(nodes);
+	var tmp_list = {nodes:[]};
 	
 	for (var i = 0; i < nodes.length; i++)
 	{
-		var n = {t:nodes[i].type,
-				 x:nodes[i].x,
-				 y:nodes[i].y};
+		var n = {t:nodes[i].type, x:nodes[i].x, y:nodes[i].y};
 							
 		if (nodes[i].op1 != -1) n.o1 = nodes[i].op1;
 		if (nodes[i].op2 != -1) n.o2 = nodes[i].op2;
 							
-		tmp_list.nodes[i] = n;
+		tmp_list.nodes.push(n);
 	}
 	
-	var list_str = JSON.stringify(tmp_list);
+	return JSON.stringify(tmp_list);
+}
+
+
+// Save bytecode to device
+function store_nodelist()
+{
+	console.log("Saving nodelist ");
+	
+	// Build temp variable list
+
+	var list_str = get_nodelist_str();
+	
+	if (list_str == "")
+	{
+		console.log("Unable to generate node list string");
+		return;
+
+	}
+
 	
 	console.log("Node list string: " + list_str);
 
@@ -93,7 +103,7 @@ function store_nodelist()
 
     XHR.addEventListener("load", function(event) 
 	{
-      console.log(event.target.responseText);
+      console.log("Save logic: " + event.target.responseText);
     });
 
     XHR.addEventListener("error", function(event) 
@@ -101,12 +111,65 @@ function store_nodelist()
       alert('Unable to save logic to device');
     });
 
-	XHR.open("POST", "/save_variablelist"); 
+	XHR.open("POST", "/save_systemfile"); 
+		
+		
+	XHR.setRequestHeader("FileType", "logic");		
+	XHR.setRequestHeader("FileName", "/logic.txt");		
+		
 		
     XHR.send(list_str);
 }
 
 
+
+
+
+
+// Request config data load
+function load_logic()
+{
+	var req = get_request();
+
+	req.overrideMimeType("text/plain");
+	
+	req.addEventListener("load", function (evt) {parse_logic(req, evt);});
+	
+	req.addEventListener("error", load_page_error, false); 
+	
+	req.open("get", "/get_logic"); 
+	
+	
+	var params = "filetype=logic";
+	
+	req.send(params);
+}
+
+
+
+// Deal with logic data response from device
+function parse_logic(data, evt)
+{
+	console.log("Parsing Logic file");
+	console.log("Logic: " + data.responseText);
+
+	var nodelist = {};
+		
+	try
+	{
+		nodelist = JSON.parse(data.responseText)
+	}
+	catch(ex)
+	{
+		console.log("Unable to parse nodelist " + ex );
+		return;
+	}
+	
+	load_nodelist(nodelist);			
+}
+
+
+// Load nodelist from JSON data
 function load_nodelist(list)
 {
 	console.log("Loading nodelist ");

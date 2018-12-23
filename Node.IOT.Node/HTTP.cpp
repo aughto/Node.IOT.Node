@@ -97,52 +97,9 @@ void HTTP::init()
  ArUploadHandlerFunction onUpload, 
  ArBodyHandlerFunction onBody);*/
 
-
-// Need to replace with /set*
-
-  // Write config file
-  server->on("/set_mainconfig", HTTP_POST, 
-            [&](AsyncWebServerRequest *request){ process_saveconfig_post(request, MAINCONFIG_FILENAME);},
-            NULL, 
-            [&](AsyncWebServerRequest *request,uint8_t *data, size_t len, size_t index, size_t total){ process_saveconfig_body(request, MAINCONFIG_FILENAME, data, len, index, total);});
-
-  // Send current config.  TODO auth
-  server->on("/get_mainconfig", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(SPIFFS, MAINCONFIG_FILENAME);
-  });
-
-  // Write config file
-  server->on("/set_ioconfig", HTTP_POST, 
-            [&](AsyncWebServerRequest *request){ process_saveconfig_post(request, IOCONFIG_FILENAME);},
-            NULL, 
-            [&](AsyncWebServerRequest *request,uint8_t *data, size_t len, size_t index, size_t total)
-            { process_saveconfig_body(request, IOCONFIG_FILENAME, data, len, index, total);}
-            );
-
-  // Write bytecode
-  server->on("/save_bytecode", HTTP_POST, 
-            [&](AsyncWebServerRequest *request){ process_savebytecode_post(request, BYTECODE_FILENAME);},
-            NULL, 
-            [&](AsyncWebServerRequest *request,uint8_t *data, size_t len, size_t index, size_t total)
-            { process_savebytecode_body(request, BYTECODE_FILENAME, data, len, index, total);}
-            );
-
-
-
-
-  // Send current config.  TODO auth
-  server->on("/get_ioconfig", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(SPIFFS, IOCONFIG_FILENAME);
-  });
-
-
-  // Send current config.  TODO auth
   
-  server->on("/system_restart", HTTP_GET, [](AsyncWebServerRequest *request)
-  {  
-    hardware.restart(); 
-    request->redirect("/html/reloader.html");
-  });
+  
+  load_handlers(server);
 
 
 /*
@@ -212,6 +169,96 @@ void HTTP::init()
 
   server->begin();
 }
+
+
+void HTTP::load_handlers(AsyncWebServer *server)
+{
+
+
+
+// Need to replace with /set*
+
+  // Write config file
+  server->on("/set_mainconfig", HTTP_POST, 
+            [&](AsyncWebServerRequest *request){ process_saveconfig_post(request, MAINCONFIG_FILENAME);},
+            NULL, 
+            [&](AsyncWebServerRequest *request,uint8_t *data, size_t len, size_t index, size_t total){ process_saveconfig_body(request, MAINCONFIG_FILENAME, data, len, index, total);});
+
+  // Send current config.  TODO auth
+  server->on("/get_mainconfig", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, MAINCONFIG_FILENAME);
+  });
+
+  // Write config file
+  server->on("/set_ioconfig", HTTP_POST, 
+            [&](AsyncWebServerRequest *request){ process_saveconfig_post(request, IOCONFIG_FILENAME);},
+            NULL, 
+            [&](AsyncWebServerRequest *request,uint8_t *data, size_t len, size_t index, size_t total)
+            { process_saveconfig_body(request, IOCONFIG_FILENAME, data, len, index, total);}
+            );
+
+  // Send current config.  TODO auth
+  server->on("/get_ioconfig", HTTP_GET, [](AsyncWebServerRequest *request)
+  {
+    request->send(SPIFFS, IOCONFIG_FILENAME);
+  });
+
+
+
+  // Write bytecode
+  server->on("/save_bytecode", HTTP_POST, 
+            [&](AsyncWebServerRequest *request){ process_savebytecode_post(request, BYTECODE_FILENAME);},
+            NULL, 
+            [&](AsyncWebServerRequest *request,uint8_t *data, size_t len, size_t index, size_t total)
+            { process_savebytecode_body(request, BYTECODE_FILENAME, data, len, index, total);}
+            );
+
+
+  // Write logic
+  server->on("/save_systemfile", HTTP_POST, 
+              [&](AsyncWebServerRequest *request){ process_savesystemfile_post(request);},
+  
+            NULL, 
+            [&](AsyncWebServerRequest *request,uint8_t *data, size_t len, size_t index, size_t total)
+              { process_savesystemfile_body(request, data, len, index, total);}
+            );
+
+  // Send current config.  TODO auth
+  server->on("/get_logic", HTTP_GET, [](AsyncWebServerRequest *request)
+  {
+    request->send(SPIFFS, LOGIC_FILENAME);
+  });
+
+
+
+
+  // Send current config.  TODO auth
+  
+  server->on("/system_restart", HTTP_GET, [](AsyncWebServerRequest *request)
+  {  
+    hardware.restart(); 
+    request->redirect("/html/reloader.html");
+  });
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void HTTP::update(unsigned long current)
 {
@@ -403,6 +450,176 @@ void HTTP::process_savebytecode_body(AsyncWebServerRequest *request, const char 
     logic.savebytecode_end(filename);
   }
 }
+
+
+
+void show_params(char * header, AsyncWebServerRequest *request)
+{
+  print_log(MODULE "Params %s\n", header);
+
+  //process all headers List all collected headers
+
+
+  int headers = request->headers();
+
+  print_log(MODULE "Headers\n");
+  
+  for(int i=0; i<headers; i++)
+  {
+    AsyncWebHeader* h = request->getHeader(i);
+    print_log(MODULE " HEADER[%s]: %s\n", h->name().c_str(), h->value().c_str());
+  }
+
+  //get specific header by name
+  //if(request->hasHeader("MyHeader"))
+  //{
+//    AsyncWebHeader* h = request->getHeader("MyHeader");
+    //Serial.printf("MyHeader: %s\n", h->value().c_str());
+  //}
+
+  //List all parameters
+print_log(MODULE "Parameters\n");
+  
+  
+  int params = request->params();
+  for(int i=0; i<params; i++)
+  {
+    AsyncWebParameter* p = request->getParam(i);
+  
+    if(p->isFile())
+    { //p->isPost() is also true
+      print_log(MODULE " FILE[%s]: %s, size: %u\n", p->name().c_str(), p->value().c_str(), p->size());
+    } else 
+    if(p->isPost())
+    {
+      print_log(MODULE " POST[%s]: %s\n", p->name().c_str(), p->value().c_str());
+      // Try to set as parameter
+      //config.set(p->name().c_str(),  p->value().c_str());
+    } 
+    else 
+    {
+      print_log(" GET[%s]: %s\n", p->name().c_str(), p->value().c_str());
+    }
+  }
+  //config.save();
+
+ if(request->hasParam("body", true))
+ {
+   AsyncWebParameter* p = request->getParam("body", true);
+
+  print_log(MODULE "Body Data: %s\n", p->value().c_str());
+ }
+  
+
+
+  
+}
+
+
+
+
+
+
+
+
+
+
+void HTTP::process_savesystemfile_post(AsyncWebServerRequest *request)
+{
+  print_log(MODULE "process_savesystemfile_post called\n");
+
+  show_params("process_savesystemfile_post", request);
+
+  /*request->send(200, "text/plain", "Saved");
+  
+  print_log(MODULE "process_savelogic_post: Sent saved\n");*/
+}
+
+
+
+#define FILETYPE_NONE 0
+#define FILETYPE_LOGIC 1
+#define FILENAME_MAX 200
+
+
+void HTTP::process_savesystemfile_body(AsyncWebServerRequest *request,  uint8_t *data, size_t len, size_t index, size_t total)
+{
+  print_log(MODULE "process_savelogic_body called\n");
+
+  int  filetype = FILETYPE_NONE;
+
+  char filename[FILENAME_MAX];
+  filename[0] = 0;
+  
+
+
+  //get specific header by name
+  if(request->hasHeader("FileType"))
+  {
+    AsyncWebHeader* h = request->getHeader("FileType");
+    print_log("Filetype: %s\n", h->value().c_str());
+  
+    // Detect type of special files
+    if (!strcmp(h->value().c_str(), "logic")) filetype = FILETYPE_LOGIC; 
+  }
+
+
+  //get Filename
+  if(request->hasHeader("FileName"))
+  {
+    AsyncWebHeader* h = request->getHeader("FileName");
+    strcpy(filename, h->value().c_str());
+  }
+  else
+  {
+    print_log(MODULE "No filename supplied\n");
+  }
+
+  print_log(MODULE "Filename: %s\n", filename);
+
+  show_params("process_savelogic_body", request);
+
+  print_log(MODULE "Index: %d\n", index);
+  print_log(MODULE "Total: %d\n", total);
+  print_log(MODULE "Len: %d\n", len);
+
+
+  if (filetype == FILETYPE_LOGIC)
+  {
+    print_log(MODULE "Logic detected\n");
+    
+    if (index == 0)   // Start
+    {
+      logic.savelogic(filename, 0, 0, SAVE_START);
+    }
+
+    //
+    logic.savelogic(filename, data, len, SAVE_CHUNK);
+  
+    if (index + len == total)  // End
+    {
+      logic.savelogic(filename, 0, 0, SAVE_END);
+  
+      request->send(200, "text/plain", "Saved");
+    
+      print_log(MODULE "process_savelogic_post: Sent saved\n");
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

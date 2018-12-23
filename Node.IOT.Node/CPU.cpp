@@ -26,7 +26,7 @@
 
 void Logic::show_debug(void)
 {
-  show_memory("Logic Debug\n");
+  //show_memory("Logic Debug\n");
  
 }
 
@@ -69,9 +69,7 @@ void Logic::decode_next_inst(unsigned int &i, bool newline)
 
 void Logic::show_disassembly( void )
 {
-
   print_log(MODULE "Bytecode Listing\n");
-
 
   unsigned int i = 0;
   
@@ -79,8 +77,6 @@ void Logic::show_disassembly( void )
   {
     decode_next_inst(i, true);
   }
-
-  
 }
 
 

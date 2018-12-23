@@ -69,34 +69,22 @@ function add_node(x, y, type, op1, op2)
 }
 
 
+// Set node symbol at location
 function set_node(x, y, s)
 {
+	// Get node index for location
 	var ni = find_node(x, y);
 	
-	if (ni == -1)
-	{
-		add_node(x, y, s, 0);
-		return;
-	}
+	// Delete whatever is there, if anything
+	if (ni != -1) nodes.splice(ni, 1);
+
+	// Just return if we are deleting a node
+	if (s == SYM.NONE) return;
 	
-	var n = create_node(x, y, s, 0);
-	
-	nodes[ni] = n;
-	
-	//assemble();
-	
-	
-//	cells[x+y*x_cells] = s;
+	// Create new node at location
+	add_node(x, y, s, 0);
 }
 
-/*function remove_node(ni)
-{
-	for (var i = 0; i < nodes.length; i++)
-	{
-		var n = nodes[i];
-	}
-}
-*/
 
 
 

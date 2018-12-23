@@ -279,7 +279,7 @@ void Logic::savebytecode_chunk(const char *filename, uint8_t *data, size_t len)
  
   if (!bytecode_file.write(data, len))
   {
-      print_log("Config write failed\n");
+      print_log(MODULE "Config write failed\n");
     
   }
 
@@ -296,10 +296,67 @@ void Logic::savebytecode_end(const char *filename)
   print_log(MODULE "Save ended for %s\n", filename);
 
 
-  print_log("Bytecode Saved\n");
+  print_log(MODULE "Bytecode Saved\n");
 
 
   file_loaded = false;
 
   load_bytecode(BYTECODE_FILENAME);
+}
+
+
+
+
+
+
+void Logic::savelogic(const char *filename, uint8_t *data, size_t len, int mode)
+{
+  if (mode == SAVE_START)
+  {
+    file_loaded = false;
+    
+    logic_file = SPIFFS.open(filename, FILE_WRITE);
+    
+    if(!logic_file)
+    {
+      print_log(MODULE "Failed to open file for writing %s", filename);
+      return;
+    }
+  
+    set_timeout(save_timeout, millis() + CONFIG_TIMEOUT);
+  
+    file_loaded = true;
+    
+    print_log(MODULE "Save started for %s\n", filename);
+  
+  } else
+
+  if (mode == SAVE_CHUNK)
+  {
+    if (!file_loaded) return;
+   
+    if (!logic_file.write(data, len))
+    {
+        print_log(MODULE "Config write failed\n");
+      
+    }
+  
+    save_timeout = 0;
+   
+  } else
+  
+  if (mode == SAVE_END)
+  {
+    if (!file_loaded) return;
+  
+    logic_file.close();
+    
+    print_log(MODULE "Save ended for %s\n", filename);
+  
+    print_log(MODULE "Logic Saved\n");
+  
+    file_loaded = false;
+   
+    //load_bytecode(BYTECODE_FILENAME);
+  }
 }

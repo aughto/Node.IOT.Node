@@ -10,6 +10,9 @@ function weblogix_init()
 {
 	console.log("Weblogix Init");	
 
+	load_logic();
+	
+	
 	init_global();								// Globals
 	setInterval(function() {logic_ui_update_timer()}, 100);	// Setup timer
 }
@@ -195,7 +198,3 @@ function setup_canvas()
 /* 
 	End of System
 */
-
-
-
-

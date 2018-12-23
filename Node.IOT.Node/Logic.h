@@ -10,6 +10,13 @@
 #ifndef LOGIC_H
 #define LOGIC_H
 
+
+#define SAVE_START  1
+#define SAVE_CHUNK  2
+#define SAVE_END    3
+
+
+
 #define MAX_BYTECODE  32768
 #define VARIABLE_MAX  1024
 #define CRSTACK_MAX   256
@@ -51,6 +58,9 @@ class Logic
   void savebytecode_start(const char *filename);
   void savebytecode_chunk(const char *filename, uint8_t *data, size_t len);
   void savebytecode_end(const char *filename);
+
+  void savelogic(const char *filename, uint8_t *data, size_t len, int mode);
+
   
   void show_disassembly();
   void decode_next_inst(unsigned int &i, bool newline);
@@ -65,6 +75,8 @@ class Logic
 
 
   void show_debug(void);
+
+  void savelogic(const char *filename, int MODE);
   
 
  private:
@@ -76,6 +88,7 @@ class Logic
 
   bool file_loaded; // need to move into config file
   File bytecode_file;
+  File logic_file;
 
   unsigned long save_timeout;
 

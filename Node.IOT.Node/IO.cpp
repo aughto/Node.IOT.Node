@@ -101,6 +101,32 @@ bool IO::check_getval(const String item, String &value)
 
 
 
+
+
+
+
+bool IO::get_input(unsigned index, unsigned char &value)
+{
+  if (index >= NUM_INPUTS) return true;
+  
+  value = inputs[index].get_value();
+
+  return false;
+}
+
+bool IO::set_output(unsigned index, unsigned char value)
+{
+  if (index >= NUM_OUTPUTS) return true;
+
+  outputs[index].set_value(value);
+
+  return false;
+}
+
+
+
+
+
 bool IO::get_value(unsigned index, unsigned char &value)
 {
   // Inputs

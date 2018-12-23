@@ -75,4 +75,71 @@ bool check_timeout(unsigned long to, unsigned long current)
 }
 
 
+
+/* File IO */
+
+
+// Read next 1 digit hex number from file
+bool read_hex4(File &file, unsigned char &v)
+{
+    if (!file.available()) return true;
+  
+    unsigned char c = file.read();
+
+    if (c >= 'a') v = c - 'a' + 10;  else    // Small A is largest 
+    if (c >= 'A') v = c - 'A' + 10;  else  // Large A is next
+      v = c - '0';    // Digits are lowest
+
+    return false;
+}
+
+
+
+// Read next 2 digit hex number from file
+bool read_hex8(File &file, unsigned char &v)
+{
+  unsigned char b1, b2;
+
+  if (read_hex4(file, b1)) return true;
+  if (read_hex4(file, b2)) return true;
+
+  v = (b1 << 4) + b2;
+    
+  return false;
+}
+
+
+// Read next 4 digit hex number from file
+bool read_hex16(File &file, unsigned int &v)
+{
+    unsigned char b1, b2;
+
+    if (read_hex8(file, b1)) return true;
+    if (read_hex8(file, b2)) return true;
+
+    v = (b1 << 8) + b2;
+
+    return false;
+}
+
+
+// Read next 8 digit hex number from file
+bool read_hex32(File &file, unsigned long &v)
+{
+    unsigned int b1, b2;
+
+    if (read_hex16(file, b1)) return true;
+    if (read_hex16(file, b2)) return true;
+
+    v = (b1 << 16) + b2;
+
+    return false;
+}
+
+
+
+
+
+
+
    

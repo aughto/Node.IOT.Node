@@ -187,6 +187,8 @@ function draw_icon_selection(ctx, x, y, sx, sy)
 
 function draw_icons()
 {
+	if (tool_canvas == null) return;
+		
 	tool_context.clearRect(0, 0, tool_canvas.width, tool_canvas.height);
 	
 	for (var i = 0; i < current_icons.length; i++)

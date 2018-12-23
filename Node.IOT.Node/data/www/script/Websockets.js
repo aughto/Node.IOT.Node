@@ -214,10 +214,10 @@ function set_command(message)
 	if (message.item == "Input3") variable_update(2, message.value);
 	if (message.item == "Input4") variable_update(3, message.value);
 
-	if (message.item == "Output1") variable_update(64, message.value);
-	if (message.item == "Output2") variable_update(65, message.value);
-	if (message.item == "Output3") variable_update(66, message.value);
-	if (message.item == "Output4") variable_update(67, message.value);
+	if (message.item == "Output1") variable_update(4, message.value);
+	if (message.item == "Output2") variable_update(5, message.value);
+	if (message.item == "Output3") variable_update(6, message.value);
+	if (message.item == "Output4") variable_update(7, message.value);
 	
 	
 	update_value(message.item, message.value);

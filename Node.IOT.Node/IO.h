@@ -30,6 +30,10 @@ class IO
 
   bool get_value(unsigned index, unsigned char &value);
   bool set_value(unsigned index, unsigned char value);
+
+
+  bool get_input(unsigned index, unsigned char &value);
+  bool set_output(unsigned index, unsigned char value);
   
   
   void update(unsigned long current);

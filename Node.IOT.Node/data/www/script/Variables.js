@@ -14,6 +14,33 @@ var variable_list = {};  // Variable name list
 
 
 
+
+function variable_update(idx, v)
+{
+	console.log("Variable update " + idx + " " + v);
+	
+	if (idx < 0 || idx >= variable_data.length)
+	{
+		console.log("variable_update: Invalid memory reference: " + idx);
+		return;
+	}
+	
+	variable_data[idx] = parseInt(v);
+	
+	
+	return;
+	
+	for (var i = 0; i < variable_table.length; i++)
+	{
+		if (variable_table[i].index == idx)
+		{
+			variable_table[i].value = v;
+		}
+	}
+	
+}
+
+
 // Merge in a new variable
 // Must be able to keep existing links and values
 function logic_add_variable(name, type)

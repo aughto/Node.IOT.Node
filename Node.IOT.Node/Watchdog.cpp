@@ -89,6 +89,9 @@ void Watchdog::update_second(unsigned long current)
 
     print_log("Logic Update Rate: %d\n", logic.get_updates());
 
+    logic.show_debug();
+
+
 
     //hardware.show_stats();
 

@@ -62,9 +62,17 @@ class Logic
   void set_value(unsigned int i, unsigned char v);
 
   unsigned int get_updates() { unsigned int v = updates; updates = 0; return v; };
+
+
+  void show_debug(void);
   
 
  private:
+
+  void map_inputs(void);
+  void map_outputs(void);
+
+  unsigned char check_offset(unsigned int i);
 
   bool file_loaded; // need to move into config file
   File bytecode_file;

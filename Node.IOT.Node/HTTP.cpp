@@ -178,6 +178,9 @@ void HTTP::load_handlers(AsyncWebServer *server)
 
 // Need to replace with /set*
 
+
+
+  // TODO Replace with Generic
   // Write config file
   server->on("/set_mainconfig", HTTP_POST, 
             [&](AsyncWebServerRequest *request){ process_saveconfig_post(request, MAINCONFIG_FILENAME);},
@@ -189,6 +192,7 @@ void HTTP::load_handlers(AsyncWebServer *server)
     request->send(SPIFFS, MAINCONFIG_FILENAME);
   });
 
+  // TODO Replace with Generic
   // Write config file
   server->on("/set_ioconfig", HTTP_POST, 
             [&](AsyncWebServerRequest *request){ process_saveconfig_post(request, IOCONFIG_FILENAME);},
@@ -204,7 +208,7 @@ void HTTP::load_handlers(AsyncWebServer *server)
   });
 
 
-
+  // TODO Replace with Generic
   // Write bytecode
   server->on("/save_bytecode", HTTP_POST, 
             [&](AsyncWebServerRequest *request){ process_savebytecode_post(request, BYTECODE_FILENAME);},
@@ -214,39 +218,31 @@ void HTTP::load_handlers(AsyncWebServer *server)
             );
 
 
-  // Write logic
-  server->on("/save_systemfile", HTTP_POST, 
-              [&](AsyncWebServerRequest *request){ process_savesystemfile_post(request);},
-  
-            NULL, 
-            [&](AsyncWebServerRequest *request,uint8_t *data, size_t len, size_t index, size_t total)
-              { process_savesystemfile_body(request, data, len, index, total);}
-            );
 
-  // Send current config.  TODO auth
+ 
+  // Generic get system file
+  // TODO Replace with Generic
   server->on("/get_logic", HTTP_GET, [](AsyncWebServerRequest *request)
   {
     request->send(SPIFFS, LOGIC_FILENAME);
   });
 
+  // Generic save system file
+  server->on("/save_systemfile", HTTP_POST, 
+              [&](AsyncWebServerRequest *request){ process_savesystemfile_post(request);},
+              NULL, 
+              [&](AsyncWebServerRequest *request,uint8_t *data, size_t len, size_t index, size_t total)
+              { process_savesystemfile_body(request, data, len, index, total);}
+            );
 
-
-
-  // Send current config.  TODO auth
-  
+  // Request system restart.  Need to replace with generic commands
   server->on("/system_restart", HTTP_GET, [](AsyncWebServerRequest *request)
   {  
     hardware.restart(); 
     request->redirect("/html/reloader.html");
   });
 
-
-
 }
-
-
-
-
 
 
 

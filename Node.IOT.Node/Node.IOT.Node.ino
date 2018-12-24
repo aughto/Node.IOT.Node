@@ -4,7 +4,7 @@
  (C) 2018 Jason Hunt
   nulluser@gmail.com
 
-  FILE: MQTTNode.ino
+  FILE: Node.IOT.Node.ino
 */
 
 #define MODULE_MQTTNODE

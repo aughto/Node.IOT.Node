@@ -195,33 +195,22 @@ function websocket_message(msg)
 	// Todo need to be able to register actions 			
 	if (data.cmd == "ping")	 recv_ping(); else
 	if (data.cmd == "set")	 set_command(data);         else
-	
+	if (data.cmd == "setvar")	 setvar_command(data);         else
+
 	{
-		console.log("Unknown action: " + data.action);
+		console.log("Unknown action: " + data.cmd);
 	}
 }
 
 
 
-// Parse MQTT message
-function set_command(message)
-{
-	console.log("Set command " + message.item + " " +message.value);
 
-	
-	if (message.item == "Input1") variable_update(0, message.value);
-	if (message.item == "Input2") variable_update(1, message.value);
-	if (message.item == "Input3") variable_update(2, message.value);
-	if (message.item == "Input4") variable_update(3, message.value);
 
-	if (message.item == "Output1") variable_update(4, message.value);
-	if (message.item == "Output2") variable_update(5, message.value);
-	if (message.item == "Output3") variable_update(6, message.value);
-	if (message.item == "Output4") variable_update(7, message.value);
-	
-	
-	update_value(message.item, message.value);
-}
+
+
+
+
+
 
 function recv_ping()
 {
@@ -241,7 +230,7 @@ function send_ping()
 
 
 
-function send_message(item, value)
+function send_set(item, value)
 {
 	var message = {};
 
@@ -251,10 +240,9 @@ function send_message(item, value)
 	
 	var str = JSON.stringify(message);
 	
-	//console.log('Message str: ' +str);
+	console.log('Message str: ' +str);
 	websocket_send(str) 
 }
-
 
 
 

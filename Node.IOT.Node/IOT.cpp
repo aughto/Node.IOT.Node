@@ -21,6 +21,7 @@
 #include "IO.h"
 #include "IOPorts.h"
 #include "NMQTT.h"
+#include "Logic.h"
 #include "Network.h"
 #include "HTTP.h"
 
@@ -103,6 +104,38 @@ bool IOT::handle_message(const char *cmd, const char *item, const char *value)
     
     //io.handle_message(cmd, item, value);
   }
+
+
+   if (!strcmp(cmd, "setvar"))
+  {
+    if (item == NULL)
+    {
+      print_log(MODULE "Item not present");
+      return true;
+    }
+
+    if (value == NULL)
+    {
+      print_log(MODULE "Value not present");
+      return true;
+    }
+
+    //print_log("Command: %s\n", cmd);
+    //print_log("Item: %s\n", item);
+    //print_log("Value: %s\n", value);
+
+    unsigned int var_offset = atoi(item);
+    unsigned int var_value = atoi(value);
+
+    logic.set_value(var_offset, var_value);
+
+
+    if (io.set_value(item, value))
+      return true;
+    
+    //io.handle_message(cmd, item, value);
+  }
+
 
   return false;
   

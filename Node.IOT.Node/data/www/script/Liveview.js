@@ -60,18 +60,47 @@ function update_value(item, value)
 // Set local value and publish
 function set_value(item, value)
 {
-	//console.log(`SET ${item} ${value}`);
-	
+
 	update_value(item, value);	// local update
 	
-	send_message(item, value.toString());
+	var index = -1;
+	
+	if (item == "Input1") index = 0;
+	if (item == "Input1") index = 1;
+	if (item == "Input1") index = 2;
+	if (item == "Input1") index = 3;
+	
+	if (item == "Output1") index = 4;
+	if (item == "Output2") index = 5;
+	if (item == "Output3") index = 6;
+	if (item == "Output4") index = 7;
+	
+
+	console.log(`SET ${item} ${index} ${value}`);
+
+	
+	// Only send updates if live
+	if (logic_mode == MODE_LIVE)
+	{
+		send_setvariable(index, parseInt(value));
+	}
+	
+	
+	//send_message(item, value.toString());
 }
 
 // Area was clicked
 function area_click(item)
 {
-	// Make sure item is an output
-	if (item.toLowerCase().indexOf("output") == -1) return;
+	
+	// Only allow input and outputs changes if live, or in overried
+	if (logic_mode == MODE_LIVE)
+	{
+		return;
+		// Make sure item is an output
+//		if (item.toLowerCase().indexOf("output") == -1) 
+			//return;
+	}
 	
 	//console.log("Get value: " + get_value(item));
 	

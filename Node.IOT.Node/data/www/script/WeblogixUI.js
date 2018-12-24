@@ -56,6 +56,12 @@ var sel_icon = 1; // toggle mode
 var sel_color = "#5050ff";
 
 
+var MODE_SIM = 1;
+var MODE_LIVE = 2;
+
+var logic_mode = MODE_LIVE;
+
+
 function ui_init()
 {
 	console.log("UI Init");	
@@ -84,6 +90,22 @@ function menu_file_load()
 {
 	console.log("menu_file_load()");
 }
+
+
+function menu_logic_simulate()
+{
+	console.log("menu_logic_simulate()");
+	
+	logic_mode = MODE_SIM;
+}
+
+function menu_logic_live()
+{
+	console.log("menu_logic_live()");
+	
+	logic_mode = MODE_LIVE;
+}
+
 
 function menu_logic_assemble()
 {
@@ -1072,6 +1094,14 @@ function toggle_node(ni)
 	cpu_toggle_byte(n.op1);
 	
 	
+	// Only send toggle if live
+	if (logic_mode == MODE_LIVE)
+	{	
+		var v = cpu_get_byte(n.op1);
+		
+		send_setvariable(n.op1, v);
+	}
+		
 	//variables[n.op1] = variables[n.op1]  == 0 ? 1 : 0;
 	
 	

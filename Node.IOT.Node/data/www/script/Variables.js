@@ -15,6 +15,62 @@ var variable_list = {};  // Variable name list
 
 
 
+function send_setvariable(index, value)
+{
+	var message = {};
+
+	message.cmd = "setvar";
+	message.item = index;
+	message.value = value;
+	
+	var str = JSON.stringify(message);
+	
+	console.log('Set Variable: ' +str);
+	websocket_send(str) 
+}
+
+
+// Parse MQTT message
+function set_command(message)
+{
+	console.log("Set command " + message.item + " " +message.value);
+
+	
+	if (message.item == "Input1") variable_update(0, message.value);
+	if (message.item == "Input2") variable_update(1, message.value);
+	if (message.item == "Input3") variable_update(2, message.value);
+	if (message.item == "Input4") variable_update(3, message.value);
+
+	if (message.item == "Output1") variable_update(4, message.value);
+	if (message.item == "Output2") variable_update(5, message.value);
+	if (message.item == "Output3") variable_update(6, message.value);
+	if (message.item == "Output4") variable_update(7, message.value);
+	
+	
+	update_value(message.item, message.value);
+}
+
+// Parse MQTT message
+function setvar_command(message)
+{
+	console.log("Setvar command " + message.item + " " +message.value);
+
+	
+	/*if (message.item == "Input1") variable_update(0, message.value);
+	if (message.item == "Input2") variable_update(1, message.value);
+	if (message.item == "Input3") variable_update(2, message.value);
+	if (message.item == "Input4") variable_update(3, message.value);
+
+	if (message.item == "Output1") variable_update(4, message.value);
+	if (message.item == "Output2") variable_update(5, message.value);
+	if (message.item == "Output3") variable_update(6, message.value);
+	if (message.item == "Output4") variable_update(7, message.value);*/
+	
+	
+	update_value(message.item, message.value);
+}
+
+
 function variable_update(idx, v)
 {
 	console.log("Variable update " + idx + " " + v);

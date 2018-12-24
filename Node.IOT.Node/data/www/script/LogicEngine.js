@@ -27,9 +27,9 @@ function logic_download()
 		
 	store_nodelist();
 		
-	//var bytecode = generate_bytecode();
+	var bytecode = generate_bytecode();
 
-	//store_bytecode(bytecode);
+	store_bytecode(bytecode);
 	
 	//store_variablelist();
 }
@@ -45,7 +45,7 @@ function store_bytecode(bytecode)
 
     XHR.addEventListener("load", function(event) 
 	{
-      console.log(event.target.responseText);
+      console.log("Save Bytecode: " + event.target.responseText);
     });
 
     XHR.addEventListener("error", function(event) 

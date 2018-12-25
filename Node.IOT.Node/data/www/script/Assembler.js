@@ -128,14 +128,14 @@ function add_stack(pn, x, y)
 	stack_ptr++;
 }
 
-// Follow flor direction and set node links
+// Follow flow direction and set node links
 function resolve_chain(prev_ni, x, y)
 {
 	//if (enagle_log) console.log(" Assemble Row ("+x+","+y+")");
 	
 	var max = 100;
 	
-	var x_dir = 1;
+	var x_dir = 1; // Default moving to right
 	var y_dir = 0;
 		
 	var ni = find_node(x, y);	 // current node index
@@ -147,7 +147,7 @@ function resolve_chain(prev_ni, x, y)
 	{
 		//if (enagle_log) console.log("[" + ni + "] Pos  (" + x + "," + y + ") = " + n.type_text +  "Dir: (" + x_dir +"," + y_dir + ")" + " C: " + n.consumed);
 		
-		// skip consumed cells
+		// skip consumed cells. Consumed cell ends chain
 		if (n.consumed == 1)
 		{
 			return false;

@@ -351,13 +351,6 @@ var weblogix = (function ()
 	}
 
 
-
-
-
-
-
-
-
 	// Main render
 	function render()
 	{
@@ -368,20 +361,14 @@ var weblogix = (function ()
 		main_display.clear();
 
 		draw_icons();
-		
 		draw_grid();
 		
-		main_display.context.save();
-		
-		// Apply pan and zoom
-		main_display.context.translate(-main_display.x_ofs, -main_display.y_ofs);
-		main_display.context.scale(main_display.zoom_scale,main_display.zoom_scale);
-		
+		main_display.transform();
 
 		// Iterate drawing operation over the node list
 		project.iterate_nodes(draw_node);
 
-		main_display.context.restore();
+		main_display.restore();
 	}
 
 	/* 

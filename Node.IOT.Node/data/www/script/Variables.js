@@ -17,16 +17,7 @@ var variable_list = {};  // Variable name list
 
 function send_setvariable(index, value)
 {
-	var message = {};
-
-	message.cmd = "setvar";
-	message.item = index;
-	message.value = value;
-	
-	var str = JSON.stringify(message);
-	
-	console.log('Set Variable: ' +str);
-	websocket_send(str) 
+	websocket.send_command("setvar", index, value);
 }
 
 
@@ -36,15 +27,15 @@ function set_command(message)
 	console.log("Set command " + message.item + " " +message.value);
 
 	
-	if (message.item == "Input1") variable_update(0, message.value);
-	if (message.item == "Input2") variable_update(1, message.value);
-	if (message.item == "Input3") variable_update(2, message.value);
-	if (message.item == "Input4") variable_update(3, message.value);
+	if (message.item == "Input1") cpu.variable_update(0, message.value);
+	if (message.item == "Input2") cpu.variable_update(1, message.value);
+	if (message.item == "Input3") cpu.variable_update(2, message.value);
+	if (message.item == "Input4") cpu.variable_update(3, message.value);
 
-	if (message.item == "Output1") variable_update(4, message.value);
-	if (message.item == "Output2") variable_update(5, message.value);
-	if (message.item == "Output3") variable_update(6, message.value);
-	if (message.item == "Output4") variable_update(7, message.value);
+	if (message.item == "Output1") cpu.variable_update(4, message.value);
+	if (message.item == "Output2") cpu.variable_update(5, message.value);
+	if (message.item == "Output3") cpu.variable_update(6, message.value);
+	if (message.item == "Output4") cpu.variable_update(7, message.value);
 	
 	
 	update_value(message.item, message.value);
@@ -71,30 +62,7 @@ function setvar_command(message)
 }
 
 
-function variable_update(idx, v)
-{
-	console.log("Variable update " + idx + " " + v);
-	
-	if (idx < 0 || idx >= variable_data.length)
-	{
-		console.log("variable_update: Invalid memory reference: " + idx);
-		return;
-	}
-	
-	variable_data[idx] = parseInt(v);
-	
-	
-	return;
-	
-	for (var i = 0; i < variable_table.length; i++)
-	{
-		if (variable_table[i].index == idx)
-		{
-			variable_table[i].value = v;
-		}
-	}
-	
-}
+
 
 
 // Merge in a new variable
@@ -271,15 +239,10 @@ function assign_variable_list()
 	
 	variable_list.mem_size = offset;
 	
-	variable_data = new Uint8Array(variable_list.mem_size);
 	
+	cpu.resize_variable_data(variable_list.mem_size);
 	
-	for (var i = 0; i < variable_data.length; i++)
-		variable_data[i] = 0;
-	
-	//console.log("Memory: " + variable_data.length);
-	//console.log(variable_list);
-	//console.log(variable_data);
+
 	
 	
 	//console.log(nodes);

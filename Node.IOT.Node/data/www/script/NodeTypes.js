@@ -12,6 +12,7 @@
 	Nodes 
 */
 
+// Generic
 function Node(type)
 {
 	var n = {};
@@ -78,7 +79,7 @@ function Node(type)
 }
 
 
-
+// Begin
 function NodeB()
 {
 	var n = new Node(SYM.B);
@@ -98,7 +99,7 @@ function NodeB()
 	return n;
 }
 
-
+// End 
 function NodeE()
 {
 	var n = new Node(SYM.E);
@@ -116,11 +117,7 @@ function NodeE()
 	return n;
 }
 
-
-
-
-
-
+// Corner Right
 function NodeCR()
 {
 	var n = new Node(SYM.CAPRIGHT);
@@ -137,6 +134,7 @@ function NodeCR()
 	return n;
 }
 
+// Corner Left
 function NodeCL()
 {
 	var n = new Node(SYM.CAPLEFT);
@@ -152,6 +150,7 @@ function NodeCL()
 	return n;
 }
 
+// Branch right
 function NodeBR()
 {
 	var n = new Node(SYM.BRRIGHT);
@@ -169,7 +168,7 @@ function NodeBR()
 	return n;
 }
 
-
+// Branch left
 function NodeBL()
 {
 	var n = new Node(SYM.BRLEFT);
@@ -186,7 +185,7 @@ function NodeBL()
 }
 
 
-
+// Branch down
 function NodeBD()
 {
 	var n = new Node(SYM.BRDOWN);
@@ -206,6 +205,7 @@ function NodeBD()
 }
 
 
+// Horz wire
 function NodeHW()
 {
 	var n = new Node(SYM.HORZ);
@@ -221,6 +221,7 @@ function NodeHW()
 }
 
 
+// Vert wire
 function NodeVW()
 {
 	var n = new Node(SYM.VERT);
@@ -235,6 +236,7 @@ function NodeVW()
 	return n;
 }
 
+// Examine if closed
 function NodeXIC()
 {
 	var n = new Node(SYM.XIC);
@@ -245,22 +247,21 @@ function NodeXIC()
 	
 	n.draw = function(ctx, x, y, sx, sy)
 	{
-	var pad = (sx + sy) / 2 * 0.2;
+		var pad = (sx + sy) / 2 * 0.2;
 		
-	var c1 = sx * 0.40;
-	var c2 = sx * 0.60;
+		var c1 = sx * 0.40;
+		var c2 = sx * 0.60;
 		
-	draw_symbol_line(ctx, x, y+sy/2, x+c1, y+sy/2);	
-	draw_symbol_line(ctx, x+c1, y+sy/2-pad, x+c1, y+sy/2+pad);		
-	draw_symbol_line(ctx, x+c2 , y+sy/2-pad, x+c2, y+sy/2+pad);		
-	draw_symbol_line(ctx, x + c2, y+sy/2, x+sx, y+sy/2);	
-	
+		draw_symbol_line(ctx, x, y+sy/2, x+c1, y+sy/2);	
+		draw_symbol_line(ctx, x+c1, y+sy/2-pad, x+c1, y+sy/2+pad);		
+		draw_symbol_line(ctx, x+c2 , y+sy/2-pad, x+c2, y+sy/2+pad);		
+		draw_symbol_line(ctx, x + c2, y+sy/2, x+sx, y+sy/2);	
 	}
 	
 	return n;
 }
 
-
+// Examine if open
 function NodeXIO()
 {
 	var n = new Node(SYM.XIO);
@@ -270,21 +271,21 @@ function NodeXIO()
 	
 	n.draw = function(ctx, x, y, sx, sy)
 	{
-	var pad = (sx + sy) / 2 * 0.2;
-	var pad2 = (sx + sy) / 2 * 0.15;
+		var pad = (sx + sy) / 2 * 0.2;
+		var pad2 = (sx + sy) / 2 * 0.15;
 	
-	var c1 = sx * 0.40;
-	var c2 = sx * 0.60;
+		var c1 = sx * 0.40;
+		var c2 = sx * 0.60;
+		
+		var c3 = sx * 0.45;
+		var c4 = sx * 0.55;
 	
-	var c3 = sx * 0.45;
-	var c4 = sx * 0.55;
-	
-	draw_symbol_line(ctx, x, y+sy/2, x+c1, y+sy/2);	
-	draw_symbol_line(ctx, x+c1, y+sy/2-pad, x+c1, y+sy/2+pad);		
-	draw_symbol_line(ctx, x+c2 , y+sy/2-pad, x+c2, y+sy/2+pad);		
-	draw_symbol_line(ctx, x + c2, y+sy/2, x+sx, y+sy/2);	
+		draw_symbol_line(ctx, x, y+sy/2, x+c1, y+sy/2);	
+		draw_symbol_line(ctx, x+c1, y+sy/2-pad, x+c1, y+sy/2+pad);		
+		draw_symbol_line(ctx, x+c2 , y+sy/2-pad, x+c2, y+sy/2+pad);		
+		draw_symbol_line(ctx, x + c2, y+sy/2, x+sx, y+sy/2);	
 
-	draw_symbol_line(ctx, x + c3, y+sy/2-pad2, x+c4, y+sy/2+pad2);		
+		draw_symbol_line(ctx, x + c3, y+sy/2-pad2, x+c4, y+sy/2+pad2);		
 	}
 	
 	return n;
@@ -293,7 +294,7 @@ function NodeXIO()
 
 
 
-
+// Output Energize
 function NodeOTE()
 {
 	var n = new Node(SYM.OTE);
@@ -321,6 +322,8 @@ function NodeOTE()
 	return n;
 }
 
+
+// Output latch
 function NodeOTL()
 {
 	var n = new Node(SYM.OTL);
@@ -350,6 +353,7 @@ function NodeOTL()
 	return n;
 }
 
+// Output Unlatch
 function NodeOTU()
 {
 	var n = new Node(SYM.OTU);
@@ -379,6 +383,7 @@ function NodeOTU()
 	return n;
 }
 
+// Generic Box
 function NodeBOX()
 {
 	var n = new Node(SYM.BOX);
@@ -412,7 +417,7 @@ function NodeBOX()
 
 
 
-
+// Timer
 function NodeTMR()
 {
 	var n = new Node(SYM.TMR);

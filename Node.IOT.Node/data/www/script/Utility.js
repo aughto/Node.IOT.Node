@@ -9,13 +9,6 @@
 "use strict";
 
 
-function utility_init()
-{
-	// Define console if not present
-	if (!console) { console = {log: ()=>{}} }
-}
-
-
 
 
 

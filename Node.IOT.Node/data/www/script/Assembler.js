@@ -29,8 +29,8 @@ function logic_assemble()
 	
 	//assign_variable_list();
 	
-
-	logic_ok = false;
+	cpu.set_logic_ok(false);
+	
 	
 	for (var i = 0 ; i < nodes.length; i++)
 		nodes[i].consumed = 0;
@@ -57,9 +57,9 @@ function logic_assemble()
 		return true;
 	}
 	
-	logic_ok = true;
+	cpu.set_logic_ok(true);
 	
-	solve_logic(100);
+	cpu.solve(100);
 	
 	//solve_logic();
 }
@@ -289,7 +289,9 @@ function resolve_chain(prev_ni, x, y)
 
 function assemble_nodes()
 {
-	inst_list = []; // Clear instruction list
+	cpu.clear_inst_list();
+	
+//	inst_list = []; // Clear instruction list
  
 	var result = "";
 	
@@ -302,7 +304,7 @@ function assemble_nodes()
 		if (n.type == SYM.B)
 		{
 		
-			add_inst(INST_TYPES.INST_CLEAR, 0, 0); // REset CR
+			cpu.add_inst(INST_TYPES.INST_CLEAR, 0, 0); // Reset CR
 			//if (assemble_tree(0, root_node)) return true;
 			
 			if (assemble_tree(0, i)) return true;
@@ -357,7 +359,7 @@ function assemble_tree(level, node)
 			var offset1 = find_variable_offset(n.op1);
 			var offset2 = find_variable_offset(n.op2);
 
-			add_inst(n.type_inst, offset1, offset1);
+			cpu.add_inst(n.type_inst, offset1, offset1);
 
 			//console.log("N: [" + np + "] " + n.type_text + "(" + n.op1 + ") " + n.x + " " + n.y + "\n");
 		}	
@@ -371,12 +373,12 @@ function assemble_tree(level, node)
 			if ((pn !=-1) && (pn == n.prev)) 
 			{
 				//console.log("N: [" + np + "] COLLECT "+ n.x + " " + n.y + " \n");
-				add_inst(INST_TYPES.INST_POPOR, 0, 0);
+				cpu.add_inst(INST_TYPES.INST_POPOR, 0, 0);
 			}
 			else // Otherwise done with segment
 			{
 				//console.log("N: [" + np + "] PUSHOR " + n.x + " " + n.y + " \n");
-				add_inst(INST_TYPES.INST_PUSHOR, 0, 0);
+				cpu.add_inst(INST_TYPES.INST_PUSHOR, 0, 0);
 				return false;
 			}
 			
@@ -385,7 +387,7 @@ function assemble_tree(level, node)
 		if (n.is_branch() && n.branch_type == BRANCH_OPEN)
 		{
 			//console.log("N: [" + np + "] PUSHCR " + n.x + " " + n.y + " \n");
-			add_inst(INST_TYPES.INST_PUSHCR, 0, 0);
+			cpu.add_inst(INST_TYPES.INST_PUSHCR, 0, 0);
 			
 			//s += assemble_tree(level+1, n.branch);
 			if (assemble_tree(level+1, n.next)) return true;
@@ -394,7 +396,7 @@ function assemble_tree(level, node)
 
 			//console.log("N: [" + np + "] POPCR " + n.x + " " + n.y + " \n");
 			
-			add_inst(INST_TYPES.INST_POPCR, 0, 0);
+			cpu.add_inst(INST_TYPES.INST_POPCR, 0, 0);
 		}
 		
 		pn = np;
@@ -422,10 +424,12 @@ function generate_bytecode()
 	
 	var out = "";
 	
+	var inst_list = cpu.get_inst_list();
+	
 	for (var i = 0; i < inst_list.length; i++)
 	{
 		var inst = inst_list[i];		// current instruction
-		var nops = get_ops(inst.inst);	// Number of ops
+		var nops = cpu.get_ops(inst.inst);	// Number of ops
 		
 		// Add instruction
 		out += get_hex8(inst.inst);

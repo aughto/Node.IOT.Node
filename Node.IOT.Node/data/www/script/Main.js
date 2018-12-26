@@ -2,32 +2,54 @@
 	Node.IOT
 	2018 Aughto Inc
 	Jason Hunt - nulluser@gmail.com
+	
+	File: Main.js
 */
 
 "use strict";
 
-/* Core init */
-function init()
-{
-	console.log("System Init");
-	
-	// Enfore init order here
-	
-	utility_init();
-	
-	ajax.init();
+/*
+	Main system object
+*/
 
-	// Load default pages
+var main = (function () 
+{
+	// Private variables
+	var local = {};
 	
-	ajax.load_page("live.html");
+	const MODULE = "Main      ";
+	const DEFAULT_PAGE = "live.html";
 	
-	console.log("Host: " + location.host)
+	// Public Interface
+	local.init = init;
+
+	// Deal with console not present
+	if (!console) { console = {log: ()=>{}} }
+		
+	/* Core init */
+	function init()
+	{
+		console.log(`${MODULE} Init`);
+		
+		// Enforce init order here
+		
+		ajax.init();
 	
-	weblogix_init();
-	
-	websocket_init();
-	
-	logic_init();
-}
+		// Load default pages
+		
+		ajax.load_page(DEFAULT_PAGE);
+		
+		console.log(`${MODULE} Host: ${location.host}`);
+		
+		weblogix_init();
+		
+		websocket.init();
+		
+		logic_init();
+	}
+
+	return local;
+}());
+
 
  

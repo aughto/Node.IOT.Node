@@ -477,7 +477,7 @@ function render()
 			{
 				var offset = variable_list.variables[n.op1].offset;
 				
-				var value = cpu_get_byte(offset);
+				var value = cpu.get_byte(offset);
 				
 				var color = (value == 0) ?  "#ff0000" : "#0000ff" ;
 				var name = variable_list.variables[n.op1].name;
@@ -1091,13 +1091,13 @@ function toggle_node(ni)
 
 	//variable_table[f].value = variable_table[f].value == 0 ? 1 : 0;
 	
-	cpu_toggle_byte(n.op1);
+	cpu.toggle_byte(n.op1);
 	
 	
 	// Only send toggle if live
 	if (logic_mode == MODE_LIVE)
 	{	
-		var v = cpu_get_byte(n.op1);
+		var v = cpu.get_byte(n.op1);
 		
 		send_setvariable(n.op1, v);
 	}
@@ -1105,7 +1105,7 @@ function toggle_node(ni)
 	//variables[n.op1] = variables[n.op1]  == 0 ? 1 : 0;
 	
 	
-	solve_logic(100);
+	cpu.solve(100);
 }
 	
 

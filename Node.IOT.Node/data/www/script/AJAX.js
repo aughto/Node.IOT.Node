@@ -21,9 +21,9 @@ var ajax = (function ()
 	// Private variables
 	var local = {};				// Class object
 	
-	var MODULE = "AJAX ";
-	var AJAX_UPDATE = 1000;		// Update time for housekeeping in ms
-	var AJAX_TIMEOUT = 5000;	// Request timeout
+	const  MODULE = "AJAX      ";
+	const  AJAX_UPDATE = 1000;		// Update time for housekeeping in ms
+	const  AJAX_TIMEOUT = 5000;	// Request timeout
 	
 	var requests = [];			// List of pending requests
 	var next_id = 100; 			// ID of next request
@@ -42,7 +42,7 @@ var ajax = (function ()
 	// Init object
 	function init()
 	{
-		console.log(`{$MODULE} Init`);
+		console.log(`${MODULE} Init`);
 
 		setInterval(update, AJAX_UPDATE);	// Setup timer
 	}	

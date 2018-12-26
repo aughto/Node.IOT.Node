@@ -12,7 +12,7 @@ var enagle_log = true;
 function logic_init()
 {
 	console.log("Logic init");
-	cpu_init();
+	cpu.init();
 		
 	logic_test();	
 }

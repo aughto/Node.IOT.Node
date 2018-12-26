@@ -24,10 +24,10 @@ var ajax = (function ()
 		Public 
 	*/
 	
-	local.init = function() { init(); } 
-	local.save_systemfile = function(filename, filetype, data) { save_systemfile(filename, filetype, data); };
-	local.load_systemfile = function(filename, filetype, callback) { load_systemfile(filename, filetype, callback); };
-	local.load_page = function(page, target) { load_page(page, target); };
+	local.init = init
+	local.save_systemfile = save_systemfile;
+	local.load_systemfile = load_systemfile;
+	local.load_page = load_page;
 	
 	// Init object
 	function init()

@@ -9,29 +9,34 @@
 
 "use strict";
 
-/* CPU */
-
-
-
-						
-
-
-
-
-
-
 /* 
-	CPU
+	CPU 
 */
 
 // CPU
 var cpu = (function () 
 {
-	// Private variables
+	const MODULE = "CPU       ";
 	var local = {};		
 
-	const MODULE = "CPU       ";
+	// Public Interface
 	
+	/* General */
+	local.init = init;
+	local.solve = solve_logic;
+	local.load_inst_list = load_inst_list;
+
+	/* Variable operations */
+	local.resize_variable_data = resize_variable_data;
+	local.variable_update = variable_update;
+	local.get_byte = get_byte;
+	local.set_timer = set_timer;
+	local.toggle_byte = toggle_byte;
+	
+	/* State */
+	local.set_logic_ok = set_logic_ok;	
+	
+	// Private variables
 	const UPDATE_TIME = 100;	// Update period
 	
 	var inst_table = [];		// Instruction jump table
@@ -39,27 +44,10 @@ var cpu = (function ()
 	var variable_data = null; 	//  Raw byte data for variable storage 
 	var logic_ok = false;		// true if logic is ok to process
 	
-	// Public Interface
-	local.init = init;
-	local.solve = solve_logic;
-	local.load_inst_list = load_inst_list;
-
-
-	// Variable operations
-	local.resize_variable_data = resize_variable_data;
-	local.variable_update = variable_update;
-	local.get_byte = get_byte;
-	local.set_timer = set_timer;
-	local.toggle_byte = toggle_byte;
-	
-	// State
-	local.set_logic_ok = set_logic_ok;
-	
 	
 	/* 
 		Public 
 	*/
-
 	
 	// Core CPU init 
 	function init()

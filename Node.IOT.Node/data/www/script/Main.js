@@ -9,19 +9,20 @@
 "use strict";
 
 /*
-	Main system object
+	Main
 */
 
+// Main system object
 var main = (function () 
 {
-	// Private variables
-	var local = {};
-	
 	const MODULE = "Main      ";
-	const DEFAULT_PAGE = "live.html";
-	
+	var local = {};
+
 	// Public Interface
 	local.init = init;
+
+	// Private variables
+	const DEFAULT_PAGE = "live.html";
 
 	// Deal with console not present
 	if (!console) { console = {log: ()=>{}} }
@@ -39,9 +40,8 @@ var main = (function ()
 		
 		ajax.load_page(DEFAULT_PAGE);
 		
-		console.log(`${MODULE} Host: ${location.host}`);
 		
-		weblogix_init();
+		weblogix.init();
 		
 		websocket.init();
 		

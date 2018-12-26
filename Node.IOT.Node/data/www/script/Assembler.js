@@ -10,20 +10,21 @@
 // Assembler
 var assembler = (function () 
 {
-	// Private variables
-	var local = {};				// Class object
+	const MODULE = "Project   ";
+	var local = {};				
 
-	const  MODULE = "Project   ";
+	// Public interface
+	local.assemble = assemble;
+	local.generate_bytecode = generate_bytecode;
+	local.show_inst_list = show_inst_list;
+
 	
+	// Private variables
 	var inst_list = [];			// Local instruction list for assembly only
 	var stack = [];				// Assembly stack
 	var stack_ptr = 0;			// Assembyy stack pointer
 	var order = 0;
 	
-	// Public interface
-	local.assemble = assemble;
-	local.generate_bytecode = generate_bytecode;
-	local.show_inst_list = show_inst_list;
 
 	/* 
 		Main Assembly 

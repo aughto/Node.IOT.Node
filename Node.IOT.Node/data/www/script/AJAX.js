@@ -18,23 +18,23 @@
 // Global AJAX service object
 var ajax = (function () 
 {
-	// Private variables
-	var local = {};				// Class object
+	const MODULE = "AJAX      ";	
+	var local = {};				
 	
-	const  MODULE = "AJAX      ";
-	const  AJAX_UPDATE = 1000;		// Update time for housekeeping in ms
-	const  AJAX_TIMEOUT = 5000;	// Request timeout
-	
-	var requests = [];			// List of pending requests
-	var next_id = 100; 			// ID of next request
-
 	// Public Interface
 	local.init = init;
 	local.save_systemfile = save_systemfile;
 	local.load_systemfile = load_systemfile;
-	local.load_page = load_page;	
+	local.load_page = load_page;		
 	
+	// Private variables
+
+	const AJAX_UPDATE = 1000;		// Update time for housekeeping in ms
+	const AJAX_TIMEOUT = 5000;	// Request timeout
 	
+	var requests = [];			// List of pending requests
+	var next_id = 100; 			// ID of next request
+
 	/* 
 		Public 
 	*/
@@ -127,9 +127,9 @@ var ajax = (function ()
 			
 			if (target=="mainconfig") config.load("mainconfig"); else
 			if (target=="ioconfig")   config.load("ioconfig"); else
-			if (target=="liveview")   load_liveview(); else
+			if (target=="liveview")   liveview.load(); else
 			if (target=="variables")  vareditor.load(); else
-			if (target=="weblogix")   load_weblogix(); 
+			if (target=="weblogix")   weblogix.load(); 
 		};
 				
 		req.error = function() 

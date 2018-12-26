@@ -15,17 +15,19 @@
 // Config manager
 var config = (function () 
 {
-	// Private variables
-	var local = {};				// Class object
-	
 	const  MODULE = "Config    ";
+	var local = {};				
+
+	// Public Interface
+	local.load = load;
+	local.save_click = save_click;
+	
+
+	// Private variables	
 
 	// Parameters types
 	var PARAM_TYPE = {NAME:1, INT:2, IP:3, HOST:4};
 
-	local.load = load;
-	local.save_click = save_click;
-	
 	
 	function load(config_type)
 	{

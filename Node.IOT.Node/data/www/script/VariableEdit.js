@@ -9,10 +9,8 @@
 // Support for variable editor
 var vareditor = (function () 
 {
-	// Private variables
-	var local = {};				// Class object
-	
 	const  MODULE = "VarEditor ";
+	var local = {};				
 	
 	// Public Interface
 	local.init = init;
@@ -20,6 +18,9 @@ var vareditor = (function ()
 	
 	local.add_variable = add_variable;				// Add varaible clicked
 	local.remove_variable = remove_variable;		// Remove variable clicked
+
+	// Private variables
+
 	
 	// Called on startup
 	function init()

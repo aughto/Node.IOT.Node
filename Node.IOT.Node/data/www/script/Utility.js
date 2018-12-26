@@ -17,6 +17,19 @@
 	System
 */
 
+
+function get_hex(num) 
+{
+	num = Math.floor(num);
+	if (num > 255) num = 255;
+	if (num < 0) num = 255;
+	
+	var len = 2;
+    var str = num.toString(16);
+    return "0".repeat(len - str.length) + str;
+}
+
+
 // Get 2 digit hex from integer
 function get_hex8(num) 
 {
@@ -118,7 +131,10 @@ function get_ms()
 }
 
 
-
+function get_element(id)
+{
+	return document.getElementById(id);
+}
 
 
 

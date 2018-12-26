@@ -48,10 +48,11 @@ var websocket = (function ()
 	function init()
 	{
 		console.log(`${MODULE} Websocket Init`);	
-
+		console.log(`${MODULE} Host: ${location.host}`);
+		
 		//log("Websocket Start");
 	
-		setInterval(update, 1000);
+		setInterval(update, UPDATE_TIME);
 	
 		keepalive_time = 0;
 		ping_time = 0;

@@ -6,51 +6,66 @@
 
 "use strict";
 
-var enagle_log = true;
+
+/* 
+	Project 
+*/
+
+
 
 
 // Global current project container
 // The project owns all of the node, gui element and config data 
 var project = (function () 
 {
-	// Private variables
-	var local = {};				// Class object
-	
-	const  MODULE = "Project   ";
-	
-	var variable_list = {};  	// Variable name list
-	var nodes = [];				// Editor UI nodes
-	var bytecode = "";			// Assembly bytecode
-	var inst_list = [];			// Instruction list
-	
+	const MODULE = "Project   ";		
+	var local = {};						
 
+	// Public Interface
+
+	/* General */
 	local.init = init;					// Global init
 	local.save_project = save_project;	// Save project to device
-	
 	local.assemble = assemble;			// Assemble project
 	
+	/* Mode Control */
+	local.set_online = set_online;
+	local.set_offline = set_offline;
+	local.get_online = get_online;
 	
 	/* Nodes */
 	local.iterate_nodes = iterate_nodes;
 	local.get_node = get_node;			// Return node at location
+	local.set_node = set_node;
 	//local.find_node = find_node;		// Get node list
 	local.toggle_node = toggle_node		// Toggle a node
-	
 
 	/* Variables */
 	local.variable_exists = variable_exists;
-	//local.get_variable_list = get_variable_list;
 	local.get_sorted_variable_list = get_sorted_variable_list; // Temporary list for variable editor
 	local.get_variable_by_index = get_variable_by_index;
 	local.set_variable = set_variable;	// Set variable value by name
 
 	local.remove_variable = remove_variable;
 	local.add_variable = add_variable;
-
 	
 	local.ws_set_command = ws_set_command;
 	local.ws_setvar_command = ws_setvar_command;
 	
+	
+	// Private variables
+	
+	const MODE_ONLINE = 1;
+	const MODE_OFFLINE = 2;
+
+	var variable_list = {};  	// Variable name list
+	var nodes = [];				// Editor UI nodes
+	var bytecode = "";			// Assembly bytecode
+	var inst_list = [];			// Instruction list
+	
+	var logic_mode = MODE_ONLINE;
+	
+
 	
 	// Project Init
 	function init()
@@ -353,7 +368,7 @@ var project = (function ()
 		
 		
 		// Only send toggle if live
-		if (logic_mode == MODE_LIVE)
+		if (logic_mode == MODE_ONLINE)
 		{	
 			var v = cpu.get_byte(n.op1);
 			
@@ -437,7 +452,7 @@ var project = (function ()
 		if (message.item == "Output4") cpu.variable_update(7, message.value);
 		
 		
-		update_value(message.item, message.value);
+		liveview.update_value(message.item, message.value);
 	}
 	
 	// Parse MQTT message
@@ -849,7 +864,27 @@ var project = (function ()
 	
 	
 	
+	/* Logic mode control */
 	
+	function set_online()
+	{
+		
+		logic_mode = MODE_ONLINE;
+	}
+	
+	function set_offline()
+	{
+		
+		logic_mode = MODE_OFFLINE;
+	}
+	
+	function get_online()
+	{
+		
+		return logic_mode == MODE_ONLINE;
+	}
+	
+
 	
 	
 	

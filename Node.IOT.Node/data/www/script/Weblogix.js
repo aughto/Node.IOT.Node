@@ -31,39 +31,7 @@ var SYM =  {NONE : 0,
 		};
 
 			  
-			// Display wrapper  
-			  
-	function DisplayType()
-	{
-		this.MIN_SIZE = 0.1;						// Minimum object size in x or y
-		this.MIN_X = -100000;						// Minimum x position
-		this.MAX_X = 100000;						// Maximum x position
-		this.MIN_Y = -100000;						// Minimum y position
-		this.MAX_Y = 100000;						// Maximum y position
-		this.MIN_EDIT = 0.001;					// Min change before saving object
-		this.MIN_DRAW = 0.5;						// Do not draw below this size
-		this.MAX_DRAW = 2000;						// Do not draw above this size
-		this.MIN_TEXTDRAW = 1.0;					// Do not draw text below this size
-		this.MAX_TEXTDRAW = 4000.0;				// Do not draw text below this size
-		this.MIN_SCALE = 0.05;					// Minimum scale
-		this.MAX_SCALE = 5.0;					// Maximum scale
-	
-		this.canvas = null;						// HTML5 Canvas
-		this.context = null; 						// HTML5 Canvas context
-		this.canvas_rect = null;					// Canvas rectangle
 
-		this.min_x = 0;					// Min possible x pos in world cords
-		this.max_x = 0;					// Max possible x pos in world cords
-		this.min_y = 0;					// Min possible y pos in world cords
-		this.max_y = 0;
-	
-		this.x_ofs = 0;							// Pan offset
-		this.y_ofs = 0;
-
-
-		this.zoom_scale = 0.5;					// Current zoom level
-	};
-	  
 	
 // Weblogix container
 var weblogix = (function () 
@@ -78,6 +46,17 @@ var weblogix = (function ()
 	
 	local.prop_ok_click = prop_ok_click;
 	local.prop_cancel_click = prop_cancel_click;
+	
+	// Menu
+	
+	local.menu_file_save = menu_file_save;
+	local.menu_file_saveas = menu_file_saveas;
+	local.menu_file_load  = menu_file_load;
+	local.menu_logic_simulate = menu_logic_simulate;
+	local.menu_logic_live = menu_logic_live;
+	local.menu_logic_assemble = menu_logic_assemble;
+	local.menu_logic_download = menu_logic_download;
+	
 	
 	// Private variables
 
@@ -95,6 +74,8 @@ var weblogix = (function ()
 	
 	const INVALID_OBJECT = -1;					// Sentinel for no object selection
 	
+	const UPDATE_TIME = 100;
+	
 	var ZOOM_RATE = 0.05;					// Mouse wheel zoom rate
 	var GRID_FACTOR = 2.0;					// Grid snap divisor ft / GF
 	var WHEEL_FACTOR = 40.0;					// Factor for mouse wheel correction
@@ -102,42 +83,28 @@ var weblogix = (function ()
 	var mouse_l_down = 0;					// True if left mouse button down
 	var mouse_r_down = 0;					// True if right mouse button down
 		
-var mouse_x_start = 0;					// SCreen pos where mouse was pressed
-var mouse_y_start = 0;
+	var mouse_x_start = 0;					// SCreen pos where mouse was pressed
+	var mouse_y_start = 0;
 
-var object_selected = INVALID_OBJECT;	// Current single selected object
-var object_dragged = 0;					// True if object was moved
+	var object_selected = INVALID_OBJECT;	// Current single selected object
+	var object_dragged = 0;					// True if object was moved
 
 
-var ui_mode = UIMODE.NONE;				// Current UI Mode
-var num_selected = 0;					// Number of selected objects
-var click_index = INVALID_OBJECT;		// Index of last clicked object
-var last_selected = INVALID_OBJECT;      // Last selected object, used for attaching
+	var ui_mode = UIMODE.NONE;				// Current UI Mode
+	var num_selected = 0;					// Number of selected objects
+	var click_index = INVALID_OBJECT;		// Index of last clicked object
+	var last_selected = INVALID_OBJECT;      // Last selected object, used for attaching
 		
 		
-var object_mode = OBJMODE.NONE;
+	var object_mode = OBJMODE.NONE;
 		
-var current_tool = SYM.NONE;	
+	var current_tool = SYM.NONE;	
 		
-var draw_count = 0;						// Number of draw operations per render
+	var draw_count = 0;						// Number of draw operations per render
 
-var display_params = {}					// Max possible y pos in world cords
 			  
-			  
-			  
-			  
-		var main_display = new DisplayType();
-		var tool_display = new DisplayType();
-		
-		
-
-		
-			  
-			  
-			  
-			  
-			  
-			  
+	var main_display = new DisplayType("maincanvas");
+	var tool_display = new DisplayType("toolcanvas");
 				  
 				  
 	//Symbol Size
@@ -157,20 +124,27 @@ var display_params = {}					// Max possible y pos in world cords
 
 	var sel_color = "#5050ff";
 
+	
+	var enable_debug = 1;
+		
+		
+	var in_edit = 0;
+		
+		// Debugging	
+	var count  = 0;							// Test number 
+		
+	var mode = MODE_TYPES.MODE_TOGGLE;
+	
+	
+	
 
 	function init()
 	{
 		console.log("Weblogix Init");	
-
-		//load_project();
-
-		
-		init_global();								// Globals
 		
 		load_icons();
 
-		setInterval(function() {logic_ui_update_timer()}, 100);	// Setup timer
-		
+		setInterval(logic_ui_update_timer, UPDATE_TIME);	// Setup timer
 	}
 
 
@@ -179,50 +153,16 @@ var display_params = {}					// Max possible y pos in world cords
 	{
 		console.log("Load weblogix");
 		
-		setup_canvas();								// Canvas
-		
+		setup_display();								// Canvas
 
 		render();									// Render
 	}
 
 
 
-	// Setup globals
-	function init_global()
-	{
-		window.enable_debug = 1;
-		
-		// Constants
-
-		
-		
-
-		// Variables
-		
-		window.objects = [];						// Main array of objects. Need to switch to mysql as array index
-	
-		
-		
-		window.tool_canvas = null;						// HTML5 Canvas
-		window.tool_context = null; 						// HTML5 Canvas context
-		window.tool_canvas_rect = null;					// Canvas rectangle
-
-
-		
-		window.in_edit = 0;
-		
-		// Debugging	
-		window.count  = 0;							// Test number 
-		
-		window.mode = MODE_TYPES.MODE_TOGGLE;
-		
-
-	}
-
 
 	function logic_ui_update_timer()
 	{
-
 		render();
 	}
 
@@ -234,26 +174,23 @@ var display_params = {}					// Max possible y pos in world cords
 
 
 
-
-
+	// Resize canvas to fit screen
 	function resize_canvas()
 	{
-		tool_canvas = document.getElementById("toolcanvas");	
+
+		if (tool_display.canvas == null) return;
+		if (main_display.canvas == null) return;		
 		
-		if (tool_canvas == null) return;
-		
-		tool_display.context = tool_canvas.getContext("2d");	
+		// Setup tool display
+		//tool_display.context = tool_display.canvas.getContext("2d");	
 		tool_display.context.canvas.width  = window.innerWidth;
 		tool_display.context.canvas.height = 40;//indow.innerHeight;
-		tool_display.canvas_rect = tool_canvas.getBoundingClientRect();
+		tool_display.canvas_rect = tool_display.canvas.getBoundingClientRect();
 
 		
-		main_display.canvas = get_element("maincanvas");	
 		
-		if (main_display.canvas == null) return;
-
-		
-		main_display.context = main_display.canvas.getContext("2d");	
+		// Setup main display
+		//main_display.context = main_display.canvas.getContext("2d");	
 		main_display.context.canvas.width  = window.innerWidth;
 		main_display.context.canvas.height = window.innerHeight - tool_display.context.canvas.height - 10;
 		main_display.canvas_rect = main_display.canvas.getBoundingClientRect();
@@ -266,7 +203,9 @@ var display_params = {}					// Max possible y pos in world cords
 		main_display.x_ofs += (32/2) * symbol_x * main_display.zoom_scale;
 		main_display.y_ofs += (10/2) * symbol_y * main_display.zoom_scale;
 		
-		update_display_bounds(main_display);
+		
+		main_display.update_bounds();
+		tool_display.update_bounds();
 		
 		
 	}
@@ -275,9 +214,12 @@ var display_params = {}					// Max possible y pos in world cords
 
 
 
-	// Setup HTML5 Canvas
-	function setup_canvas()
+	// Setup displays. Called once when clicking on page
+	function setup_display()
 	{
+		tool_display.assign_canvas();
+		main_display.assign_canvas();		
+		
 		resize_canvas();
 
 		// Hook events for canvas
@@ -307,9 +249,6 @@ var display_params = {}					// Max possible y pos in world cords
 		Graphics 
 	*/
 
-
-
-
 	function draw_symbol(ctx, ofs_x, ofs_y, sym)
 	{	
 		if (sym == SYM.MODE)	draw_mode(ctx, ofs_x, ofs_y); else
@@ -317,11 +256,6 @@ var display_params = {}					// Max possible y pos in world cords
 		if (sym == SYM.TOGGLE)	draw_toggle(ctx, ofs_x, ofs_y); else 
 		if (sym == SYM.CLEAR)	draw_clear(ctx, ofs_x, ofs_y); 
 	}
-
-
-
-
-
 
 
 	function get_color(f)
@@ -397,7 +331,7 @@ var display_params = {}					// Max possible y pos in world cords
 		
 		n.draw(main_display, n.x*symbol_x, n.y*symbol_y, symbol_x, symbol_y);
 
-		draw_text(main_display, n.x*symbol_x+3, n.y*symbol_y+3 +symbol_y*0.8,10, 10,"#000000", i);
+		main_display.draw_text(n.x*symbol_x+3, n.y*symbol_y+3 +symbol_y*0.8,10,"#000000", i);
 		//draw_text(main_display.context, n.x*symbol_x+symbol_x*0.6+3, n.y*symbol_y+3 +symbol_y*0.6,10, 10,"#000000", n.order);
 		
 		if (!n.is_operation()) return;
@@ -411,9 +345,9 @@ var display_params = {}					// Max possible y pos in world cords
 		var color = (value == 0) ?  "#ff0000" : "#0000ff" ;
 		var name = v.name;
 				
-		draw_text(main_display, n.x*symbol_x+symbol_x * 0.2, 
+		main_display.draw_text( n.x*symbol_x+symbol_x * 0.2, 
 								n.y*symbol_y+symbol_y *0.20, 	
-								10, symbol_y/5,color, name);		
+								symbol_y/5,color, name);		
 	}
 
 
@@ -431,7 +365,7 @@ var display_params = {}					// Max possible y pos in world cords
 		
 		if (main_display.canvas == null) return; // {("Unable to load canvas"); return; }
 		
-		main_display.context.clearRect(0, 0, main_display.canvas.width, main_display.canvas.height); 	// Clear
+		main_display.clear();
 
 		draw_icons();
 		
@@ -603,9 +537,10 @@ var display_params = {}					// Max possible y pos in world cords
 
 	function draw_icons()
 	{
-		if (tool_canvas == null) return;
+		if (tool_display.canvas == null) return;
 			
-		tool_display.context.clearRect(0, 0, tool_canvas.width, tool_canvas.height);
+		tool_display.clear();
+		//tool_display.context.clearRect(0, 0, tool_canvas.width, tool_canvas.height);
 		
 		for (var i = 0; i < current_icons.length; i++)
 		{
@@ -647,22 +582,22 @@ var display_params = {}					// Max possible y pos in world cords
 		var ctx = display.context;
 		
 		if (mode != MODE_TYPES.MODE_MEMORY) 
-			draw_tool_text(display, ofs_x+5, ofs_y+sy/2*1.2, 0.3* sx,"#000000", "Mem");
+			display.draw_text(ofs_x+5, ofs_y+sy/2*1.2, 0.3* sx,"#000000", "Mem");
 		else
-			draw_tool_text(display, ofs_x+5, ofs_y+sy/2*1.2, 0.3* sx,"#000000", "Logic");
+			display.draw_text(ofs_x+5, ofs_y+sy/2*1.2, 0.3* sx,"#000000", "Logic");
 	}
 
 	function draw_select(display, ofs_x, ofs_y, sx, sy)
 	{
 		
-		draw_tool_text(display, ofs_x+3, ofs_y+sy/2*1.2, 0.3* sx,"#000000", "Select");
+		display.draw_text(ofs_x+3, ofs_y+sy/2*1.2, 0.3* sx,"#000000", "Select");
 	}
 
 	function draw_toggle(display, ofs_x, ofs_y, sx, sy )
 	{
 		var ctx = display.context;
 		
-		draw_tool_text(display, ofs_x+3, ofs_y+sy/2*1.2, 0.3* sx,"#000000", "Toggle");
+		display.draw_text(ofs_x+3, ofs_y+sy/2*1.2, 0.3* sx,"#000000", "Toggle");
 	}
 
 	function draw_clear(display, ofs_x, ofs_y, sx, sy)
@@ -672,8 +607,8 @@ var display_params = {}					// Max possible y pos in world cords
 		
 		var pad = (symbol_x + symbol_y) / 2 * 0.2;
 			
-		draw_symbol_line(display, ofs_x + pad, ofs_y + pad, ofs_x+ sx - pad, ofs_y + sy - pad);	
-		draw_symbol_line(display, ofs_x + pad, ofs_y + sy - pad, ofs_x+ sx - pad, ofs_y + pad);	
+		display.draw_line(ofs_x + pad, ofs_y + pad, ofs_x+ sx - pad, ofs_y + sy - pad,1);	
+		display.draw_line(ofs_x + pad, ofs_y + sy - pad, ofs_x+ sx - pad, ofs_y + pad,1);	
 	}
 
 	function save_click()
@@ -682,59 +617,29 @@ var display_params = {}					// Max possible y pos in world cords
 		console.log("Buid\n");
 		
 		save_logic();
-		
-		
 	}
-
-
-	/*function mode_click()
-	{
-			console.log("is Mode button Mode " + mode);
-			
-		sel_icon = -1; // No highlight		
-			
-			if (mode != MODE_TYPES.MODE_MEMORY) 
-			{
-				show_variable_table();
-				mode = MODE_TYPES.MODE_MEMORY;
-			}
-			else
-			{
-				//show_logic();
-				mode = MODE_TYPES.MODE_TOGGLE;
-				sel_icon = 3;
-			}
-		
-	}*/
-
 
 	function select_click()
 	{
-				console.log("Select Mode " + mode);
-			//show_logic();
-			mode = MODE_TYPES.MODE_SELECT;
-			
-			
-		
+		console.log("Select Mode " + mode);
+		//show_logic();
+		mode = MODE_TYPES.MODE_SELECT;
 	}
 
 	function toggle_click()
 	{
 		console.log("ix toggle Mode " + mode);
 			
-			mode = MODE_TYPES.MODE_TOGGLE; 
-	//show_logic();
-		
+		mode = MODE_TYPES.MODE_TOGGLE; 
+		//show_logic();
 	}
 
 	function clear_click()
 	{
-				mode = MODE_TYPES.MODE_EDIT;
-			current_tool = SYM.NONE;
-			//	show_logic();
-		
+		mode = MODE_TYPES.MODE_EDIT;
+		current_tool = SYM.NONE;
+		//	show_logic();
 	}
-
 		
 		
 	/* 
@@ -742,14 +647,8 @@ var display_params = {}					// Max possible y pos in world cords
 	*/
 
 
-
-
-
-
-
-
 	// Find which object is at a screen location
-	function find_index(x, y)
+	/*function find_index(x, y)
 	{
 		var min_index = INVALID_OBJECT;
 		var min_layer = 0;
@@ -758,15 +657,15 @@ var display_params = {}					// Max possible y pos in world cords
 		y = get_world_y(y);
 		
 		
-		/*var xi = x / x_cells;
+		var xi = x / x_cells;
 		var yi = x / y_cells;
 		
 		if (x < 0 || x > x_cells-1) return SYM.NONE;
 		if (y < 0 || y > y_cells-1) return SYM.NONE;
 		
-		return get_cell(x, y);*/
+		return get_cell(x, y);
 		
-	}
+	}*/
 
 
 	/* 
@@ -791,8 +690,8 @@ var display_params = {}					// Max possible y pos in world cords
 
 	function clear_selections()
 	{
-		for (var i = 0; i < objects.length; i++)
-			objects[i].selected = 0;
+		/*for (var i = 0; i < objects.length; i++)
+			objects[i].selected = 0;*/
 
 		num_selected = 0;
 		
@@ -817,8 +716,8 @@ var display_params = {}					// Max possible y pos in world cords
 
 	function action_start_resize(index)
 	{
-		objects[index].w_start = objects[index].w;
-		objects[index].h_start = objects[index].h;
+		/*objects[index].w_start = objects[index].w;
+		objects[index].h_start = objects[index].h;*/
 						
 		//drag_expand = 1;
 		//alert("drag");
@@ -832,11 +731,11 @@ var display_params = {}					// Max possible y pos in world cords
 		// Either select object or move
 		
 		// Save starting positions
-		for (var i = 0; i < objects.length; i++)
+		/*for (var i = 0; i < objects.length; i++)
 		{
 			objects[i].x_start = objects[i].x;
 			objects[i].y_start = objects[i].y;
-		}
+		}*/
 				
 		last_selected = object_selected;		
 		object_selected = index;
@@ -904,7 +803,7 @@ var display_params = {}					// Max possible y pos in world cords
 		// Save object
 		
 		
-		var id = objects[object_selected].id;
+		/*var id = objects[object_selected].id;*/
 
 				
 				
@@ -925,27 +824,10 @@ var display_params = {}					// Max possible y pos in world cords
 
 	function action_mouse_wheel(x, y, delta)
 	{
-		var old_scale = main_display.zoom_scale;
-		
-		main_display.zoom_scale *= (1 + ZOOM_RATE * delta);
-			
-		if (main_display.zoom_scale > main_display.MAX_SCALE) main_display.zoom_scale = main_display.MAX_SCALE;
-		if (main_display.zoom_scale < main_display.MIN_SCALE) main_display.zoom_scale = main_display.MIN_SCALE;
-		
-		var mx = (x + main_display.x_ofs) / old_scale;
-		var my = (y + main_display.y_ofs) / old_scale;
-			
-		main_display.x_ofs = main_display.x_ofs + mx * (main_display.zoom_scale - old_scale);
-		main_display.y_ofs = main_display.y_ofs + my * (main_display.zoom_scale - old_scale);
-
-		update_display_bounds(main_display);
+		main_display.apply_zoom(x, y, delta, ZOOM_RATE);
 		
 		render();
-
-		//if (in_edit) show_edit();
-		
 	}
-
 
 
 	function action_move(delta_x, delta_y)
@@ -977,16 +859,8 @@ var display_params = {}					// Max possible y pos in world cords
 
 	function action_pan(delta_x, delta_y)
 	{
-		main_display.x_ofs = orig_main_display.x_ofs + delta_x;
-		main_display.y_ofs = orig_main_display.y_ofs + delta_y;
-				
-		
-		//if (main_display.x_ofs < -get_world_x(canvas.width)) main_display.x_ofs = -get_world_x(canvas.width);
-				
-		//var pan_x_min = -100;		if (main_display.x_ofs  < pan_x_min / main_display.zoom_scale) main_display.x_ofs = pan_x_min /main_display.zoom_scale ;
-		//var pan_x_min = -1000;			if (main_display.x_ofs < pan_x_min) main_display.x_ofs = pan_x_min  ;
-				
-		update_display_bounds(main_display);	
+		main_display.apply_pan(delta_x, delta_y);
+
 	}
 
 
@@ -1040,8 +914,8 @@ var display_params = {}					// Max possible y pos in world cords
 		var y = event.pageY - main_display.canvas_rect.top;
 			
 				
-		x = get_world_x(main_display, x);	// Convert to world cords
-		y = get_world_y(main_display, y);
+		x = main_display.get_world_x(x);	// Convert to world cords
+		y = main_display.get_world_y(y);
 		
 		
 		var ix = Math.floor(x / symbol_x);

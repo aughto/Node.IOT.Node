@@ -148,8 +148,8 @@ function NodeB()
 
 		var pad = (sx + sy) / 2 * 0.2;
 		
-		draw_symbol_line(display, x+0 + sx/2, y+0 + pad, x+ sx/2, y+sy-pad);	
-		draw_symbol_line(display, x + sx/2, y+sy/2, x+sx, y+sy/2);	
+		display.draw_line(x+0 + sx/2, y+0 + pad, x+ sx/2, y+sy-pad, 3);	
+		display.draw_line(x + sx/2, y+sy/2, x+sx, y+sy/2, 3);	
 	}
 	
 	return n;
@@ -166,8 +166,8 @@ function NodeE()
 	{
 		var pad = (sx + sy) / 2 * 0.2;
 
-		draw_symbol_line(display, x+0 + sx/2, y+0 + pad, x+sx/2, y+sy-pad);	
-		draw_symbol_line(display, x, y+sy/2, x+sx/2, y+sy/2);	
+		display.draw_line(x+0 + sx/2, y+0 + pad, x+sx/2, y+sy-pad, 3);	
+		display.draw_line(x, y+sy/2, x+sx/2, y+sy/2, 3);	
 	}
 	
 	return n;
@@ -183,8 +183,8 @@ function NodeCR()
 	n.draw = function(display, x, y, sx, sy)
 	{
 		//console.log("X: " + x + " Y: " + y + " sx: " + sx + " sy: " + sy);
-		draw_symbol_line(display, x+0 + sx/2, y+0, x+ sx/2, y+0 + sy/2);	
-		draw_symbol_line(display, x+ sx/2-1, y+0 + sy/2, x+sx, y+sy/2);	
+		display.draw_line(x+0 + sx/2, y+0, x+ sx/2, y+0 + sy/2, 3);	
+		display.draw_line(x+ sx/2-1, y+0 + sy/2, x+sx, y+sy/2, 3);	
 	}
 	
 	return n;
@@ -199,8 +199,8 @@ function NodeCL()
 	
 	n.draw = function(display, x, y, sx, sy)
 	{
-		draw_symbol_line(display, x+0 + sx/2, y+0, x+ sx/2, y+0 + sy/2);	
-		draw_symbol_line(display,  x, y+0 + sy/2, x+sx/2, y+sy/2);	
+		display.draw_line(x+0 + sx/2, y+0, x+ sx/2, y+0 + sy/2, 3);	
+		display.draw_line( x, y+0 + sy/2, x+sx/2, y+sy/2, 3);	
 	}
 	
 	return n;
@@ -217,8 +217,8 @@ function NodeBR()
 	{
 		//console.log("X: " + x + " Y: " + y + " sx: " + sx + " sy: " + sy);
 		
-		draw_symbol_line(display, x+sx/2, y, x+sx/2, y+sy);	
-		draw_symbol_line(display, x +sx/2, y+ sy/2, x+sx, y+sy/2);	
+		display.draw_line(x+sx/2, y, x+sx/2, y+sy, 3);	
+		display.draw_line(x +sx/2, y+ sy/2, x+sx, y+sy/2, 3);	
 	}
 	
 	return n;
@@ -233,8 +233,8 @@ function NodeBL()
 	
 	n.draw = function(display, x, y, sx, sy)
 	{
-		draw_symbol_line(display, x+sx/2, y, x+sx/2, y+sy);	
-		draw_symbol_line(display, x, y+sy/2, x+sx/2, y+sy/2);	
+		display.draw_line(x+sx/2, y, x+sx/2, y+sy, 3);	
+		display.draw_line(x, y+sy/2, x+sx/2, y+sy/2, 3);	
 	}
 	
 	return n;
@@ -252,8 +252,8 @@ function NodeBD()
 	{
 		var pad = (sx + sy) / 2 * 0.2;
 		
-		draw_symbol_line(display, x, y + sy/2, x+sx, y+sy/2);	
-		draw_symbol_line(display, x+sx/2 , y+sy/2, x+sx/2, y+sy);	
+		display.draw_line(x, y + sy/2, x+sx, y+sy/2, 3);	
+		display.draw_line(x+sx/2 , y+sy/2, x+sx/2, y+sy, 3);	
 	
 	}
 	
@@ -270,7 +270,7 @@ function NodeHW()
 	
 	n.draw = function(display, x, y, sx, sy)
 	{
-		draw_symbol_line(display, x, y+sy/2, x+sx, y+sy/2);	
+		display.draw_line(x, y+sy/2, x+sx, y+sy/2, 3);	
 	}
 	
 	return n;
@@ -286,7 +286,7 @@ function NodeVW()
 	
 	n.draw = function(display, x, y, sx, sy)
 	{
-		draw_symbol_line(display, x+sx/2, y, x+sx/2, y+ sy);	
+		display.draw_line(x+sx/2, y, x+sx/2, y+ sy, 3);	
 	}
 	
 	return n;
@@ -308,10 +308,10 @@ function NodeXIC()
 		var c1 = sx * 0.40;
 		var c2 = sx * 0.60;
 		
-		draw_symbol_line(display, x, y+sy/2, x+c1, y+sy/2);	
-		draw_symbol_line(display, x+c1, y+sy/2-pad, x+c1, y+sy/2+pad);		
-		draw_symbol_line(display, x+c2 , y+sy/2-pad, x+c2, y+sy/2+pad);		
-		draw_symbol_line(display, x + c2, y+sy/2, x+sx, y+sy/2);	
+		display.draw_line(x, y+sy/2, x+c1, y+sy/2, 3);	
+		display.draw_line(x+c1, y+sy/2-pad, x+c1, y+sy/2+pad, 3);		
+		display.draw_line(x+c2 , y+sy/2-pad, x+c2, y+sy/2+pad, 3);		
+		display.draw_line(x + c2, y+sy/2, x+sx, y+sy/2, 3);	
 	}
 	
 	return n;
@@ -336,12 +336,12 @@ function NodeXIO()
 		var c3 = sx * 0.45;
 		var c4 = sx * 0.55;
 	
-		draw_symbol_line(display, x, y+sy/2, x+c1, y+sy/2);	
-		draw_symbol_line(display, x+c1, y+sy/2-pad, x+c1, y+sy/2+pad);		
-		draw_symbol_line(display, x+c2 , y+sy/2-pad, x+c2, y+sy/2+pad);		
-		draw_symbol_line(display, x + c2, y+sy/2, x+sx, y+sy/2);	
+		display.draw_line(x, y+sy/2, x+c1, y+sy/2, 3);	
+		display.draw_line(x+c1, y+sy/2-pad, x+c1, y+sy/2+pad, 3);		
+		display.draw_line(x+c2 , y+sy/2-pad, x+c2, y+sy/2+pad, 3);		
+		display.draw_line(x + c2, y+sy/2, x+sx, y+sy/2, 3);	
 
-		draw_symbol_line(display, x + c3, y+sy/2-pad2, x+c4, y+sy/2+pad2);		
+		display.draw_line(x + c3, y+sy/2-pad2, x+c4, y+sy/2+pad2, 3);		
 	}
 	
 	return n;
@@ -367,12 +367,12 @@ function NodeOTE()
 		var y1 = sy/2;
 		var s = sx * 0.2 ;
 		
-		draw_symbol_line(display, x, y+y1, x+x1-c, y+y1);	
+		display.draw_line(x, y+y1, x+x1-c, y+y1, 3);	
 	
-		draw_arc(display, x+x1,y+ y1,s, 0.7*Math.PI, 1.3 *Math.PI);
-		draw_arc(display, x+x1,y+ y1,s, 1.7*Math.PI, 0.3 *Math.PI);
+		display.draw_arc(x+x1,y+ y1,s, 0.7*Math.PI, 1.3 *Math.PI, 3);
+		display.draw_arc(x+x1,y+ y1,s, 1.7*Math.PI, 0.3 *Math.PI, 3);
 	
-		draw_symbol_line(display, x + x1 +c, y+y1, x+sx, y + y1);	
+		display.draw_line(x + x1 +c, y+y1, x+sx, y + y1, 3);	
 	}
 	
 	return n;
@@ -396,14 +396,14 @@ function NodeOTL()
 		var y1 = sy/2;
 		var s = sx * 0.2 ;
 		
-		draw_symbol_line(display, x, y+y1, x+x1-c, y+y1);	
+		display.draw_line(x, y+y1, x+x1-c, y+y1, 3);	
 	
-		draw_arc(display, x+x1,y+ y1,s, 0.7*Math.PI, 1.3 *Math.PI);
-		draw_arc(display, x+x1,y+ y1,s, 1.7*Math.PI, 0.3 *Math.PI);
+		display.draw_arc(x+x1,y+ y1,s, 0.7*Math.PI, 1.3 *Math.PI, 3);
+		display.draw_arc(x+x1,y+ y1,s, 1.7*Math.PI, 0.3 *Math.PI, 3);
 	
-		draw_symbol_line(display, x + x1 +c, y+y1, x+sx, y + y1);	
+		display.draw_line(x + x1 +c, y+y1, x+sx, y + y1, 3);	
 		
-		draw_tool_text(display, x+x1 - c*0.3, y+y1+ c*0.4,c, "#000000", "L");
+		display.draw_tool_text(x+x1 - c*0.3, y+y1+ c*0.4,c, "#000000", "L");
 	}
 	
 	return n;
@@ -426,14 +426,14 @@ function NodeOTU()
 		var y1 = sy/2;
 		var s = sx * 0.2 ;
 		
-		draw_symbol_line(display, x, y+y1, x+x1-c, y+y1);	
+		display.draw_line(x, y+y1, x+x1-c, y+y1, 3);	
 	
-		draw_arc(display, x+x1,y+ y1,s, 0.7*Math.PI, 1.3 *Math.PI);
-		draw_arc(display, x+x1,y+ y1,s, 1.7*Math.PI, 0.3 *Math.PI);
+		display.draw_arc(x+x1,y+ y1,s, 0.7*Math.PI, 1.3 *Math.PI);
+		display.draw_arc(x+x1,y+ y1,s, 1.7*Math.PI, 0.3 *Math.PI);
 	
-		draw_symbol_line(display, x + x1 +c, y+y1, x+sx, y + y1);	
+		display.draw_line(x + x1 +c, y+y1, x+sx, y + y1, 3);	
 		
-		draw_tool_text(display, x+x1- c*0.3, y+y1 + c*0.4,c,"#000000", "U");
+		display.draw_tool_text(x+x1- c*0.3, y+y1 + c*0.4,c,"#000000", "U");
 	}
 	
 	return n;
@@ -455,15 +455,15 @@ function NodeBOX()
 		var x1 = sx/2;
 		var y1 = sy/2;
 	
-		draw_symbol_line(display, x, y+y1, x+x1-c, y+y1);	
+		display.draw_line(x, y+y1, x+x1-c, y+y1, 3);	
 	
-		draw_symbol_line(display, x+x1-c, y+y1-c, x+x1-c, y+y1+c);		
-		draw_symbol_line(display, x+x1+c, y+y1-c, x+x1+c, y+y1+c);		
+		display.draw_line(x+x1-c, y+y1-c, x+x1-c, y+y1+c, 3);		
+		display.draw_line(x+x1+c, y+y1-c, x+x1+c, y+y1+c, 3);		
 		
-		draw_symbol_line(display, x+x1-c, y+y1-c, x+x1+c, y+y1-c);		
-		draw_symbol_line(display, x+x1-c, y+y1+c, x+x1+c, y+y1+c);		
+		display.draw_line(x+x1-c, y+y1-c, x+x1+c, y+y1-c, 3);		
+		display.draw_line(x+x1-c, y+y1+c, x+x1+c, y+y1+c, 3);		
 		
-		draw_symbol_line(display, x + x1 +c, y+y1, x+sx, y + y1);	
+		display.draw_line(x + x1 +c, y+y1, x+sx, y + y1, 3);	
 		
 		
 	}
@@ -489,17 +489,17 @@ function NodeTMR()
 		var x1 = sx/2;
 		var y1 = sy/2;
 	
-		draw_symbol_line(display, x, y+y1, x+x1-c, y+y1);	
+		display.draw_line(x, y+y1, x+x1-c, y+y1, 3);	
 	
-		draw_symbol_line(display, x+x1-c, y+y1-c, x+x1-c, y+y1+c);		
-		draw_symbol_line(display, x+x1+c, y+y1-c, x+x1+c, y+y1+c);		
+		display.draw_line(x+x1-c, y+y1-c, x+x1-c, y+y1+c, 3);		
+		display.draw_line(x+x1+c, y+y1-c, x+x1+c, y+y1+c, 3);		
 		
-		draw_symbol_line(display, x+x1-c, y+y1-c, x+x1+c, y+y1-c);		
-		draw_symbol_line(display, x+x1-c, y+y1+c, x+x1+c, y+y1+c);		
+		display.draw_line(x+x1-c, y+y1-c, x+x1+c, y+y1-c, 3);		
+		display.draw_line(x+x1-c, y+y1+c, x+x1+c, y+y1+c, 3);		
 		
-		draw_symbol_line(display, x + x1 +c, y+y1, x+sx, y + y1);	
+		display.draw_line(x + x1 +c, y+y1, x+sx, y + y1, 3);	
 		
-		draw_tool_text(display, x+x1- c*0.3, y+y1 + c*0.4,c,"#000000", "T");
+		display.draw_tool_text(x+x1- c*0.3, y+y1 + c*0.4,c,"#000000", "T");
 	}
 	
 	return n;

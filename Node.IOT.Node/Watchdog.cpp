@@ -87,7 +87,7 @@ void Watchdog::update_second(unsigned long current)
 
     //print_log("Update Rate: %d\n", updates);
 
-    print_log(MODULE "Logic update rate: %d\n", logic.get_updates());
+    //print_log(MODULE "Logic update rate: %d\n", logic.get_updates());
 
     logic.show_debug();
 

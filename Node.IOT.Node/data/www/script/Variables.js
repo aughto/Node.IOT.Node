@@ -339,21 +339,28 @@ function store_variablelist()
 	
 	console.log("Variable list string: " + variable_list_str);
 
-	var XHR = get_request();
+	var req = get_request();
 
-    XHR.addEventListener("load", function(event) 
+    /*req.addEventListener("load", function(event) 
 	{
       console.log(event.target.responseText);
     });
 
-    XHR.addEventListener("error", function(event) 
+    req.addEventListener("error", function(event) 
 	{
       alert('Unable to save logic to device');
-    });
+    });*/
+	
+	req.loaded = function() { console.log("store_variablelist: Saved"); };
+	
+	req.error = function() { console.log("store_variablelist: Error"); };
+	
 
-	XHR.open("POST", "/save_variablelist"); 
+	req.open("POST", "/save_variablelist"); 
 		
-    XHR.send(variable_list_str);
+	req.data = variable_list_str;
+	ajax_add_request(req);
+	//XHR.send(variable_list_str);
 }
 
 

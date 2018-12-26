@@ -116,6 +116,10 @@ function set_html(element, text)
 
 
 
+function get_ms()
+{
+	return +new Date();;
+}
 
 
 

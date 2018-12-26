@@ -30,7 +30,7 @@
 #define INST_PUSHCR   0x11 
 #define INST_POPCR    0x12
 #define INST_PUSHOR   0x13 
-#define INST_COLLECT  0x14 
+#define INST_POPOR    0x14 
 #define INST_XIO      0x30
 #define INST_XIC      0x31
 #define INST_OTE      0x40 
@@ -78,6 +78,8 @@ class Logic
 
   void savelogic(const char *filename, int MODE);
   
+  void request_reload(void);
+  
 
  private:
 
@@ -103,6 +105,8 @@ class Logic
   unsigned int or_ptr;
 
   unsigned int updates;
+
+  bool reload_flag;
 };
 
 

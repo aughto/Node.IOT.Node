@@ -11,10 +11,66 @@
 	AJAX 
 */
 
+
+/* Ajax request manager. This mainly a wrapper to seralizise ajax requests */
+var ajax_requests = [];		// List of pending requests
+var ajax_id = 100; 			// ID of next request
+
+var AJAX_UPDATE = 1000;		// Update time for housekeeping in ms
+var AJAX_TIMEOUT = 5000;	// Request timeout
+
+function ajax_init()
+{
+	
+	
+	setInterval(function() {ajax_update()}, AJAX_UPDATE);	// Setup timer
+	
+	
+}
+
+
+function ajax_update()
+{
+	var d = new Date();
+	var cur_time = d.getMilliseconds();
+		
+	for (var i = 0; i < ajax_requests.length; i++)
+	{
+		var req = ajax_requests[i];
+		var dt = cur_time - req.reqtime;
+		
+		if (dt >= AJAX_TIMEOUT)
+		{
+			console.log("Timeout on request ID " + red.id);
+			
+			// remove
+			ajax_requests.splice(i, 1);
+			i--;
+		}
+	}
+	
+}
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
 /* Get an XMLHttpRequest object */
 function get_request()
 {
+	//console.log("Ajax get request");
+	
 	var req;
+	
 	if (window.XMLHttpRequest) 
 	{ // Mozilla, Safari, ...
 		req = new XMLHttpRequest();
@@ -35,45 +91,210 @@ function get_request()
 		}
 	}
 	
+	req.sent = false;
+	req.id = ajax_id++;
+	req.data = "";
+	req.tag = "";
+	
+	req.reqtime = get_ms();
+	
+	//console.log("Request ID: " + req.id);
+		
+	// Need to add all event listeners so that we don't miss a completion
+	
+	
+	// Need to add genereic callbacks to keep stack straight
+	req.addEventListener("load", function(event) 
+	{
+      //console.log(`Save_systemfile File: $(filename) Type: $(filetype) Resp $(event.target.responseText)`);
+
+	  var time = get_ms() - req.reqtime;
+	  
+	  //console.log('AJAX requst loaded ' +req.id);
+	  
+	  console.log("Req " + req.tag + " loaded in " + time + "ms");
+	  
+	  ajax_request_complete(req); // Signal complete;
+	  
+	  // Call
+	  if (req.loaded != undefined)	
+		req.loaded(event); // callback
+	  
+    });
+	
+    req.addEventListener("error", function(event) 
+	{
+      console.log('AJAX requst error ' +req.id);
+	  
+	  ajax_request_complete(req); // Signal complete;
+	  
+	  if (req.error != undefined)
+		req.error(event);
+	  
+    });
+
+	
+    req.addEventListener("abort", function(event) 
+	{
+      console.log('AJAX requst abort ' +req.id);
+	  
+	  ajax_request_complete(req); // Signal complete;
+	  
+	  if (req.error != undefined)
+		req.error(event);
+	  
+    });	
+	
 	return req;
 }
+
+
+
+/* Preform next ajax request if any are pending */
+function ajax_request_next()
+{
+	if (ajax_requests.length == 0) return;
+
+	//console.log("AJAX requesting " + ajax_requests[0].id);
+	
+	var r = ajax_requests[0];
+	
+	r.sent = true;
+	r.send(r.data);
+}	
+
+
+function ajax_request_complete(req)
+{
+	//console.log("AJAX Request complete");
+	//console.log(req);	
+	
+	// Remove from list
+	for (var i = 0; i < ajax_requests.length; i++)
+	{
+		if (req.id == ajax_requests[i].id)
+		{
+			ajax_requests.splice(i, 1);
+			break;
+		}
+	}
+
+	// Send next request
+	ajax_request_next();
+}
+
+
+function ajax_add_request(req)
+{
+	//console.log("AJAX add Request " + req.id);
+	//console.log(req);
+
+	// Add to list for later
+	ajax_requests.push(req);	
+	
+	// Send right away if this was the only request
+	if (ajax_requests.length == 1)
+		ajax_request_next();
+}
+
+/* End of request manager */
+
+
+/* save generic data as system file */
+function ajax_save_systemfile(filename, filetype, data)
+{
+	console.log("Saving system file (" + filename + ") type " + filetype );
+	//console.log("Data: " + data);
+
+	var req = get_request();
+	
+	req.loaded = function() { console.log(`save_systemfile ${filename}: Saved`); };
+	req.error = function()  { console.log(`save_systemfile ${filename}: Error`); };
+	
+	req.tag = "Save system file " + filename;
+	
+	var cmd = `/save_systemfile?filename=${filename}&filetype=${filetype}`;
+
+	console.log("Store command: " + cmd);
+	
+	req.open("POST", cmd ); 
+		
+	req.setRequestHeader("filetype", filetype);		
+	req.setRequestHeader("filename", "/" + filename);		
+
+	req.data = data;
+	
+	ajax_add_request(req); // Add to request buffer
+}
+
+
+/* save generic data as system file */
+function ajax_load_systemfile(filename, filetype, callback)
+{
+	console.log("Loading system file (" + filename + ") type " + filetype );
+	//console.log("Data: " + data);
+
+	var req = get_request();
+	
+	req.loaded = function(event) 
+	{ 
+		console.log(`get_systemfile ${filename}: loaded`); 
+
+		callback(filetype, req, event);
+	};
+	
+	
+	req.error = function()  { console.log(`load_systemfile ${filename}: Error`); };
+	
+	req.tag = "Load system file " + filename;
+	
+	var cmd = `/get_systemfile?filename=${filename}`;
+
+	console.log("Get command: " + cmd);
+	
+	req.open("POST", cmd ); 
+		
+	req.setRequestHeader("filename", "/" + filename);		
+
+//	req.data = data;
+	
+	ajax_add_request(req); // Add to request buffer
+}
+
+
+
 
 
 function load_page(page, target)
 {
 	var req = get_request();
 
-	//req = new XMLHttpRequest();
 	req.overrideMimeType("text/plain");
-//	req.addEventListener("load", function (evt) {ajax_parse(evt, target)});
-	req.addEventListener("load", function (evt) {load_page_result(req, target);});
 	
-	
-	req.addEventListener("error", load_page_error, false); 
+	req.loaded = function(event){ load_page_result(req, target);};
+	req.error = function() { load_page_error();  };
 	
 	var url =  "html/" + page;
+	
+	req.tag = page;
 	
 	console.log("Load URL: " + url);
 	
 	req.open("get", url);
-	req.send();
+	ajax_add_request(req);
 }
 
 
 function load_page_result(data, target)
 {
-	//.responseText
-	//console.log(data);
-	//console.log("Resp: " + data.responseText);
-
 	document.getElementById("maincontent").innerHTML = data.responseText;
 	
 	// Need to request more data for some targets
 	if (target=="mainconfig") load_config("mainconfig"); else
-	if (target=="ioconfig") load_config("ioconfig"); else
-	if (target=="liveview") load_liveview(); else
-	if (target=="variables") load_variables(); else
-	if (target=="weblogix") load_weblogix(); 
+	if (target=="ioconfig")   load_config("ioconfig"); else
+	if (target=="liveview")   load_liveview(); else
+	if (target=="variables")  load_variables(); else
+	if (target=="weblogix")   load_weblogix(); 
 
 }
 

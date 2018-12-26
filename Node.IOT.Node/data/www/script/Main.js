@@ -11,6 +11,8 @@ function init()
 {
 	console.log("System Init");
 	
+	ajax_init();
+	
 	load_page("live.html");
 	
 	console.log("Host: " + location.host)

@@ -24,6 +24,7 @@ Logic::Logic()
    bytecode = NULL;
    bytecode_size = 0;
    updates = 0;
+   reload_flag = false;
 }
 
 
@@ -49,7 +50,6 @@ void Logic::init()
     return;
   }
 
-  
   if (or_stack == NULL)
   {
     print_log("Unable to get orstack memory\n");
@@ -59,7 +59,6 @@ void Logic::init()
   for (int i = 0; i < 32; i++)
    variables[i] = 0;  
 
-  // Allocate Max bytecode. This is done to prevent heap fragmentation during reloading
 
   load();
 }
@@ -71,9 +70,9 @@ void Logic::load()
 
   load_bytecode(BYTECODE_FILENAME);
 
-
   show_disassembly();
 
+  reload_flag = false;
   
 }
 
@@ -85,6 +84,12 @@ void Logic::save()
   
 void Logic::update(unsigned long current)
 {
+  if (reload_flag)
+  {
+    load();
+  }
+
+  
   static long int c = 0;
 
   /*if (c++ > 100000)
@@ -176,10 +181,7 @@ bool Logic::load_bytecode(const char *filename)
       return true;
   }
 
-
-
-// Read size
-
+  // Read size
   if (read_hex32(file, bytecode_size))
   {
     print_log("Unable to read config file\n");
@@ -238,125 +240,8 @@ bool Logic::load_bytecode(const char *filename)
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void Logic::savebytecode_start(const char *filename)
+// Request reload on next update
+void Logic::request_reload(void)
 {
-  file_loaded = false;
-  
-  bytecode_file = SPIFFS.open(filename, FILE_WRITE);
-  
-  if(!bytecode_file)
-  {
-    Serial.println(MODULE "Failed to open file for writing");
-    return;
-  }
-
-  set_timeout(save_timeout, millis() + CONFIG_TIMEOUT);
-
-  file_loaded = true;
-  
-  print_log(MODULE "Save started for %s\n", filename);
-}
-
-
-void Logic::savebytecode_chunk(const char *filename, uint8_t *data, size_t len)
-{
-  if (!file_loaded) return;
- 
-  if (!bytecode_file.write(data, len))
-  {
-      print_log(MODULE "Config write failed\n");
-    
-  }
-
-  save_timeout = 0;
- 
-}
-
-void Logic::savebytecode_end(const char *filename)
-{
-  if (!file_loaded) return;
-
-  bytecode_file.close();
-  
-  print_log(MODULE "Save ended for %s\n", filename);
-
-
-  print_log(MODULE "Bytecode Saved\n");
-
-
-  file_loaded = false;
-
-  load_bytecode(BYTECODE_FILENAME);
-}
-
-
-
-
-
-
-void Logic::savelogic(const char *filename, uint8_t *data, size_t len, int mode)
-{
-  if (mode == SAVE_START)
-  {
-    file_loaded = false;
-    
-    logic_file = SPIFFS.open(filename, FILE_WRITE);
-    
-    if(!logic_file)
-    {
-      print_log(MODULE "Failed to open file for writing %s", filename);
-      return;
-    }
-  
-    set_timeout(save_timeout, millis() + CONFIG_TIMEOUT);
-  
-    file_loaded = true;
-    
-    print_log(MODULE "Save started for %s\n", filename);
-  
-  } else
-
-  if (mode == SAVE_CHUNK)
-  {
-    if (!file_loaded) return;
-   
-    if (!logic_file.write(data, len))
-    {
-        print_log(MODULE "Config write failed\n");
-      
-    }
-  
-    save_timeout = 0;
-   
-  } else
-  
-  if (mode == SAVE_END)
-  {
-    if (!file_loaded) return;
-  
-    logic_file.close();
-    
-    print_log(MODULE "Save ended for %s\n", filename);
-  
-    print_log(MODULE "Logic Saved\n");
-  
-    file_loaded = false;
-   
-    //load_bytecode(BYTECODE_FILENAME);
-  }
+  reload_flag = true;
 }

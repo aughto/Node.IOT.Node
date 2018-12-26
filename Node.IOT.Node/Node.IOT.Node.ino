@@ -40,9 +40,7 @@ module_type modules[MAX_MODULES];
 
 void setup() 
 {
-  // Constructors should be all heap allocation to prevent fragmentation
- 
- 
+  // Constructors should use heal allocation to prevent fragmentation 
   hardware.init();
   filesystem.init();
   config.init();

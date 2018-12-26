@@ -26,12 +26,7 @@ Config config;
 
 Config::Config()
 {
-
-
-  //config_file = (File)NULL;
-  file_loaded = false;
-
-  
+ 
 }
 
 
@@ -189,56 +184,6 @@ bool Config::load(const char *filename)
   return false;
 }
 
-
-void Config::save_start(const char *filename)
-{
-  file_loaded = false;
-  
-  config_file = SPIFFS.open(filename, FILE_WRITE);
-  
-  if(!config_file)
-  {
-    Serial.println(MODULE "Failed to open file for writing");
-    return;
-  }
-
-  set_timeout(save_timeout, millis() + CONFIG_TIMEOUT);
-
-  file_loaded = true;
-  
-  print_log(MODULE "Save started for %s\n", filename);
-}
-
-
-void Config::save_chunk(const char *filename, uint8_t *data, size_t len)
-{
-  if (!file_loaded) return;
- 
-  if (!config_file.write(data, len))
-  {
-      print_log("Config write failed\n");
-    
-  }
-
-  save_timeout = 0;
- 
-}
-
-void Config::save_end(const char *filename)
-{
-  if (!file_loaded) return;
-
-  config_file.close();
-  
-  print_log(MODULE "Save ended for %s\n", filename);
-
-  print_log(MODULE "Rebooting in %d seconds\n", REBOOT_TIMEOUT/1000);
-
-  file_loaded = false;
-}
-
-
-
 void Config::show()
 {
   print_log(MODULE "Config Options\n");
@@ -248,15 +193,14 @@ void Config::show()
   http.show_config();  
 }
 
-
 void Config::update(unsigned long current)
 {
-  if (check_timeout(save_timeout, current))
+  /*if (check_timeout(save_timeout, current))
   {
     print_log(MODULE "Config save failed");
     save_timeout = 0;
     config_file.close();
     //esp_restart(); // reboot to load new config
-  }
+  }*/
 
 }

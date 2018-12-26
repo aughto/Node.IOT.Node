@@ -71,27 +71,40 @@ function upload_config(config_type, config_str)
 {
 	console.log("Uploading config for "+config_type+": " + config_str);
 	 
-	var XHR = get_request();
-
-    XHR.addEventListener("load", function(event) 
-	{
-      console.log(event.target.responseText);
-    });
-
-    XHR.addEventListener("error", function(event) 
-	{
-      alert('Unable to save config');
-    });
+	var req = get_request();
 
 	
-	if (config_type == "mainconfig") XHR.open("POST", "/set_mainconfig"); else
-	if (config_type == "ioconfig") XHR.open("POST", "/set_ioconfig"); else
+	req.loaded = function() { console.log("upload config: loaded"); };
+	req.error = function() { console.log("upload config: error"); };
+	
+	
+	/*if (config_type == "mainconfig")req.open("POST", "/set_mainconfig"); else
+	if (config_type == "ioconfig") req.open("POST", "/set_ioconfig"); else
 	{
 		console.log("Invalid config type\n");
 		return;
-	}
+	}*/
+	
+	//req.data = config_str;
 		
-    XHR.send(config_str);
+	//	ajax_add_request(req);
+	
+	
+	var filename = "";
+	
+	if (config_type == "mainconfig") filename = "mainconfig.txt"; else
+	if (config_type == "ioconfig") filename = "ioconfig.txt"; else
+	{
+		console.log("upload_config: invalid config type");
+		return;
+	}
+	
+	
+	ajax_save_systemfile(filename, "config", config_str)
+	
+	
+	
+	//   XHR.send(config_str);
 }
 	
 /*
@@ -137,30 +150,48 @@ function save_config(config_type)
 // Request config data load
 function load_config(config_type)
 {
-	if (config_type == "ioconfig")
+	var filename = "";
+	
+	if (config_type == "mainconfig") filename = "mainconfig.txt"; else
+	if (config_type == "ioconfig") filename = "ioconfig.txt"; else
 	{
-		//generate_iolist()
-	}1
-		
-	
-	
-	var req = get_request();
-
-	req.overrideMimeType("text/plain");
-	req.addEventListener("load", function (evt) {parse_formdata(config_type, req, evt);});
-	
-	req.addEventListener("error", load_page_error, false); 
-	
-	
-	if (config_type == "mainconfig")	req.open("get", "/get_mainconfig"); else
-	if (config_type == "ioconfig")	req.open("get", "/get_ioconfig"); else
-	{
-		console.log("Unknown config type: " + config_type);
+		console.log("upload_config: invalid config type");
 		return;
 	}
 	
 	
-	req.send();
+	ajax_load_systemfile(filename, config_type, parse_formdata);
+	
+	
+	/*if (config_type == "ioconfig")
+	{
+		//generate_iolist()
+	}
+	
+	var req = get_request();
+
+	req.overrideMimeType("text/plain");
+	
+	req.loaded = function(event) 
+	{ 
+		console.log("load_config: loaded"); 
+		parse_formdata(config_type, req, event);
+	};
+	
+	req.error = function() 
+	{ 
+		load_page_error();	
+	};
+	
+	if (config_type == "mainconfig") req.open("get", "/get_mainconfig"); else
+	if (config_type == "ioconfig")   req.open("get", "/get_ioconfig"); else
+	{
+		console.log("Unknown config type: " + config_type);
+		return;
+	}
+
+	ajax_add_request(req);*/
+	
 }
 
 

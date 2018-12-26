@@ -17,10 +17,6 @@
 
 #define MODULE "[CPU]       "
 
-
-
-
-
 /* CPU */
 
 
@@ -43,7 +39,7 @@ void Logic::decode_next_inst(unsigned int &i, bool newline)
   if (inst == INST_PUSHCR)    print_log("PUSHCR"); else
   if (inst == INST_POPCR)     print_log("POPCR"); else 
   if (inst == INST_PUSHOR)    print_log("PUSHOR");  else
-  if (inst == INST_COLLECT)   print_log("COLLECT"); else
+  if (inst == INST_POPOR)     print_log("POPOR"); else
   if (inst == INST_XIO)     { print_log("XIO      %5d (%d)", op1, get_value(op1)); i++; } else
   if (inst == INST_XIC)     { print_log("XIC      %5d (%d)", op1, get_value(op1)); i++; }else
   if (inst == INST_OTE)     { print_log("OTE      %5d (%d)", op1, get_value(op1)); i++; }else
@@ -58,18 +54,16 @@ void Logic::decode_next_inst(unsigned int &i, bool newline)
 }
 
 
-
-
-
-
-
-
-
-
-
-void Logic::show_disassembly( void )
+// Show bytecode disassembly
+void Logic::show_disassembly(void)
 {
   print_log(MODULE "Bytecode Listing\n");
+
+  if (bytecode == NULL)
+  {
+    print_log("No Bytecode loaded\n");
+    return;
+  }
 
   unsigned int i = 0;
   
@@ -81,7 +75,7 @@ void Logic::show_disassembly( void )
 
 
 
-void Logic::show_memory(char * title )
+void Logic::show_memory(char * title)
 {
   print_log(MODULE "%s\n", title);
 
@@ -106,85 +100,37 @@ unsigned char Logic::check_offset(unsigned int i)
 
 
 
-
+// Get byte from memory
 unsigned char Logic::get_value(unsigned int i)
 {
   if (check_offset(i)) return 0;
   
   return variables[i];
-
-/*
-  // Input
-  if (i < 64) 
-  {
-    unsigned char v;
-
-    if (io.get_value(i, v)) return 0;
-    return v;
-  }
-
-   // output
-   if (i < 128) 
-  {
-    unsigned char v;
-
-    if (io.get_value(i, v)) return 0;
-    return v;
-  }
-
-  
-  i -= 128;
-
-  if (i >= VARIABLE_MAX) return 0;
-  
-  return variables[i];*/
 }
-  
+
+// Set byte in memory
 void Logic::set_value(unsigned int i, unsigned char v)
 {
-
   if (check_offset(i)) return;
-
   
-variables[i] = v;
-/*
-  
-  // Input
-  if (i < 64) 
-  {
-    return;
-  }
-
-  // output
-  if (i < 128) 
-  {
-    io.set_value(i, v);
-    return;
-  }
-
-  i -= 128;
-
-  if (i >= VARIABLE_MAX) return;
-  
-  variables[i] = v;*/
+  variables[i] = v;
 }
 
-
-
-
+// Core solver
 void Logic::solve_logic(unsigned long dt)
 {
   //print_log("Solve Logic\n");
 
   //show_memory("Before");
 
-
-  if (bytecode == NULL && bytecode_size == 0)
+  // Make sure logic is valid
+  if (bytecode == NULL || bytecode_size == 0)
   {
     print_log("Solve: Logic not ok\n");
     return;
   }
-  
+
+  // Reset stack pointers
   cr_ptr = 0;
   or_ptr = 0;
 
@@ -230,11 +176,11 @@ void Logic::solve_logic(unsigned long dt)
          if (or_ptr >= ORSTACK_MAX) {print_log("PUSHOR Error- Too Parge"); return; }
     } else
 
-    if (inst == INST_COLLECT)
+    if (inst == INST_POPOR)
     {
       or_ptr--;
 
-      if (or_ptr < 0) {print_log("COLLECT Error - Too Small"); return; }
+      if (or_ptr < 0) {print_log("POPOR Error - Too Small"); return; }
       
       //var v = or_stack[or_ptr];
       

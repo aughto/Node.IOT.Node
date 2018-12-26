@@ -14,7 +14,6 @@
 #include <SPIFFS.h>
 #include <Update.h>
 
-
 #include "AsyncTCP.h"
 #include "ESPAsyncWebServer.h"
 
@@ -29,11 +28,9 @@
 
 HTTP http;
 
-void onNotFound(AsyncWebServerRequest *request);
-void onRequest(AsyncWebServerRequest *request);
-void onBody(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total);
-void onUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final);
-void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len);
+/* 
+   Public 
+ */
 
 
 HTTP::HTTP()
@@ -62,6 +59,57 @@ void HTTP::init()
   // disable cache for now
   //server.serveStatic("/", SPIFFS, "/www").setDefaultFile("index.html").setCacheControl("max-age=60000");
   server->serveStatic("/", SPIFFS, "/www").setDefaultFile("/www/index.html");
+ 
+  // Load page handlers   
+  load_handlers(server);
+
+  server->begin();
+}
+
+
+void HTTP::update(unsigned long current)
+{
+  /*static char temp[128];
+  sprintf(temp, "Seconds since boot: %u", millis()/1000);
+  events->send(temp, "time"); //send event "time"*/
+}
+
+// Set config vaule
+bool HTTP::set_config(const char *name, const char *value)
+{
+  if (!strcmp(name, "port")) port = atoi(value);
+  if (!strcmp(name, "user")) strncpy(user, value, CONFIG_USER_MAX);
+  if (!strcmp(name, "pass")) strncpy(pass, value, CONFIG_PASS_MAX);
+}  
+
+// Show config values
+void HTTP::show_config()
+{
+  print_log(MODULE " Port: %d\n", port);
+  print_log(MODULE " User: %s\n", user);
+  print_log(MODULE " Pass: %s\n", pass);
+}
+
+// Send message to all web socket clients
+void HTTP::send_message(char * message)
+{
+  //print_log(MODULE "Send message %s\n", message);
+  ws->printfAll("%s", message);
+ 
+}
+
+
+/* 
+   End of public 
+ */
+
+
+/* 
+ *  Request processing 
+*/
+
+void HTTP::load_handlers(AsyncWebServer *server)
+{
 
   // respond to GET requests on URL /heap
   /*server.on("/heap", HTTP_GET, [](AsyncWebServerRequest *request)
@@ -81,6 +129,9 @@ void HTTP::init()
     request->send(SPIFFS, "/www/index.htm");
   });*/
 
+
+  
+
   // send a file when /index is requested
   server->on("/", HTTP_ANY, [](AsyncWebServerRequest *request)
   {
@@ -88,18 +139,82 @@ void HTTP::init()
     request->send(SPIFFS, "/www/index.html");
   });
 
-
-  //server.on("/saveconfig", HTTP_POST, [&](AsyncWebServerRequest **request){ process_saveconfig_post(request);},NULL, 
-
- /*AsyncCallbackWebHandler& on(const char* uri, 
- WebRequestMethodComposite method, 
- ArRequestHandlerFunction onRequest, 
- ArUploadHandlerFunction onUpload, 
- ArBodyHandlerFunction onBody);*/
-
   
-  
-  load_handlers(server);
+
+
+/*
+
+  // TODO Replace with Generic
+  // Write config file
+  server->on("/set_mainconfig", HTTP_POST, 
+            [&](AsyncWebServerRequest *request){ process_saveconfig_post(request, MAINCONFIG_FILENAME);},
+            NULL, 
+            [&](AsyncWebServerRequest *request,uint8_t *data, size_t len, size_t index, size_t total){ process_saveconfig_body(request, MAINCONFIG_FILENAME, data, len, index, total);});
+
+  // Send current config.  TODO auth
+  server->on("/get_mainconfig", HTTP_GET, [](AsyncWebServerRequest *request){
+    request->send(SPIFFS, MAINCONFIG_FILENAME);
+  });
+
+  // TODO Replace with Generic
+  // Write config file
+  server->on("/set_ioconfig", HTTP_POST, 
+            [&](AsyncWebServerRequest *request){ process_saveconfig_post(request, IOCONFIG_FILENAME);},
+            NULL, 
+            [&](AsyncWebServerRequest *request,uint8_t *data, size_t len, size_t index, size_t total)
+            { process_saveconfig_body(request, IOCONFIG_FILENAME, data, len, index, total);}
+            );
+
+  // Send current config.  TODO auth
+  server->on("/get_ioconfig", HTTP_GET, [](AsyncWebServerRequest *request)
+  {
+    request->send(SPIFFS, IOCONFIG_FILENAME);
+  });
+
+
+  // TODO Replace with Generic
+  // Write bytecode
+  server->on("/save_bytecode", HTTP_POST, 
+            [&](AsyncWebServerRequest *request){ process_savebytecode_post(request, BYTECODE_FILENAME);},
+            NULL, 
+            [&](AsyncWebServerRequest *request,uint8_t *data, size_t len, size_t index, size_t total)
+            { process_savebytecode_body(request, BYTECODE_FILENAME, data, len, index, total);}
+            );
+
+*/
+
+ 
+  // Generic get system file
+  // TODO Replace with Generic
+  /*server->on("/get_logic", HTTP_GET, [](AsyncWebServerRequest *request)
+  {
+    request->send(SPIFFS, LOGIC_FILENAME);
+  });*/
+
+  // Generic save system file
+  server->on("/save_systemfile", HTTP_POST, 
+              [&](AsyncWebServerRequest *request){ process_savesystemfile_post(request);},
+              NULL, 
+              [&](AsyncWebServerRequest *request,uint8_t *data, size_t len, size_t index, size_t total)
+              { process_savesystemfile_body(request, data, len, index, total);}
+            );
+
+
+  // Generic get system file
+  server->on("/get_systemfile", HTTP_POST, 
+              [&](AsyncWebServerRequest *request){ process_getsystemfile_post(request);},
+              NULL, 
+              NULL
+            );
+            
+
+  // Request system restart.  Need to replace with generic commands
+  server->on("/system_restart", HTTP_GET, [](AsyncWebServerRequest *request)
+  {  
+    hardware.restart(); 
+    request->redirect("/html/reloader.html");
+  });
+
 
 
 /*
@@ -167,354 +282,7 @@ void HTTP::init()
   server->onFileUpload(onUpload);
   //server.onRequestBody(onBody);
 
-  server->begin();
 }
-
-
-void HTTP::load_handlers(AsyncWebServer *server)
-{
-
-
-
-// Need to replace with /set*
-
-
-
-  // TODO Replace with Generic
-  // Write config file
-  server->on("/set_mainconfig", HTTP_POST, 
-            [&](AsyncWebServerRequest *request){ process_saveconfig_post(request, MAINCONFIG_FILENAME);},
-            NULL, 
-            [&](AsyncWebServerRequest *request,uint8_t *data, size_t len, size_t index, size_t total){ process_saveconfig_body(request, MAINCONFIG_FILENAME, data, len, index, total);});
-
-  // Send current config.  TODO auth
-  server->on("/get_mainconfig", HTTP_GET, [](AsyncWebServerRequest *request){
-    request->send(SPIFFS, MAINCONFIG_FILENAME);
-  });
-
-  // TODO Replace with Generic
-  // Write config file
-  server->on("/set_ioconfig", HTTP_POST, 
-            [&](AsyncWebServerRequest *request){ process_saveconfig_post(request, IOCONFIG_FILENAME);},
-            NULL, 
-            [&](AsyncWebServerRequest *request,uint8_t *data, size_t len, size_t index, size_t total)
-            { process_saveconfig_body(request, IOCONFIG_FILENAME, data, len, index, total);}
-            );
-
-  // Send current config.  TODO auth
-  server->on("/get_ioconfig", HTTP_GET, [](AsyncWebServerRequest *request)
-  {
-    request->send(SPIFFS, IOCONFIG_FILENAME);
-  });
-
-
-  // TODO Replace with Generic
-  // Write bytecode
-  server->on("/save_bytecode", HTTP_POST, 
-            [&](AsyncWebServerRequest *request){ process_savebytecode_post(request, BYTECODE_FILENAME);},
-            NULL, 
-            [&](AsyncWebServerRequest *request,uint8_t *data, size_t len, size_t index, size_t total)
-            { process_savebytecode_body(request, BYTECODE_FILENAME, data, len, index, total);}
-            );
-
-
-
- 
-  // Generic get system file
-  // TODO Replace with Generic
-  server->on("/get_logic", HTTP_GET, [](AsyncWebServerRequest *request)
-  {
-    request->send(SPIFFS, LOGIC_FILENAME);
-  });
-
-  // Generic save system file
-  server->on("/save_systemfile", HTTP_POST, 
-              [&](AsyncWebServerRequest *request){ process_savesystemfile_post(request);},
-              NULL, 
-              [&](AsyncWebServerRequest *request,uint8_t *data, size_t len, size_t index, size_t total)
-              { process_savesystemfile_body(request, data, len, index, total);}
-            );
-
-  // Request system restart.  Need to replace with generic commands
-  server->on("/system_restart", HTTP_GET, [](AsyncWebServerRequest *request)
-  {  
-    hardware.restart(); 
-    request->redirect("/html/reloader.html");
-  });
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-void HTTP::update(unsigned long current)
-{
-  
-  /*static char temp[128];
-  sprintf(temp, "Seconds since boot: %u", millis()/1000);
-  events->send(temp, "time"); //send event "time"*/
-}
-
-
-
-bool HTTP::set_config(const char *name, const char *value)
-{
-  if (!strcmp(name, "port")) port = atoi(value);
-  if (!strcmp(name, "user")) strncpy(user, value, CONFIG_USER_MAX);
-  if (!strcmp(name, "pass")) strncpy(pass, value, CONFIG_PASS_MAX);
-
-}  
-
-
-void HTTP::show_config()
-{
-  print_log(MODULE " Port: %d\n", port);
-  print_log(MODULE " User: %s\n", user);
-  print_log(MODULE " Pass: %s\n", pass);
-  
-}
-
-
-
-void HTTP::process_saveconfig_post(AsyncWebServerRequest *request, const char *filename)
-{
-  //process all headers List all collected headers
-  int headers = request->headers();
-  int i;
-  
-  for(i=0;i<headers;i++)
-  {
-    AsyncWebHeader* h = request->getHeader(i);
-    Serial.printf("HEADER[%s]: %s\n", h->name().c_str(), h->value().c_str());
-  }
-
-  //get specific header by name
-  if(request->hasHeader("MyHeader"))
-  {
-    AsyncWebHeader* h = request->getHeader("MyHeader");
-    Serial.printf("MyHeader: %s\n", h->value().c_str());
-  }
-
-  //List all parameters
-  int params = request->params();
-  for(int i=0;i<params;i++)
-  {
-    AsyncWebParameter* p = request->getParam(i);
-  
-    if(p->isFile())
-    { //p->isPost() is also true
-      Serial.printf("FILE[%s]: %s, size: %u\n", p->name().c_str(), p->value().c_str(), p->size());
-    } else 
-    if(p->isPost())
-    {
-      Serial.printf("POST[%s]: %s\n", p->name().c_str(), p->value().c_str());
-      // Try to set as parameter
-      //config.set(p->name().c_str(),  p->value().c_str());
-    } 
-    else 
-    {
-      Serial.printf("GET[%s]: %s\n", p->name().c_str(), p->value().c_str());
-    }
-  }
-  //config.save();
-
- if(request->hasParam("body", true))
- {
-   AsyncWebParameter* p = request->getParam("body", true);
-
-  print_log("Body Data: %s\n", p->value().c_str());
- }
-  
-
-  print_log(MODULE "Sent saved\n");
-
-request->send(200, "text/plain", "Saved");
-}
-
-
-void HTTP::process_saveconfig_body(AsyncWebServerRequest *request, const char *filename, uint8_t *data, size_t len, size_t index, size_t total)
-{
-  print_log(MODULE "Index: %d\n", index);
-  print_log(MODULE "Total: %d\n", total);
-  print_log(MODULE "Len: %d\n", len);
-  
-  if (index == 0)   // Start
-  {
-    // need to set config write timeout
-
-    config.save_start(filename);
-  }
-
-  config.save_chunk(filename, data, len);
-
-  if (index + len == total)  // End
-  {
-    config.save_end(filename);
-  }
-}
-
-
-
-
-
-void HTTP::process_savebytecode_post(AsyncWebServerRequest *request, const char *filename)
-{
-  //process all headers List all collected headers
-
-  print_log(MODULE "Save Bytecode post\n");
-  int headers = request->headers();
-  int i;
-  
-  for(i=0;i<headers;i++)
-  {
-    AsyncWebHeader* h = request->getHeader(i);
-    Serial.printf("HEADER[%s]: %s\n", h->name().c_str(), h->value().c_str());
-  }
-
-  //get specific header by name
-  if(request->hasHeader("MyHeader"))
-  {
-    AsyncWebHeader* h = request->getHeader("MyHeader");
-    Serial.printf("MyHeader: %s\n", h->value().c_str());
-  }
-
-  //List all parameters
-  int params = request->params();
-  for(int i=0;i<params;i++)
-  {
-    AsyncWebParameter* p = request->getParam(i);
-  
-    if(p->isFile())
-    { //p->isPost() is also true
-      Serial.printf("FILE[%s]: %s, size: %u\n", p->name().c_str(), p->value().c_str(), p->size());
-    } else 
-    if(p->isPost())
-    {
-      Serial.printf("POST[%s]: %s\n", p->name().c_str(), p->value().c_str());
-      // Try to set as parameter
-      //config.set(p->name().c_str(),  p->value().c_str());
-    } 
-    else 
-    {
-      Serial.printf("GET[%s]: %s\n", p->name().c_str(), p->value().c_str());
-    }
-  }
-  //config.save();
-
- if(request->hasParam("body", true))
- {
-   AsyncWebParameter* p = request->getParam("body", true);
-
-  print_log("Body Data: %s\n", p->value().c_str());
- }
-  
-
-  print_log(MODULE "Sent saved\n");
-
-request->send(200, "text/plain", "Saved");
-}
-
-
-void HTTP::process_savebytecode_body(AsyncWebServerRequest *request, const char *filename, uint8_t *data, size_t len, size_t index, size_t total)
-{
-
-  print_log(MODULE "Save Bytecode body\n");
-  print_log(MODULE "Index: %d\n", index);
-  print_log(MODULE "Total: %d\n", total);
-  print_log(MODULE "Len: %d\n", len);
-  
-  if (index == 0)   // Start
-  {
-    // need to set config write timeout
-
-    logic.savebytecode_start(filename);
-  }
-
-  logic.savebytecode_chunk(filename, data, len);
-
-  if (index + len == total)  // End
-  {
-    logic.savebytecode_end(filename);
-  }
-}
-
-
-
-void show_params(char * header, AsyncWebServerRequest *request)
-{
-  print_log(MODULE "Params %s\n", header);
-
-  //process all headers List all collected headers
-
-
-  int headers = request->headers();
-
-  print_log(MODULE "Headers\n");
-  
-  for(int i=0; i<headers; i++)
-  {
-    AsyncWebHeader* h = request->getHeader(i);
-    print_log(MODULE " HEADER[%s]: %s\n", h->name().c_str(), h->value().c_str());
-  }
-
-  //get specific header by name
-  //if(request->hasHeader("MyHeader"))
-  //{
-//    AsyncWebHeader* h = request->getHeader("MyHeader");
-    //Serial.printf("MyHeader: %s\n", h->value().c_str());
-  //}
-
-  //List all parameters
-print_log(MODULE "Parameters\n");
-  
-  
-  int params = request->params();
-  for(int i=0; i<params; i++)
-  {
-    AsyncWebParameter* p = request->getParam(i);
-  
-    if(p->isFile())
-    { //p->isPost() is also true
-      print_log(MODULE " FILE[%s]: %s, size: %u\n", p->name().c_str(), p->value().c_str(), p->size());
-    } else 
-    if(p->isPost())
-    {
-      print_log(MODULE " POST[%s]: %s\n", p->name().c_str(), p->value().c_str());
-      // Try to set as parameter
-      //config.set(p->name().c_str(),  p->value().c_str());
-    } 
-    else 
-    {
-      print_log(" GET[%s]: %s\n", p->name().c_str(), p->value().c_str());
-    }
-  }
-  //config.save();
-
- if(request->hasParam("body", true))
- {
-   AsyncWebParameter* p = request->getParam("body", true);
-
-  print_log(MODULE "Body Data: %s\n", p->value().c_str());
- }
-  
-
-
-  
-}
-
-
-
-
-
 
 
 
@@ -522,9 +290,9 @@ print_log(MODULE "Parameters\n");
 
 void HTTP::process_savesystemfile_post(AsyncWebServerRequest *request)
 {
-  print_log(MODULE "process_savesystemfile_post called\n");
+  //print_log(MODULE "process_savesystemfile_post called\n");
 
-  show_params("process_savesystemfile_post", request);
+  //show_params("process_savesystemfile_post", request);
 
   /*request->send(200, "text/plain", "Saved");
   
@@ -533,74 +301,84 @@ void HTTP::process_savesystemfile_post(AsyncWebServerRequest *request)
 
 
 
-#define FILETYPE_NONE 0
-#define FILETYPE_LOGIC 1
-#define FILENAME_MAX 200
-
-
+// Process request for save system file 
 void HTTP::process_savesystemfile_body(AsyncWebServerRequest *request,  uint8_t *data, size_t len, size_t index, size_t total)
 {
-  print_log(MODULE "process_savelogic_body called\n");
+  //print_log(MODULE "process_savesystemfile_body called\n");
+  //show_params("process_savesystemfile_body params ", request);
 
   int  filetype = FILETYPE_NONE;
-
-  char filename[FILENAME_MAX];
+  char filename[FILENAME_MAX]; // TODO need to range check filename
   filename[0] = 0;
-  
 
-
-  //get specific header by name
-  if(request->hasHeader("FileType"))
+  //Get type
+  if(request->hasHeader("filetype"))
   {
-    AsyncWebHeader* h = request->getHeader("FileType");
+    AsyncWebHeader* h = request->getHeader("filetype");
     print_log("Filetype: %s\n", h->value().c_str());
   
     // Detect type of special files
     if (!strcmp(h->value().c_str(), "logic")) filetype = FILETYPE_LOGIC; 
+    if (!strcmp(h->value().c_str(), "bytecode")) filetype = FILETYPE_BYTECODE; 
   }
 
 
-  //get Filename
-  if(request->hasHeader("FileName"))
+  //Get Filename
+  if(request->hasHeader("filename"))
   {
-    AsyncWebHeader* h = request->getHeader("FileName");
+    AsyncWebHeader* h = request->getHeader("filename");
     strcpy(filename, h->value().c_str());
   }
   else
   {
     print_log(MODULE "No filename supplied\n");
+    return;
   }
 
-  print_log(MODULE "Filename: %s\n", filename);
-
-  show_params("process_savelogic_body", request);
-
-  print_log(MODULE "Index: %d\n", index);
-  print_log(MODULE "Total: %d\n", total);
-  print_log(MODULE "Len: %d\n", len);
-
-
-  if (filetype == FILETYPE_LOGIC)
+  print_log(MODULE "Filename: %s Type: %d Index %d Total %d Len %d\n", filename, filetype, index, total, len);
+  
+  if (index == 0)   // Start
   {
-    print_log(MODULE "Logic detected\n");
-    
-    if (index == 0)   // Start
-    {
-      logic.savelogic(filename, 0, 0, SAVE_START);
-    }
-
-    //
-    logic.savelogic(filename, data, len, SAVE_CHUNK);
-  
-    if (index + len == total)  // End
-    {
-      logic.savelogic(filename, 0, 0, SAVE_END);
-  
-      request->send(200, "text/plain", "Saved");
-    
-      print_log(MODULE "process_savelogic_post: Sent saved\n");
-    }
+    save_systemfile(filename, filetype, 0, 0, SAVE_START);
   }
+
+  // Save chunk
+  save_systemfile(filename, filetype, data, len, SAVE_CHUNK);
+  
+  if (index + len == total)  // End
+  {
+    save_systemfile(filename, filetype, 0, 0, SAVE_END);
+  
+    request->send(200, "text/plain", "Saved");
+    
+    print_log(MODULE "Sent saved\n");
+  }
+}
+
+
+// process request for get system file 
+void HTTP::process_getsystemfile_post(AsyncWebServerRequest *request)
+{
+  print_log(MODULE "process_savesystemfile_post called\n");
+
+  show_params("process_getsystemfile_post", request);
+
+  char filename[FILENAME_MAX]; // TODO need to range check filename
+
+  //Get Filename
+  if(request->hasHeader("filename"))
+  {
+    AsyncWebHeader* h = request->getHeader("filename");
+    strcpy(filename, h->value().c_str());
+  }
+  else
+  {
+    print_log(MODULE "No filename supplied\n");
+    return;
+  }
+
+  // Send the file
+  request->send(SPIFFS, filename);  
 }
 
 
@@ -614,6 +392,9 @@ void HTTP::process_savesystemfile_body(AsyncWebServerRequest *request,  uint8_t 
 
 
 
+/* 
+  End of request processing 
+*/
 
 
 
@@ -625,27 +406,7 @@ void HTTP::process_savesystemfile_body(AsyncWebServerRequest *request,  uint8_t 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void onNotFound(AsyncWebServerRequest *request)
+void HTTP::onNotFound(AsyncWebServerRequest *request)
 {
   print_log(MODULE "ON Not found Request %s\n", request->url().c_str());
 
@@ -656,7 +417,7 @@ void onNotFound(AsyncWebServerRequest *request)
 
 
 
-void onRequest(AsyncWebServerRequest *request)
+void HTTP::onRequest(AsyncWebServerRequest *request)
 {
   print_log(MODULE "ON Request %s\n", request->url().c_str());
 
@@ -666,7 +427,7 @@ void onRequest(AsyncWebServerRequest *request)
 }
 
 
-void onBody(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)
+void HTTP::onBody(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t index, size_t total)
 {
   print_log(MODULE "ON Body %s\n", request->url().c_str());
   //Handle body
@@ -674,7 +435,7 @@ void onBody(AsyncWebServerRequest *request, uint8_t *data, size_t len, size_t in
 
 }
 
-void onUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final)
+void HTTP::onUpload(AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final)
 {
   print_log(MODULE "ON Upload %s\n", request->url().c_str());
   //Handle upload
@@ -682,18 +443,11 @@ void onUpload(AsyncWebServerRequest *request, String filename, size_t index, uin
 
 
 
-void HTTP::send_message(char * message)
-{
-  //print_log(MODULE "Send message %s\n", message);
-  ws->printfAll("%s", message);
- 
-}
-
 
 
 // Websocket events
 
-void onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len)
+void HTTP::onEvent(AsyncWebSocket * server, AsyncWebSocketClient * client, AwsEventType type, void * arg, uint8_t *data, size_t len)
 {
   //print_log(MODULE "Websocket event\n");
 
@@ -779,3 +533,141 @@ bool handleTest(AsyncWebServerRequest *request, uint8_t *datas) {
 }
 
 */
+
+
+
+
+
+
+
+
+/* Generic system file save routine from HTTP */
+// Only supports one save at a time
+void HTTP::save_systemfile(const char *filename, int filetype, uint8_t *data, size_t len, int mode)
+{
+  static File file;             // Current file we are saving
+  static bool saving = false;   // True with we are currently saving a file
+
+  //print_log("Save System File. File: %s  Type: %d Len: %d Mode: %d\n", filename, filetype, len, mode);
+ 
+  if (mode == SAVE_START)
+  {
+    // Previous save not complete
+    if (saving == true)
+    {
+      print_log("Duplicate save detected\n");
+      saving = false;
+      return;
+    }
+
+    saving = true;
+    
+    file = SPIFFS.open(filename, FILE_WRITE);
+    
+    if(!file)
+    {
+      print_log(MODULE "Failed to open file for writing %s", filename);
+      saving = false;
+
+      return;
+    }
+  
+    //set_timeout(save_timeout, millis() + CONFIG_TIMEOUT);
+    
+    print_log(MODULE "Save started for %s\n", filename);
+  
+  } else
+
+  if (mode == SAVE_CHUNK)
+  {
+    // see if something wend wrong with previus call      
+    if (!saving) return;
+   
+    if (!file.write(data, len))
+    {
+        print_log(MODULE "File write failed %s\n", filename);
+        saving = false;
+        return;    
+    }
+  
+//    save_timeout = 0;
+   
+  } else
+  
+  if (mode == SAVE_END)
+  {
+    // see if something wend wrong with previus call      
+    if (!saving) return;
+    
+    saving = false;
+  
+    file.close();
+    
+    print_log(MODULE "File saved for for %s\n", filename);
+
+    // Other actions for system files
+    if (filetype == FILETYPE_BYTECODE)  logic.request_reload();
+  }
+}
+
+
+
+
+
+
+/* Debugging */
+
+
+void HTTP::show_params(char * header, AsyncWebServerRequest *request)
+{
+  print_log(MODULE "Params %s\n", header);
+
+  int headers = request->headers();
+
+  print_log(MODULE "Headers\n");
+  
+  for(int i=0; i<headers; i++)
+  {
+    AsyncWebHeader* h = request->getHeader(i);
+    print_log(MODULE " HEADER[%s]: %s\n", h->name().c_str(), h->value().c_str());
+  }
+
+  //get specific header by name
+  //if(request->hasHeader("MyHeader"))
+  //{
+  //    AsyncWebHeader* h = request->getHeader("MyHeader");
+    //Serial.printf("MyHeader: %s\n", h->value().c_str());
+  //}
+
+  //List all parameters
+  print_log(MODULE "Parameters\n");
+  
+  int params = request->params();
+  for(int i=0; i<params; i++)
+  {
+    AsyncWebParameter* p = request->getParam(i);
+  
+    if(p->isFile())
+    { //p->isPost() is also true
+      print_log(MODULE " FILE[%s]: %s, size: %u\n", p->name().c_str(), p->value().c_str(), p->size());
+    } else 
+    if(p->isPost())
+    {
+      print_log(MODULE " POST[%s]: %s\n", p->name().c_str(), p->value().c_str());
+      // Try to set as parameter
+      //config.set(p->name().c_str(),  p->value().c_str());
+    } 
+    else 
+    {
+      print_log(" GET[%s]: %s\n", p->name().c_str(), p->value().c_str());
+    }
+  }
+  //config.save();
+
+  if(request->hasParam("body", true))
+  {
+    AsyncWebParameter* p = request->getParam("body", true);
+
+    print_log(MODULE "Body Data: %s\n", p->value().c_str());
+  }
+}

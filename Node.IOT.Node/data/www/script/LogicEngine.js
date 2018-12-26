@@ -25,47 +25,88 @@ function logic_download()
 	
 	logic_assemble();
 		
-	store_nodelist();
+	save_project();
 		
-	var bytecode = generate_bytecode();
-
-	store_bytecode(bytecode);
+	
 	
 	//store_variablelist();
 }
 
 
 // Save bytecode to device
-function store_bytecode(bytecode)
+/*function store_bytecode(bytecode)
 {
 	console.log("Saving bytecode ");
 	console.log("Bytecode: " + bytecode);
 
-	var XHR = get_request();
+	var req = get_request();
 
-    XHR.addEventListener("load", function(event) 
-	{
-      console.log("Save Bytecode: " + event.target.responseText);
-    });
+	
+	req.loaded = function(event) 
+	{ 
+		console.log("store_bytecode: loaded"); 
+	};
+	
+	req.error = function() 
+	{ 
+		console.log("Unable to save logic to device");	
+	};
+	
 
-    XHR.addEventListener("error", function(event) 
-	{
-      alert('Unable to save logic to device');
-    });
 
-	XHR.open("POST", "/save_bytecode"); 
+	req.open("POST", "/save_bytecode"); 
 		
-    XHR.send(bytecode);
+	req.data = bytecode;
+		
+    ajax_add_request(req);
+	//XHR.send(bytecode);
+}*/
+
+
+
+// Return a string representing the entire project
+function project_get_string()
+{
+	var p = {}; // Temp project that will contain stripped down node and variable data
+	
+	p.nodes = project_get_nodes();			// Load nodes
+	//project.vars = generate_vardata(); // Load variables
+	
+	return JSON.stringify(p);
+	
 }
 
 
 
-// Create JSON string from node list
-// Only extract needed elements for rebuilding
-function get_nodelist_str()
+
+function save_project()
 {
-	var tmp_list = {nodes:[]};
+	console.log("Saving project to device");	
 	
+	// Save project file
+	var str = project_get_string();
+	//console.log("Project string: " + str);	
+	ajax_save_systemfile("logic.txt", "logic", str)
+		
+	// Save bytecode file
+	str = generate_bytecode();
+	ajax_save_systemfile("bytecode.txt", "bytecode", str)
+	
+
+}
+
+
+
+
+
+// TODO needs to be moved to project
+// Create node list obect
+// Only extract needed elements for rebuilding
+function project_get_nodes()
+{
+	var node_list = [];
+	
+	// node order does not matter
 	for (var i = 0; i < nodes.length; i++)
 	{
 		var n = {t:nodes[i].type, x:nodes[i].x, y:nodes[i].y};
@@ -73,53 +114,14 @@ function get_nodelist_str()
 		if (nodes[i].op1 != -1) n.o1 = nodes[i].op1;
 		if (nodes[i].op2 != -1) n.o2 = nodes[i].op2;
 							
-		tmp_list.nodes.push(n);
+		node_list.push(n);
 	}
 	
-	return JSON.stringify(tmp_list);
+	return node_list;
 }
 
 
-// Save bytecode to device
-function store_nodelist()
-{
-	console.log("Saving nodelist ");
-	
-	// Build temp variable list
 
-	var list_str = get_nodelist_str();
-	
-	if (list_str == "")
-	{
-		console.log("Unable to generate node list string");
-		return;
-
-	}
-
-	
-	console.log("Node list string: " + list_str);
-
-	var XHR = get_request();
-
-    XHR.addEventListener("load", function(event) 
-	{
-      console.log("Save logic: " + event.target.responseText);
-    });
-
-    XHR.addEventListener("error", function(event) 
-	{
-      alert('Unable to save logic to device');
-    });
-
-	XHR.open("POST", "/save_systemfile"); 
-		
-		
-	XHR.setRequestHeader("FileType", "logic");		
-	XHR.setRequestHeader("FileName", "/logic.txt");		
-		
-		
-    XHR.send(list_str);
-}
 
 
 
@@ -129,20 +131,38 @@ function store_nodelist()
 // Request config data load
 function load_logic()
 {
-	var req = get_request();
+	/*var req = get_request();
 
 	req.overrideMimeType("text/plain");
+		
+	req.loaded = function(event) 
+	{ 
+		console.log("load_logic: loaded"); 
+		parse_logic(req, event);
+	};
 	
-	req.addEventListener("load", function (evt) {parse_logic(req, evt);});
+	req.error = function() 
+	{ 
+		//console.log("Unable to save logic to device");	
+		load_page_error();
+	};	
 	
-	req.addEventListener("error", load_page_error, false); 
+	
+	req.tag = "Load logic";
 	
 	req.open("get", "/get_logic"); 
 	
-	
 	var params = "filetype=logic";
+
+	req.data = params;
 	
-	req.send(params);
+	ajax_add_request(req);*/
+	
+	// Request logic system file from device
+	// Need to refort callback
+	ajax_load_systemfile("logic.txt", "", function (event, req, type) { parse_logic(req, event); } );
+	
+	
 }
 
 
@@ -151,7 +171,7 @@ function load_logic()
 function parse_logic(data, evt)
 {
 	console.log("Parsing Logic file");
-	console.log("Logic: " + data.responseText);
+	//console.log("Logic: " + data.responseText);
 
 	var nodelist = {};
 		

@@ -312,7 +312,7 @@ function assemble_nodes()
 	}
 	
 	//if (enagle_log) console.log("Result: " + result);
-	if (enagle_log) show_inst_list();
+	//if (enagle_log) show_inst_list();
 	
 	return false;
 

@@ -66,7 +66,7 @@ var ajax = (function ()
 	}
 	
 
-	// save generic data as system file 
+	// Save generic data as system file 
 	function load_systemfile(filename, filetype, callback)
 	{
 		console.log(`Loading system file ${filename} type ${filetype}`);

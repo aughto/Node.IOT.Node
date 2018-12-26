@@ -12,6 +12,66 @@
 	Nodes 
 */
 
+
+const BRANCH_NONE = 0;
+const BRANCH_OPEN = 1;
+const BRANCH_CLOSE = 2;
+	
+	
+// Create a new node from UI symbol
+function create_node(x, y, type, op1, op2)
+{
+	var n;
+		
+	// decode node type
+	if (type == SYM.B)  	  n = new NodeB();  else		// Begin
+	if (type == SYM.E)		  n = new NodeE();  else		// End
+	
+	if (type == SYM.CAPLEFT)  n = new NodeCL();  else		// Left corner
+	if (type == SYM.CAPRIGHT) n = new NodeCR();  else		// Right corner
+	if (type == SYM.BRRIGHT)  n = new NodeBR();  else		// Branch right
+	if (type == SYM.BRLEFT)   n = new NodeBL();  else		// Branch left
+	if (type == SYM.BRDOWN)   n = new NodeBD();  else		// Branch down
+	if (type == SYM.HORZ)     n = new NodeHW();  else		// Horizontal
+	if (type == SYM.VERT)     n = new NodeVW();  else		// Vert
+	if (type == SYM.XIC)      n = new NodeXIC(); else		// Examine if closed
+	if (type == SYM.XIO)      n = new NodeXIO(); else		// Examine if opened
+	if (type == SYM.OTE)      n = new NodeOTE(); else		// Output energize
+	if (type == SYM.OTL)      n = new NodeOTL(); else		// Output latch
+	if (type == SYM.OTU)      n = new NodeOTU(); else		// Output unlatch
+	if (type == SYM.TMR)      n = new NodeTMR(); else		// Timer
+	{
+		n = new Node(type);		// Unknown
+	}
+	
+	//if (enagle_log) console.log("Add node type: " + n.type_text + " pos (" + x + "," +y + ")");
+	
+	n.x = x;
+	n.y = y;
+	
+	n.sx = symbol_x;
+	n.sy = symbol_y;
+	
+	n.branch_x = -1;
+	n.branch_y = -1;
+	
+	n.consumed = 0;
+	
+	n.op1 = op1;
+	n.op2 = op2;
+	
+
+	return n;
+}	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 // Generic
 function Node(type)
 {

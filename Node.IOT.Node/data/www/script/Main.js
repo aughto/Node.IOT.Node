@@ -45,7 +45,10 @@ var main = (function ()
 		
 		websocket.init();
 		
-		logic_init();
+		project.init();
+	
+		
+		//logic_init();
 	}
 
 	return local;

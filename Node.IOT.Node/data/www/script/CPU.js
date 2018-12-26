@@ -11,37 +11,11 @@
 
 /* CPU */
 
-// Instruction types
-const INST_TYPES = 	{INST_NONE		: 0x00, 
-					 INST_CLEAR		: 0x10, 
-					 INST_PUSHCR	: 0x11, 
-					 INST_POPCR		: 0x12,
-					 INST_PUSHOR	: 0x13, 
-					 INST_POPOR		: 0x14, 
-					 INST_XIO		: 0x30, 
-					 INST_XIC		: 0x31,
-					 INST_OTE		: 0x40, 
-					 INST_OTL		: 0x41, 
-					 INST_OTU		: 0x42, 
-					 INST_TMR		: 0x80};
 
-// Variable types
-const  VAR_TYPES = 	{VAR_NONE		: 0x00, 
-					 VAR_DIN		: 0x10, 
-					 VAR_DOUT		: 0x20, 
-					 VAR_AIN		: 0x30, 
-					 VAR_AOUT		: 0x40, 
-					 VAR_BIT		: 0x50, 
-					 VAR_TMR		: 0x60};
-					
-// Variable sizes					
-const  VAR_SIZE = 	{VAR_DIN		: 1, 
-					 VAR_DOUT		: 1, 
-					 VAR_AIN		: 2, 
-					 VAR_AOUT		: 2, 
-					 VAR_BIT		: 1, 
-					 VAR_TMR		: 6};
+
 						
+
+
 
 
 
@@ -50,7 +24,7 @@ const  VAR_SIZE = 	{VAR_DIN		: 1,
 	CPU
 */
 
-// Global Websockets service object
+// CPU
 var cpu = (function () 
 {
 	// Private variables
@@ -61,29 +35,25 @@ var cpu = (function ()
 	const UPDATE_TIME = 100;	// Update period
 	
 	var inst_table = [];		// Instruction jump table
-	
 	var inst_list = [];			// Instruction list
 	var variable_data = null; 	//  Raw byte data for variable storage 
 	var logic_ok = false;		// true if logic is ok to process
 	
 	// Public Interface
 	local.init = init;
-	local.set_timer = set_timer;
 	local.solve = solve_logic;
-	
-	
+	local.load_inst_list = load_inst_list;
+
+
+	// Variable operations
 	local.resize_variable_data = resize_variable_data;
 	local.variable_update = variable_update;
 	local.get_byte = get_byte;
-	local.get_ops = get_ops;
+	local.set_timer = set_timer;
 	local.toggle_byte = toggle_byte;
 	
+	// State
 	local.set_logic_ok = set_logic_ok;
-	
-	// Interface for assembler
-	local.add_inst = add_inst;
-	local.clear_inst_list = clear_inst_list;
-	local.get_inst_list = get_inst_list;
 	
 	
 	/* 
@@ -97,17 +67,19 @@ var cpu = (function ()
 		console.log(`${MODULE} Init`);	
 	
 		// Setup instruction table
-		inst_table[INST_TYPES.INST_CLEAR]  = inst_clear;
-		inst_table[INST_TYPES.INST_PUSHCR] = inst_pushcr;
-		inst_table[INST_TYPES.INST_POPCR]  = inst_popcr;
-		inst_table[INST_TYPES.INST_PUSHOR] = inst_pushor;
-		inst_table[INST_TYPES.INST_POPOR]  = inst_popor;
-		inst_table[INST_TYPES.INST_XIC]    = inst_xic;
-		inst_table[INST_TYPES.INST_XIO]    = inst_xio;
-		inst_table[INST_TYPES.INST_OTE]    = inst_ote;
-		inst_table[INST_TYPES.INST_OTL]    = inst_otl;
-		inst_table[INST_TYPES.INST_OTU]    = inst_otu;
-		inst_table[INST_TYPES.INST_TMR]    = inst_tmr;
+		inst_table = [];
+		
+		inst_table[INST_TYPES.INST_CLEAR.op]  = inst_clear;
+		inst_table[INST_TYPES.INST_PUSHCR.op] = inst_pushcr;
+		inst_table[INST_TYPES.INST_POPCR.op]  = inst_popcr;
+		inst_table[INST_TYPES.INST_PUSHOR.op] = inst_pushor;
+		inst_table[INST_TYPES.INST_POPOR.op]  = inst_popor;
+		inst_table[INST_TYPES.INST_XIC.op]    = inst_xic;
+		inst_table[INST_TYPES.INST_XIO.op]    = inst_xio;
+		inst_table[INST_TYPES.INST_OTE.op]    = inst_ote;
+		inst_table[INST_TYPES.INST_OTL.op]    = inst_otl;
+		inst_table[INST_TYPES.INST_OTU.op]    = inst_otu;
+		inst_table[INST_TYPES.INST_TMR.op]    = inst_tmr;
 
 		setInterval(update_timer, UPDATE_TIME);	// Setup timer
 	}
@@ -126,18 +98,34 @@ var cpu = (function ()
 	}
 	
 	
-	function clear_inst_list()
+	
+	
+	
+	
+	// Deep copy instruction list from external source
+	function load_inst_list(list)
 	{
+		//console.log("CPU load inst list");
 		
 		inst_list = [];
+
+		for (var i = 0; i < list.length; i++)
+		{
+			var inst = {inst:list[i].inst, op1:list[i].op1, op2:list[i].op2};
+			inst_list.push(inst);
+		}
+		
+		//console.log(inst_list);
 	}
 	
 	
-	function get_inst_list()
+	
+	
+	/*function get_inst_list()
 	{
 		
 		return inst_list;
-	}
+	}*/
 
 	
 	function resize_variable_data(size)
@@ -267,62 +255,7 @@ var cpu = (function ()
 	//		variable_data[i] = 0;
 	}
 	
-	// Add instruction to instruction list
-	function add_inst(inst, op1, op2)
-	{
-		var i = {inst:inst, op1:op1, op2:op2};
-		inst_list.push(i);
-	}
-	
-	
-	// Get number of operands
-	function get_ops(inst)
-	{
-		if (inst == INST_TYPES.INST_XIC) return 1;
-		if (inst == INST_TYPES.INST_XIO) return 1;
-		if (inst == INST_TYPES.INST_OTE) return 1;
-		if (inst == INST_TYPES.INST_OTL) return 1; 
-		if (inst == INST_TYPES.INST_OTU) return 1;
-		if (inst == INST_TYPES.INST_TMR) return 1;
-		
-		return 0;
-	}
-	
-	
-	// Decode and display
-	function decode_inst(n, inst, op1, op2)
-	{
-		if (inst == INST_TYPES.INST_NONE)    console.log("["+n+"] NONE ");      else 
-		if (inst == INST_TYPES.INST_CLEAR)   console.log("["+n+"] CLEAR ");     else 
-		if (inst == INST_TYPES.INST_PUSHCR)  console.log("["+n+"] PUSHCR ");    else 
-		if (inst == INST_TYPES.INST_POPCR)   console.log("["+n+"] POPCR ");     else 
-		if (inst == INST_TYPES.INST_PUSHOR)  console.log("["+n+"] PUSHOR ");    else 
-		if (inst == INST_TYPES.INST_POPOR)   console.log("["+n+"] COLLECT ");   else 
-		if (inst == INST_TYPES.INST_XIC)     console.log("["+n+"] XIC " + op1); else 
-		if (inst == INST_TYPES.INST_XIO)     console.log("["+n+"] XIO " + op1); else
-		if (inst == INST_TYPES.INST_OTE)     console.log("["+n+"] OTE " + op1); else	
-		if (inst == INST_TYPES.INST_OTL)     console.log("["+n+"] OTL " + op1); else	
-		if (inst == INST_TYPES.INST_OTU)     console.log("["+n+"] OTU " + op1); else	
-		if (inst == INST_TYPES.INST_TMR)     console.log("["+n+"] TMR " + op1); else
-		{
-			console.log("Unknown inst: " + inst);
-		}
-	}
-	
-	// Show instruction list
-	function show_inst_list()
-	{
-		console.log("Instruction list:");
-		
-		for (var i = 0; i < inst_list.length; i++)
-		{
-			var inst = inst_list[i].inst;
-			var op1 = inst_list[i].op1;
-			var op2 = inst_list[i].op2;
-			
-			decode_inst(i, inst, op1, op2);		
-		}
-	}
+
 	
 	
 	/* 
@@ -421,6 +354,12 @@ var cpu = (function ()
 	// Core Solver
 	function solve_logic(dt)
 	{
+		
+		// Make sure varibles are defined
+		if (variable_data == null)
+			logic_ok = false;
+		
+		
 		if (!logic_ok) 
 		{
 			console.log("Solve: Logic not ok");
@@ -442,7 +381,7 @@ var cpu = (function ()
 			
 			try
 			{
-				inst_table[state.inst.inst](state);
+				inst_table[state.inst.inst.op](state);
 			}
 			catch(ex)
 			{

@@ -125,10 +125,10 @@ var ajax = (function ()
 			// Need to preform special actions for some targerts
 			// TODO: Need to replace with hooks
 			
-			if (target=="mainconfig") load_config("mainconfig"); else
-			if (target=="ioconfig")   load_config("ioconfig"); else
+			if (target=="mainconfig") config.load("mainconfig"); else
+			if (target=="ioconfig")   config.load("ioconfig"); else
 			if (target=="liveview")   load_liveview(); else
-			if (target=="variables")  load_variables(); else
+			if (target=="variables")  vareditor.load(); else
 			if (target=="weblogix")   load_weblogix(); 
 		};
 				

@@ -12,11 +12,11 @@
 */
 
 // Graphics Helpers
-function get_screen_x(wx) {	return wx * zoom_scale - x_ofs;}						// World X to Screen X
-function get_screen_y(wy) {	return wy * zoom_scale - y_ofs;}						// World Y to Screen Y
+//function get_screen_x(wx) {	return wx * zoom_scale - x_ofs;}						// World X to Screen X
+//function get_screen_y(wy) {	return wy * zoom_scale - y_ofs;}						// World Y to Screen Y
 function get_world_x(sx)  {	return (sx + x_ofs) / zoom_scale; }						// Screen X to World X
 function get_world_y(sy)  { return (sy + y_ofs) / zoom_scale; }						// Screen Y to World Y 
-function grid_round(v)    { return +(v*GRID_FACTOR).toFixed(1)/GRID_FACTOR; }     	// Apply snap to grid
+//function grid_round(v)    { return +(v*GRID_FACTOR).toFixed(1)/GRID_FACTOR; }     	// Apply snap to grid
 	
 // Determine if world cord in on screen
 function on_screen(x, y, w, h)

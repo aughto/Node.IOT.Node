@@ -6,7 +6,7 @@
 "use strict";
 
 // UI Symbol types 
-var SYM = {NONE : 0,
+var SYM =  {NONE : 0,
 			MODE : 1,
 			SELECT : 2,
 			TOGGLE : 3,
@@ -671,6 +671,39 @@ function draw_grid()
 }
 
 
+
+function draw_node(n, i)
+{
+	
+	n.draw(main_context, n.x*symbol_x, n.y*symbol_y, symbol_x, symbol_y);
+
+	draw_text(main_context, n.x*symbol_x+3, n.y*symbol_y+3 +symbol_y*0.6,10, 10,"#000000", i);
+	//draw_text(main_context, n.x*symbol_x+symbol_x*0.6+3, n.y*symbol_y+3 +symbol_y*0.6,10, 10,"#000000", n.order);
+	
+	if (!n.is_operation()) return;
+	
+	if (n.op1 == -1) return;
+
+	var v = project.get_variable_by_index(n.op1);
+			
+	var value = cpu.get_byte(v.offset);
+			
+	var color = (value == 0) ?  "#ff0000" : "#0000ff" ;
+	var name = v.name;
+			
+	draw_text(main_context, n.x*symbol_x+symbol_x * 0.2, 
+							n.y*symbol_y+symbol_y*0.05, 	
+							10, 10,color, name);		
+}
+
+
+
+
+
+
+
+
+
 // Main render
 function render()
 {
@@ -690,38 +723,9 @@ function render()
 	main_context.translate(-x_ofs, -y_ofs);
 	main_context.scale(zoom_scale,zoom_scale);
 	
-	// Get node list for rendering
-	var nodes = project.get_nodes();	
-	
-	// Draw Nodes 
-	for (var i = 0; i < nodes.length; i++)
-	{
-		var n = nodes[i];
 
-		n.draw(main_context, n.x*symbol_x, n.y*symbol_y, symbol_x, symbol_y);
-
-		draw_text(main_context, n.x*symbol_x+3, n.y*symbol_y+3 +symbol_y*0.6,10, 10,"#000000", i);
-		//draw_text(main_context, n.x*symbol_x+symbol_x*0.6+3, n.y*symbol_y+3 +symbol_y*0.6,10, 10,"#000000", n.order);
-		
-		if (n.is_operation())
-		{
-			if (n.op1 != -1)
-			{
-				var v = project.get_variable_by_index(n.op1);
-				
-				var value = cpu.get_byte(v.offset);
-				
-				var color = (value == 0) ?  "#ff0000" : "#0000ff" ;
-				var name = v.name;
-				
-				draw_text(main_context, n.x*symbol_x+symbol_x * 0.2, 
-										n.y*symbol_y+symbol_y*0.05, 	
-										10, 10,color, name);		
-			}
-
-		}
-	}
-		
+	// Iterate drawing operation over the node list
+	project.iterate_nodes(draw_node);
 
 	main_context.restore();
 }

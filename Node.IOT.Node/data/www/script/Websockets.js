@@ -197,8 +197,8 @@ var websocket = (function ()
 				
 		// Todo need to be able to register actions 			
 		if (data.cmd == "ping")	 recv_ping(); else
-		if (data.cmd == "set")	 set_command(data);         else
-		if (data.cmd == "setvar")	 setvar_command(data);         else
+		if (data.cmd == "set")	 project.ws_set_command(data);         else
+		if (data.cmd == "setvar")project.ws_setvar_command(data);         else
 	
 		{
 			console.log("Unknown action: " + data.cmd);

@@ -29,9 +29,11 @@ var project = (function ()
 	
 	local.assemble = assemble;			// Assemble project
 	
+	
+	/* Nodes */
+	local.iterate_nodes = iterate_nodes;
 	local.get_node = get_node;			// Return node at location
 	//local.find_node = find_node;		// Get node list
-	local.get_nodes = get_nodes;		// Get node list
 	local.toggle_node = toggle_node		// Toggle a node
 	
 
@@ -45,6 +47,10 @@ var project = (function ()
 	local.remove_variable = remove_variable;
 	local.add_variable = add_variable;
 
+	
+	local.ws_set_command = ws_set_command;
+	local.ws_setvar_command = ws_setvar_command;
+	
 	
 	// Project Init
 	function init()
@@ -283,113 +289,116 @@ var project = (function ()
 		return null;
 	}	
 		
-	
-	
-	
-	function get_nodes()
+		
+	// Preform operaton over nodes
+	function iterate_nodes(callback)
 	{
-		return nodes;
-	}
-	
-	
-function add_node(x, y, type, op1, op2)
-{
-	if (op1 == undefined) op1 = -1;
-	if (op2 == undefined) op2 = -1;
-	
-	var n = create_node(x, y, type, op1, op2);
-	nodes.push(n);
-	
-	return nodes.length - 1;		
-}
-
-
-// Set node symbol at location
-function set_node(x, y, s)
-{
-	// Get node index for location
-	var ni = find_node(x, y);
-	
-	// Delete whatever is there, if anything
-	if (ni != -1) nodes.splice(ni, 1);
-
-	// Just return if we are deleting a node
-	if (s == SYM.NONE) return;
-	
-	// Create new node at location
-	add_node(x, y, s, 0);
-}
-
-
-
-// Toggle node value
-// Should this be in logic?
-function toggle_node(ix, iy)
-{
-	var ni = find_node(ix, iy);
-	
-	if (ni < 0) return;
+		for	(var i = 0; i < nodes.length; i++)
+			callback(nodes[i], i);
+	}	
 		
-	var n = nodes[ni];
-	
-	if (n.op1 == -1) return;
-
-	//var f = variable_find(n.op1);
 		
-	//if (f == -1) return;
-
-	//variable_table[f].value = variable_table[f].value == 0 ? 1 : 0;
-	
-	cpu.toggle_byte(n.op1);
-	
-	
-	// Only send toggle if live
-	if (logic_mode == MODE_LIVE)
-	{	
-		var v = cpu.get_byte(n.op1);
 		
-		send_setvariable(n.op1, v);
-	}
+	
 		
-	//variables[n.op1] = variables[n.op1]  == 0 ? 1 : 0;
-	
-	
-	cpu.solve(100);
-}
-	
-
-
-
-	
-
-function show_node_list(nodes)
-{
-	for(var i = 0; i < nodes.length; i++)
+	function add_node(x, y, type, op1, op2)
 	{
-		var n = nodes[i];
+		if (op1 == undefined) op1 = -1;
+		if (op2 == undefined) op2 = -1;
 		
-		var s = "";
-		s += "N " + i + " " + n.type_text + " (" + n.x + "," + n.y + ") ";
+		var n = create_node(x, y, type, op1, op2);
+		nodes.push(n);
 		
-		s += "Next: " + nodes[i].next + " " ;
-		
-		if (nodes[i].branch != -1)
-			s += "Branch: " + nodes[i].branch + " " ;
-
-		if (nodes[i].branch != -1)
-			s += "Type: " + nodes[i].branch_type + " " ;
-		
-		if (nodes[i].prev != -1)
-			s += "Prev: " + nodes[i].prev + " " ;
-		
-		s += "Op1: " + nodes[i].op1 + " " ;
-			//s += "Op1_index: " + nodes[i].op1_index + " " ;
-		
-		console.log(s);
+		return nodes.length - 1;		
 	}
-	
-	console.log(nodes);
-}
+
+
+	// Set node symbol at location
+	function set_node(x, y, s)
+	{
+		// Get node index for location
+		var ni = find_node(x, y);
+		
+		// Delete whatever is there, if anything
+		if (ni != -1) nodes.splice(ni, 1);
+
+		// Just return if we are deleting a node
+		if (s == SYM.NONE) return;
+		
+		// Create new node at location
+		add_node(x, y, s, 0);
+	}
+
+
+
+	// Toggle node value
+	// Should this be in logic?
+	function toggle_node(ix, iy)
+	{
+		var ni = find_node(ix, iy);
+		
+		if (ni < 0) return;
+			
+		var n = nodes[ni];
+		
+		if (n.op1 == -1) return;
+
+		//var f = variable_find(n.op1);
+			
+		//if (f == -1) return;
+
+		//variable_table[f].value = variable_table[f].value == 0 ? 1 : 0;
+		
+		cpu.toggle_byte(n.op1);
+		
+		
+		// Only send toggle if live
+		if (logic_mode == MODE_LIVE)
+		{	
+			var v = cpu.get_byte(n.op1);
+			
+			send_setvariable(n.op1, v);
+		}
+			
+		//variables[n.op1] = variables[n.op1]  == 0 ? 1 : 0;
+		
+		
+		cpu.solve(100);
+	}
+		
+
+
+
+		
+
+	function show_node_list(nodes)
+	{
+		for(var i = 0; i < nodes.length; i++)
+		{
+			var n = nodes[i];
+			
+			var s = "";
+			s += "N " + i + " " + n.type_text + " (" + n.x + "," + n.y + ") ";
+			
+			s += "Next: " + nodes[i].next + " " ;
+			
+			if (nodes[i].branch != -1)
+				s += "Branch: " + nodes[i].branch + " " ;
+
+			if (nodes[i].branch != -1)
+				s += "Type: " + nodes[i].branch_type + " " ;
+			
+			if (nodes[i].prev != -1)
+				s += "Prev: " + nodes[i].prev + " " ;
+			
+			s += "Op1: " + nodes[i].op1 + " " ;
+				//s += "Op1_index: " + nodes[i].op1_index + " " ;
+			
+			console.log(s);
+		}
+		
+		console.log(nodes);
+	}
 
 
 
@@ -404,232 +413,221 @@ function show_node_list(nodes)
 	
 	
 	
+	/* Websockets updates */
+	function send_setvariable(index, value)
+	{
+		websocket.send_command("setvar", index, value);
+	}
+
+
+	// Parse MQTT message
+	function ws_set_command(message)
+	{
+		console.log("Set command " + message.item + " " +message.value);
+	
+		
+		if (message.item == "Input1") cpu.variable_update(0, message.value);
+		if (message.item == "Input2") cpu.variable_update(1, message.value);
+		if (message.item == "Input3") cpu.variable_update(2, message.value);
+		if (message.item == "Input4") cpu.variable_update(3, message.value);
+	
+		if (message.item == "Output1") cpu.variable_update(4, message.value);
+		if (message.item == "Output2") cpu.variable_update(5, message.value);
+		if (message.item == "Output3") cpu.variable_update(6, message.value);
+		if (message.item == "Output4") cpu.variable_update(7, message.value);
+		
+		
+		update_value(message.item, message.value);
+	}
+	
+	// Parse MQTT message
+	function ws_setvar_command(message)
+	{
+		console.log("Setvar command " + message.item + " " + message.value);
+	
+		
+		/*if (message.item == "Input1") variable_update(0, message.value);
+		if (message.item == "Input2") variable_update(1, message.value);
+		if (message.item == "Input3") variable_update(2, message.value);
+		if (message.item == "Input4") variable_update(3, message.value);
+	
+		if (message.item == "Output1") variable_update(4, message.value);
+		if (message.item == "Output2") variable_update(5, message.value);
+		if (message.item == "Output3") variable_update(6, message.value);
+		if (message.item == "Output4") variable_update(7, message.value);*/
+		
+		
+		update_value(message.item, message.value);
+	}
+	
+
+
+
+
 	/* Variables */
 	
 	
-
-
-
-function send_setvariable(index, value)
-{
-	websocket.send_command("setvar", index, value);
-}
-
-
-// Parse MQTT message
-function set_command(message)
-{
-	console.log("Set command " + message.item + " " +message.value);
-
-	
-	if (message.item == "Input1") cpu.variable_update(0, message.value);
-	if (message.item == "Input2") cpu.variable_update(1, message.value);
-	if (message.item == "Input3") cpu.variable_update(2, message.value);
-	if (message.item == "Input4") cpu.variable_update(3, message.value);
-
-	if (message.item == "Output1") cpu.variable_update(4, message.value);
-	if (message.item == "Output2") cpu.variable_update(5, message.value);
-	if (message.item == "Output3") cpu.variable_update(6, message.value);
-	if (message.item == "Output4") cpu.variable_update(7, message.value);
-	
-	
-	update_value(message.item, message.value);
-}
-
-// Parse MQTT message
-function setvar_command(message)
-{
-	console.log("Setvar command " + message.item + " " +message.value);
-
-	
-	/*if (message.item == "Input1") variable_update(0, message.value);
-	if (message.item == "Input2") variable_update(1, message.value);
-	if (message.item == "Input3") variable_update(2, message.value);
-	if (message.item == "Input4") variable_update(3, message.value);
-
-	if (message.item == "Output1") variable_update(4, message.value);
-	if (message.item == "Output2") variable_update(5, message.value);
-	if (message.item == "Output3") variable_update(6, message.value);
-	if (message.item == "Output4") variable_update(7, message.value);*/
-	
-	
-	update_value(message.item, message.value);
-}
-
-
-
-
-
-
-	
-	
-function cpu_remove_variable(index)
-{
-	
-
-	
-}
 	
 	
 
 		
 		
-// Find index for variable by name
-function find_variable_index(n)
-{
-	console.log("find_variable_index");
-	
-	for (var i = 0; i < variable_list.variables.length; i++)
+	// Find index for variable by name
+	function find_variable_index(n)
 	{
-		if (variable_list.variables[i].name == n)
-			return i;
+		console.log("find_variable_index");
 		
-	}
-		
-	return -1;
-}		
-		
-		
-		
-
-// Find index of variable by offset
-// used for node linking		
-/*function find_variable_index(offset)
-{
-	
-	// Compute memory offsets
-	for (var i = 0; i < variable_list.variables.length; i++)
-	{
-		
-		if (variable_list.variables[i].offset == offset) return i;
-	}
-	
-	return -1;
-}
-*/
-
-
-
-
-
-
-
-
-
-function assign_variable_list()
-{
-// Variables are sorted by type and then by name to assign index
-
-
-	console.log("Assign variable table");
-
-	// Sort variable list by type to assign offsets correctly
-	variable_list.variables.sort(variable_compare_type);
-	
-	
-	variable_list.num_din = 0;
-	variable_list.num_dout = 0;
-	variable_list.num_ain = 0;
-	variable_list.num_aout = 0;
-	variable_list.num_bit = 0;
-	variable_list.num_tmr = 0;
-	
-	var offset = 0;
-	// Compute memory offsets
-	for (var i = 0; i < variable_list.variables.length; i++)
-	{
-		var v = variable_list.variables[i];
-
-		v.index = i; // Save index for when list is sorted for viewing
-		v.offset = offset;
-		
-		// Decode type and increment offset
-		if (v.type == VAR_TYPES.VAR_DIN)  {variable_list.num_din++;  offset += VAR_SIZE.VAR_DIN;  } else
-		if (v.type == VAR_TYPES.VAR_DOUT) {variable_list.num_dout++; offset += VAR_SIZE.VAR_DOUT; } else
-		if (v.type == VAR_TYPES.VAR_AIN)  {variable_list.num_ain++;  offset += VAR_SIZE.VAR_AIN;  } else
-		if (v.type == VAR_TYPES.VAR_AOUT) {variable_list.num_aout++; offset += VAR_SIZE.VAR_AOUT; } else
-		if (v.type == VAR_TYPES.VAR_BIT)  {variable_list.num_bit++;  offset += VAR_SIZE.VAR_BIT;  } else
-		if (v.type == VAR_TYPES.VAR_TMR)  {variable_list.num_tmr++;  offset += VAR_SIZE.VAR_TMR;  } else
+		for (var i = 0; i < variable_list.variables.length; i++)
 		{
-			console.log(`Unknown variable type: ${v.type}`);
-			//return;
+			if (variable_list.variables[i].name == n)
+				return i;
+			
 		}
-	}
-	
-	variable_list.mem_size = offset;
-	
-	
-	cpu.resize_variable_data(variable_list.mem_size);
-	
+			
+		return -1;
+	}		
+			
+			
+			
 
-	
-	
-	//console.log(nodes);
-
-	set_variable_values();
-}
-
-
-
-// Name compare for variables
-function variable_compare_type(a,b) 
-{
-	// Sory by type first
-	if (a.type < b.type) return -1;
-	if (a.type > b.type) return 1;
-	
-	// Then sort by name	
-	if (a.name.toUpperCase() < b.name.toUpperCase() )    return -1;
-	if (a.name.toUpperCase() > b.name.toUpperCase() )    return 1;
-	return 0;
-}
-
-// Name compare for variables
-function variable_compare_name(a,b) 
-{
-	//  sort by name	
-	if (a.name.toUpperCase() < b.name.toUpperCase() )    return -1;
-	if (a.name.toUpperCase() > b.name.toUpperCase() )    return 1;
-	return 0;
-}
-
-
-
-// Save bytecode to device
-function variables_get_export_object()
-{
-	// Will be moved to project save
-	
-	//console.log("Saving variablelist ");
-	
-	var var_data = {vars:[]};
-	
-	// Build temp variable list
-	for (var i = 0; i < variable_list.variables.length; i++)
+	// Find index of variable by offset
+	// used for node linking		
+	/*function find_variable_index(offset)
 	{
-		var_data.vars[i] = {name:variable_list.variables[i].name, type:variable_list.variables[i].type};
+		
+		// Compute memory offsets
+		for (var i = 0; i < variable_list.variables.length; i++)
+		{
+			
+			if (variable_list.variables[i].offset == offset) return i;
+		}
+		
+		return -1;
 	}
-	
-	var_data.config = {};
-	var_data.num_din = variable_list.num_din;
-	var_data.num_dout = variable_list.num_dout;
-	var_data.num_ain = variable_list.num_ain;
-	var_data.num_aout = variable_list.num_aout;
-	var_data.num_bit = variable_list.num_bit;
-	var_data.num_tmr = variable_list.num_tmr;
-	
-	return var_data;
-}
+	*/
 
 
 
-function set_variable_values()
-{
-	//load_test_variables();
-}
-	
-	/* End of Variables */
-	
+
+
+
+
+
+
+	function assign_variable_list()
+	{
+	// Variables are sorted by type and then by name to assign index
+
+
+		console.log("Assign variable table");
+
+		// Sort variable list by type to assign offsets correctly
+		variable_list.variables.sort(variable_compare_type);
+		
+		
+		variable_list.num_din = 0;
+		variable_list.num_dout = 0;
+		variable_list.num_ain = 0;
+		variable_list.num_aout = 0;
+		variable_list.num_bit = 0;
+		variable_list.num_tmr = 0;
+		
+		var offset = 0;
+		// Compute memory offsets
+		for (var i = 0; i < variable_list.variables.length; i++)
+		{
+			var v = variable_list.variables[i];
+
+			v.index = i; // Save index for when list is sorted for viewing
+			v.offset = offset;
+			
+			// Decode type and increment offset
+			if (v.type == VAR_TYPES.VAR_DIN)  {variable_list.num_din++;  offset += VAR_SIZE.VAR_DIN;  } else
+			if (v.type == VAR_TYPES.VAR_DOUT) {variable_list.num_dout++; offset += VAR_SIZE.VAR_DOUT; } else
+			if (v.type == VAR_TYPES.VAR_AIN)  {variable_list.num_ain++;  offset += VAR_SIZE.VAR_AIN;  } else
+			if (v.type == VAR_TYPES.VAR_AOUT) {variable_list.num_aout++; offset += VAR_SIZE.VAR_AOUT; } else
+			if (v.type == VAR_TYPES.VAR_BIT)  {variable_list.num_bit++;  offset += VAR_SIZE.VAR_BIT;  } else
+			if (v.type == VAR_TYPES.VAR_TMR)  {variable_list.num_tmr++;  offset += VAR_SIZE.VAR_TMR;  } else
+			{
+				console.log(`Unknown variable type: ${v.type}`);
+				//return;
+			}
+		}
+		
+		variable_list.mem_size = offset;
+		
+		
+		cpu.resize_variable_data(variable_list.mem_size);
+		
+
+		
+		
+		//console.log(nodes);
+
+		set_variable_values();
+	}
+
+
+
+	// Name compare for variables
+	function variable_compare_type(a,b) 
+	{
+		// Sory by type first
+		if (a.type < b.type) return -1;
+		if (a.type > b.type) return 1;
+		
+		// Then sort by name	
+		if (a.name.toUpperCase() < b.name.toUpperCase() )    return -1;
+		if (a.name.toUpperCase() > b.name.toUpperCase() )    return 1;
+		return 0;
+	}
+
+	// Name compare for variables
+	function variable_compare_name(a,b) 
+	{
+		//  sort by name	
+		if (a.name.toUpperCase() < b.name.toUpperCase() )    return -1;
+		if (a.name.toUpperCase() > b.name.toUpperCase() )    return 1;
+		return 0;
+	}
+
+
+
+	// Save bytecode to device
+	function variables_get_export_object()
+	{
+		// Will be moved to project save
+		
+		//console.log("Saving variablelist ");
+		
+		var var_data = {vars:[]};
+		
+		// Build temp variable list
+		for (var i = 0; i < variable_list.variables.length; i++)
+		{
+			var_data.vars[i] = {name:variable_list.variables[i].name, type:variable_list.variables[i].type};
+		}
+		
+		var_data.config = {};
+		var_data.num_din = variable_list.num_din;
+		var_data.num_dout = variable_list.num_dout;
+		var_data.num_ain = variable_list.num_ain;
+		var_data.num_aout = variable_list.num_aout;
+		var_data.num_bit = variable_list.num_bit;
+		var_data.num_tmr = variable_list.num_tmr;
+		
+		return var_data;
+	}
+
+
+
+	function set_variable_values()
+	{
+		//load_test_variables();
+	}
+		
+		/* End of Variables */
+		
 
 	
 	

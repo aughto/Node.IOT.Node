@@ -9,12 +9,15 @@
 "use strict";
 
 
-function log(s)
+function utility_init()
 {
-	console.log(s);
-//	var a = document.getElementById("data_area");
-//	a.innerHTML = s + "<br>" + a.innerHTML ;
+	// Define console if not present
+	if (!console) { console = {log: ()=>{}} }
 }
+
+
+
+
 
 
 /* 

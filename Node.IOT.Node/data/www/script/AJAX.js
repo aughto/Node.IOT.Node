@@ -24,16 +24,23 @@ var ajax = (function ()
 		Public 
 	*/
 	
+	local.init = function() { init(); } 
+	local.save_systemfile = function(filename, filetype, data) { save_systemfile(filename, filetype, data); };
+	local.load_systemfile = function(filename, filetype, callback) { load_systemfile(filename, filetype, callback); };
+	local.load_page = function(page, target) { load_page(page, target); };
+	
 	// Init object
-	local.init = function()
+	function init()
 	{
 		console.log("AJAX Init");
 
 		setInterval(update, AJAX_UPDATE);	// Setup timer
 	}	
 	
+	
+	
 	/* Save generic data as system file on device*/
-	local.save_systemfile = function(filename, filetype, data)
+	function save_systemfile(filename, filetype, data)
 	{
 		console.log(`Saving system file ${filename} type ${filetype}`);
 		//console.log("Data: " + data);
@@ -61,7 +68,7 @@ var ajax = (function ()
 	
 
 	// save generic data as system file 
-	local.load_systemfile = function(filename, filetype, callback)
+	function load_systemfile(filename, filetype, callback)
 	{
 		console.log(`Loading system file ${filename} type ${filetype}`);
 		//console.log("Data: " + data);
@@ -96,7 +103,7 @@ var ajax = (function ()
 
 	// Load html
 	// Need to replace with callback
-	local.load_page = function(page, target) 
+	function load_page(page, target) 
 	{
 		var req = get_request();
 

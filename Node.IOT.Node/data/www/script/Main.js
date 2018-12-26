@@ -13,6 +13,8 @@ function init()
 	
 	// Enfore init order here
 	
+	utility_init();
+	
 	ajax.init();
 
 	// Load default pages

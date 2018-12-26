@@ -18,21 +18,31 @@
 // Global AJAX service object
 var ajax = (function () 
 {
-	var local = {};
+	// Private variables
+	var local = {};				// Class object
+	
+	var MODULE = "AJAX ";
+	var AJAX_UPDATE = 1000;		// Update time for housekeeping in ms
+	var AJAX_TIMEOUT = 5000;	// Request timeout
+	
+	var requests = [];			// List of pending requests
+	var next_id = 100; 			// ID of next request
+
+	// Public Interface
+	local.init = init;
+	local.save_systemfile = save_systemfile;
+	local.load_systemfile = load_systemfile;
+	local.load_page = load_page;	
+	
 	
 	/* 
 		Public 
 	*/
 	
-	local.init = init
-	local.save_systemfile = save_systemfile;
-	local.load_systemfile = load_systemfile;
-	local.load_page = load_page;
-	
 	// Init object
 	function init()
 	{
-		console.log("AJAX Init");
+		console.log(`{$MODULE} Init`);
 
 		setInterval(update, AJAX_UPDATE);	// Setup timer
 	}	
@@ -41,19 +51,19 @@ var ajax = (function ()
 	// Save generic data as system file on device
 	function save_systemfile(filename, filetype, data)
 	{
-		console.log(`Saving system file ${filename} type ${filetype}`);
+		console.log(`${MODULE} Saving system file ${filename} type ${filetype}`);
 		//console.log("Data: " + data);
 	
 		var req = get_request();
 		
-		req.loaded = function() { console.log(`save_systemfile ${filename}: Saved`); };
-		req.error = function()  { console.log(`save_systemfile ${filename}: Error`); };
+		req.loaded = function() { console.log(`${MODULE} Save_systemfile ${filename}: Saved`); };
+		req.error = function()  { console.log(`${MODULE} Save_systemfile ${filename}: Error`); };
 		
 		req.tag = `Save system file ${filename}`;
 		
 		var cmd = `/save_systemfile?filename=${filename}&filetype=${filetype}`;
 	
-		console.log(`Store command: ${cmd}`);
+		console.log(`${MODULE} Store command: ${cmd}`);
 		
 		req.open("POST", cmd ); 
 			
@@ -69,29 +79,28 @@ var ajax = (function ()
 	// Save generic data as system file 
 	function load_systemfile(filename, filetype, callback)
 	{
-		console.log(`Loading system file ${filename} type ${filetype}`);
+		console.log(`${MODULE} Loading system file ${filename} type ${filetype}`);
 		//console.log("Data: " + data);
 	
 		var req = get_request();
 			
 		req.loaded = function(event) 
 		{ 
-			console.log(`get_systemfile ${filename}: loaded`); 
+			console.log(`${MODULE} get_systemfile ${filename}: loaded`); 
 	
 			callback(filetype, req, event);
-		};
-		
+		};		
 		
 		req.error = function()  
 		{ 
-			console.log(`load_systemfile ${filename}: Error`); 
+			console.log(`${MODULE} load_systemfile ${filename}: Error`); 
 		};
 		
 		req.tag = `Load system file ${filename}`;
 		
 		var cmd = `/get_systemfile?filename=${filename}`;
 	
-		console.log(`Get command: ${cmd}`);
+		console.log(`${MODULE} Get command: ${cmd}`);
 		
 		req.open("POST", cmd ); 
 			
@@ -122,11 +131,10 @@ var ajax = (function ()
 			if (target=="variables")  load_variables(); else
 			if (target=="weblogix")   load_weblogix(); 
 		};
-		
-		
+				
 		req.error = function() 
 		{ 
-			console.log("Unable to load page");
+			console.log(`${MODULE} Unable to load page`);
 			//document.getElementById("page").innerHTML = "";
 		};
 	
@@ -134,25 +142,16 @@ var ajax = (function ()
 	
 		req.tag = page;
 	
-		console.log(`Load URL: ${url}`);
+		console.log(`${MODULE} Load URL: ${url}`);
 	
 		req.open("get", url);
 		add_request(req);
 	}
-	
-	
+		
 	
 	/* 
 		Private 
 	*/	
-	
-	/* Ajax request manager. This mainly a wrapper to seralizise ajax requests */
-	var requests = [];		// List of pending requests
-	var next_id = 100; 			// ID of next request
-
-	var AJAX_UPDATE = 1000;		// Update time for housekeeping in ms
-	var AJAX_TIMEOUT = 5000;	// Request timeout
-
 
 	// Preform next ajax request if any are pending 
 	function request_next()
@@ -201,10 +200,6 @@ var ajax = (function ()
 		if (requests.length == 1)
 			request_next();
 	}
-
-	
-	/* End of request manager */
-
 	
 	
 	// Get an XMLHttpRequest object
@@ -253,7 +248,7 @@ var ajax = (function ()
 		
 			//console.log('AJAX requst loaded ' +req.id);
 	  
-			console.log(`Req ${req.tag} loaded in ${time} ms`);
+			console.log(`${MODULE} Req ${req.tag} loaded in ${time} ms`);
 	  
 			request_complete(req); // Signal complete;
 	  
@@ -265,7 +260,7 @@ var ajax = (function ()
 		
 		req.addEventListener("error", function(event) 
 		{
-			console.log(`AJAX requst error ${req.id}`);
+			console.log(`${MODULE} AJAX requst error ${req.id}`);
 		
 			request_complete(req); // Signal complete;
 		
@@ -277,7 +272,7 @@ var ajax = (function ()
 		
 		req.addEventListener("abort", function(event) 
 		{
-			console.log(`AJAX requst abort ${req.id}`);
+			console.log(`${MODULE} AJAX requst abort ${req.id}`);
 		
 			request_complete(req); // Signal complete;
 		
@@ -292,7 +287,7 @@ var ajax = (function ()
 	// Periodic check for hanging requests
 	function update()
 	{
-		console.log("Ajax Update");
+		//console.log(`${MODULE} Update`);
 		
 		var d = new Date();
 		var cur_time = d.getMilliseconds();
@@ -304,7 +299,7 @@ var ajax = (function ()
 			
 			if (dt >= AJAX_TIMEOUT)
 			{
-				console.log(`Timeout on request ID ${red.id}`);
+				console.log(`${MODULE} Timeout on request ID ${red.id}`);
 				
 				// remove
 				requests.splice(i, 1);

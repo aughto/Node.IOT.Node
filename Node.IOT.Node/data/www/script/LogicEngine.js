@@ -26,41 +26,11 @@ function logic_download()
 	logic_assemble();
 		
 	save_project();
-		
 	
 	
 	//store_variablelist();
 }
 
-
-// Save bytecode to device
-/*function store_bytecode(bytecode)
-{
-	console.log("Saving bytecode ");
-	console.log("Bytecode: " + bytecode);
-
-	var req = get_request();
-
-	
-	req.loaded = function(event) 
-	{ 
-		console.log("store_bytecode: loaded"); 
-	};
-	
-	req.error = function() 
-	{ 
-		console.log("Unable to save logic to device");	
-	};
-	
-
-
-	req.open("POST", "/save_bytecode"); 
-		
-	req.data = bytecode;
-		
-    ajax_add_request(req);
-	//XHR.send(bytecode);
-}*/
 
 
 
@@ -78,7 +48,7 @@ function project_get_string()
 
 
 
-
+// Save project to device
 function save_project()
 {
 	console.log("Saving project to device");	
@@ -90,9 +60,7 @@ function save_project()
 		
 	// Save bytecode file
 	str = generate_bytecode();
-	ajax_save_systemfile("bytecode.txt", "bytecode", str)
-	
-
+	ajax.ajax_save_systemfile("bytecode.txt", "bytecode", str)
 }
 
 
@@ -131,37 +99,9 @@ function project_get_nodes()
 // Request config data load
 function load_logic()
 {
-	/*var req = get_request();
-
-	req.overrideMimeType("text/plain");
-		
-	req.loaded = function(event) 
-	{ 
-		console.log("load_logic: loaded"); 
-		parse_logic(req, event);
-	};
-	
-	req.error = function() 
-	{ 
-		//console.log("Unable to save logic to device");	
-		load_page_error();
-	};	
-	
-	
-	req.tag = "Load logic";
-	
-	req.open("get", "/get_logic"); 
-	
-	var params = "filetype=logic";
-
-	req.data = params;
-	
-	ajax_add_request(req);*/
-	
 	// Request logic system file from device
-	// Need to refort callback
-	ajax_load_systemfile("logic.txt", "", function (event, req, type) { parse_logic(req, event); } );
-	
+	// Need to reformat callback
+	ajax.ajax_load_systemfile("logic.txt", "", function (event, req, type) { parse_logic(req, event); } );
 	
 }
 
@@ -200,8 +140,6 @@ function load_nodelist(list)
 	
 	for (var i = 0; i < list.nodes.length; i++)
 	{
-		//function add_node(x, y, type, op1, op2)
-		
 		var n = list.nodes[i];
 		
 		add_node(n.x, n.y, n.t, n.o1, n.o2);

@@ -316,6 +316,10 @@ function variable_compare_name(a,b)
 // Save bytecode to device
 function store_variablelist()
 {
+	// Will be moved to project save
+	
+	/*
+	
 	console.log("Saving variablelist ");
 	
 	var tmp_list = {};
@@ -339,17 +343,8 @@ function store_variablelist()
 	
 	console.log("Variable list string: " + variable_list_str);
 
-	var req = get_request();
+	var req = ajax.get_request();
 
-    /*req.addEventListener("load", function(event) 
-	{
-      console.log(event.target.responseText);
-    });
-
-    req.addEventListener("error", function(event) 
-	{
-      alert('Unable to save logic to device');
-    });*/
 	
 	req.loaded = function() { console.log("store_variablelist: Saved"); };
 	
@@ -361,6 +356,8 @@ function store_variablelist()
 	req.data = variable_list_str;
 	ajax_add_request(req);
 	//XHR.send(variable_list_str);
+	*/
+	
 }
 
 

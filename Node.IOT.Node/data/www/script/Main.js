@@ -11,9 +11,13 @@ function init()
 {
 	console.log("System Init");
 	
-	ajax_init();
+	// Enfore init order here
 	
-	load_page("live.html");
+	ajax.init();
+
+	// Load default pages
+	
+	ajax.load_page("live.html");
 	
 	console.log("Host: " + location.host)
 	

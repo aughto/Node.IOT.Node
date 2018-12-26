@@ -86,7 +86,7 @@ function upload_config(config_type, config_str)
 		return;
 	}
 
-	ajax.ajax_save_systemfile(filename, "config", config_str)
+	ajax.save_systemfile(filename, "config", config_str)
 	
 	//   XHR.send(config_str);
 }
@@ -143,7 +143,7 @@ function load_config(config_type)
 		return;
 	}
 	
-	ajax.ajax_load_systemfile(filename, config_type, parse_formdata);
+	ajax.load_systemfile(filename, config_type, parse_formdata);
 }
 
 

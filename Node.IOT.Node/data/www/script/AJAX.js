@@ -4,6 +4,7 @@
 	Jason Hunt - nulluser@gmail.com
 	
 	Implements AJAX global service object
+	Serializes AJAX requests
 	
 	File: AJAX.js
 */
@@ -32,7 +33,7 @@ var ajax = (function ()
 	}	
 	
 	/* Save generic data as system file on device*/
-	local.ajax_save_systemfile = function(filename, filetype, data)
+	local.save_systemfile = function(filename, filetype, data)
 	{
 		console.log(`Saving system file ${filename} type ${filetype}`);
 		//console.log("Data: " + data);
@@ -55,12 +56,12 @@ var ajax = (function ()
 	
 		req.data = data;
 		
-		ajax_add_request(req); // Add to request buffer
+		add_request(req); // Add to request buffer
 	}
 	
 
 	// save generic data as system file 
-	local.ajax_load_systemfile = function(filename, filetype, callback)
+	local.load_systemfile = function(filename, filetype, callback)
 	{
 		console.log(`Loading system file ${filename} type ${filetype}`);
 		//console.log("Data: " + data);
@@ -90,7 +91,7 @@ var ajax = (function ()
 			
 		req.setRequestHeader("filename", `/${filename}`);			
 	
-		ajax_add_request(req); // Add to request buffer
+		add_request(req); // Add to request buffer
 	}
 
 	// Load html
@@ -130,7 +131,7 @@ var ajax = (function ()
 		console.log(`Load URL: ${url}`);
 	
 		req.open("get", url);
-		ajax_add_request(req);
+		add_request(req);
 	}
 	
 	
@@ -140,59 +141,59 @@ var ajax = (function ()
 	*/	
 	
 	/* Ajax request manager. This mainly a wrapper to seralizise ajax requests */
-	var ajax_requests = [];		// List of pending requests
-	var ajax_id = 100; 			// ID of next request
+	var requests = [];		// List of pending requests
+	var next_id = 100; 			// ID of next request
 
 	var AJAX_UPDATE = 1000;		// Update time for housekeeping in ms
 	var AJAX_TIMEOUT = 5000;	// Request timeout
 
 
 	// Preform next ajax request if any are pending 
-	function ajax_request_next()
+	function request_next()
 	{
 		// Done if no more requests
-		if (ajax_requests.length == 0) return;
+		if (requests.length == 0) return;
 	
 		//console.log("AJAX requesting " + ajax_requests[0].id);
 		
 		//Preform request on next pending request
-		var r = ajax_requests[0];
+		var r = requests[0];
 		r.sent = true;
 		r.send(r.data);
 	}	
 
 	// Called when a requests completes or errors
-	function ajax_request_complete(req)
+	function request_complete(req)
 	{
 		//console.log("AJAX Request complete");
 		//console.log(req);	
 		
 		// Remove from list
-		for (var i = 0; i < ajax_requests.length; i++)
+		for (var i = 0; i < requests.length; i++)
 		{
-			if (req.id == ajax_requests[i].id)
+			if (req.id == requests[i].id)
 			{
-				ajax_requests.splice(i, 1);
+				requests.splice(i, 1);
 				break;
 			}
 		}
 
 		// Send next request
-		ajax_request_next();
+		request_next();
 	}
 
 	// Add a request to the pending list
-	function ajax_add_request(req)
+	function add_request(req)
 	{
 		//console.log("AJAX add Request " + req.id);
 		//console.log(req);
 	
 		// Add to list for later
-		ajax_requests.push(req);	
+		requests.push(req);	
 		
 		// Send right away if this was the only request
-		if (ajax_requests.length == 1)
-			ajax_request_next();
+		if (requests.length == 1)
+			request_next();
 	}
 
 	
@@ -228,7 +229,7 @@ var ajax = (function ()
 		}
 		
 		req.sent = false;
-		req.id = ajax_id++;
+		req.id = next_id++;
 		req.data = "";
 		req.tag = "";
 		
@@ -248,7 +249,7 @@ var ajax = (function ()
 	  
 			console.log(`Req ${req.tag} loaded in ${time} ms`);
 	  
-			ajax_request_complete(req); // Signal complete;
+			request_complete(req); // Signal complete;
 	  
 			// Call
 			if (req.loaded != undefined)	
@@ -260,7 +261,7 @@ var ajax = (function ()
 		{
 			console.log(`AJAX requst error ${req.id}`);
 		
-			ajax_request_complete(req); // Signal complete;
+			request_complete(req); // Signal complete;
 		
 			if (req.error != undefined)
 				req.error(event);
@@ -272,7 +273,7 @@ var ajax = (function ()
 		{
 			console.log(`AJAX requst abort ${req.id}`);
 		
-			ajax_request_complete(req); // Signal complete;
+			request_complete(req); // Signal complete;
 		
 			if (req.error != undefined)
 				req.error(event);
@@ -290,9 +291,9 @@ var ajax = (function ()
 		var d = new Date();
 		var cur_time = d.getMilliseconds();
 		
-		for (var i = 0; i < ajax_requests.length; i++)
+		for (var i = 0; i < requests.length; i++)
 		{
-			var req = ajax_requests[i];
+			var req = requests[i];
 			var dt = cur_time - req.reqtime;
 			
 			if (dt >= AJAX_TIMEOUT)
@@ -300,7 +301,7 @@ var ajax = (function ()
 				console.log(`Timeout on request ID ${red.id}`);
 				
 				// remove
-				ajax_requests.splice(i, 1);
+				requests.splice(i, 1);
 				i--;
 			}
 		}

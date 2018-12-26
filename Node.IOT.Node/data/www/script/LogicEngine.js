@@ -56,11 +56,11 @@ function save_project()
 	// Save project file
 	var str = project_get_string();
 	//console.log("Project string: " + str);	
-	ajax_save_systemfile("logic.txt", "logic", str)
+	ajax.save_systemfile("logic.txt", "logic", str)
 		
 	// Save bytecode file
 	str = generate_bytecode();
-	ajax.ajax_save_systemfile("bytecode.txt", "bytecode", str)
+	ajax.save_systemfile("bytecode.txt", "bytecode", str)
 }
 
 
@@ -101,7 +101,7 @@ function load_logic()
 {
 	// Request logic system file from device
 	// Need to reformat callback
-	ajax.ajax_load_systemfile("logic.txt", "", function (event, req, type) { parse_logic(req, event); } );
+	ajax.load_systemfile("logic.txt", "", function (event, req, type) { parse_logic(req, event); } );
 	
 }
 

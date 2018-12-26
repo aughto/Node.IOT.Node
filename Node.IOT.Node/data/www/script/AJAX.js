@@ -36,10 +36,9 @@ var ajax = (function ()
 
 		setInterval(update, AJAX_UPDATE);	// Setup timer
 	}	
+		
 	
-	
-	
-	/* Save generic data as system file on device*/
+	// Save generic data as system file on device
 	function save_systemfile(filename, filetype, data)
 	{
 		console.log(`Saving system file ${filename} type ${filetype}`);

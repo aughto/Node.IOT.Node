@@ -376,14 +376,6 @@ var weblogix = (function ()
 	*/
 
 
-				  
-					  
-					  
-					  
-
-
-
-
 	/* Menu items */
 
 
@@ -392,30 +384,25 @@ var weblogix = (function ()
 		console.log("menu_file_save()");
 	}
 
-
 	function menu_file_saveas()
 	{
 		console.log("menu_file_saveas()");
 	}
-
 
 	function menu_file_load()
 	{
 		console.log("menu_file_load()");
 	}
 
-
 	function menu_logic_simulate()
 	{
 		console.log("menu_logic_simulate()");
-		
 		project.set_offline();
 	}
 
 	function menu_logic_live()
 	{
 		console.log("menu_logic_live()");
-		
 		project.set_online();
 	}
 
@@ -423,7 +410,6 @@ var weblogix = (function ()
 	function menu_logic_assemble()
 	{
 		console.log("menu_logic_assemble()");
-		
 		project.assemble();		
 	}
 
@@ -431,12 +417,8 @@ var weblogix = (function ()
 	function menu_logic_download()
 	{
 		console.log("menu_logic_download()");
-
 		project.save_project();
-		
 	}
-
-
 
 	/* 
 		Icons 
@@ -455,11 +437,7 @@ var weblogix = (function ()
 	{
 		var i = {draw:draw, click:click};
 		current_icons.push(i);
-		
-		
 	}
-
-
 
 	function add_node_icon(n)
 	{
@@ -559,19 +537,6 @@ var weblogix = (function ()
 		}
 		
 		
-	}
-
-
-
-
-	function draw_mode(display, ofs_x, ofs_y, sx, sy)
-	{
-		var ctx = display.context;
-		
-		if (mode != MODE_TYPES.MODE_MEMORY) 
-			display.draw_text(ofs_x+5, ofs_y+sy/2*1.2, 0.3* sx,"#000000", "Mem");
-		else
-			display.draw_text(ofs_x+5, ofs_y+sy/2*1.2, 0.3* sx,"#000000", "Logic");
 	}
 
 	function draw_select(display, ofs_x, ofs_y, sx, sy)

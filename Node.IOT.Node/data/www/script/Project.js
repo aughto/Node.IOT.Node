@@ -472,7 +472,7 @@ var project = (function ()
 		if (message.item == "Output4") variable_update(7, message.value);*/
 		
 		
-		update_value(message.item, message.value);
+		liveview.update_value(message.item, message.value);
 	}
 	
 

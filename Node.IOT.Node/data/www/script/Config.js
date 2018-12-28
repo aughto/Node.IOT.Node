@@ -15,26 +15,35 @@
 // Config manager
 var config = (function () 
 {
-	const  MODULE = "Config    ";
+	const MODULE = "Config    ";
 	var local = {};				
 
 	// Public Interface
-	local.load = load;
+	local.init = init;
 	local.save_click = save_click;
 	
-
 	// Private variables	
 
 	// Parameters types
 	var PARAM_TYPE = {NAME:1, INT:2, IP:3, HOST:4};
 
-	
-	function load(config_type)
+	function init()
 	{
-		load_config(config_type)
+		console.log(`${MODULE} Init`);
+		
+		ajax.add_target("mainconfig", load_main);	
+		ajax.add_target("ioconfig", load_io);	
 	}
 	
-
+	function load_io(config_type)
+	{
+		load_config("ioconfig")
+	}
+	
+	function load_main(config_type)
+	{
+		load_config("mainconfig")
+	}
 	
 	// Validate a parameter
 	function validate(name, item, type)

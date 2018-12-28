@@ -25,7 +25,9 @@ var ajax = (function ()
 	local.init = init;
 	local.save_systemfile = save_systemfile;
 	local.load_systemfile = load_systemfile;
-	local.load_page = load_page;		
+	local.load_page = load_page;
+	local.add_target = add_target;
+	
 	
 	// Private variables
 
@@ -35,6 +37,8 @@ var ajax = (function ()
 	var requests = [];			// List of pending requests
 	var next_id = 100; 			// ID of next request
 
+	var targets = [];
+	
 	/* 
 		Public 
 	*/
@@ -47,6 +51,13 @@ var ajax = (function ()
 		setInterval(update, AJAX_UPDATE);	// Setup timer
 	}	
 		
+	
+	
+	function add_target(name, func)
+	{
+		targets.push({name:name, func:func});
+	}
+	
 	
 	// Save generic data as system file on device
 	function save_systemfile(filename, filetype, data)
@@ -123,13 +134,15 @@ var ajax = (function ()
 			document.getElementById("maincontent").innerHTML = req.responseText;
 	
 			// Need to preform special actions for some targerts
-			// TODO: Need to replace with hooks
-			
-			if (target=="mainconfig") config.load("mainconfig"); else
-			if (target=="ioconfig")   config.load("ioconfig"); else
-			if (target=="liveview")   liveview.load(); else
-			if (target=="variables")  vareditor.load(); else
-			if (target=="weblogix")   weblogix.load(); 
+			var found = false;
+			for (var i = 0; i < targets.length && !found; i++)
+			{
+				if (target == targets[i].name)
+				{
+					targets[i].func();
+					found = true;
+				}
+			}
 		};
 				
 		req.error = function() 
@@ -261,6 +274,9 @@ var ajax = (function ()
 		req.addEventListener("error", function(event) 
 		{
 			console.log(`${MODULE} AJAX requst error ${req.id}`);
+				
+			error(`Unable to load file: ${req.tag}`);
+			project.set_offline();
 		
 			request_complete(req); // Signal complete;
 		
@@ -273,6 +289,9 @@ var ajax = (function ()
 		req.addEventListener("abort", function(event) 
 		{
 			console.log(`${MODULE} AJAX requst abort ${req.id}`);
+		
+			error(`Unable to load file: ${req.tag}`);
+			project.set_offline();		
 		
 			request_complete(req); // Signal complete;
 		

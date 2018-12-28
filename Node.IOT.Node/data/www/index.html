@@ -27,6 +27,17 @@
 <div id="header" onclick=location.reload();><span id=banner>Node.IOT</span></div>
 <div id="content">
  <div id="sidebar" id=nav>
+ 
+ 	<div class="side_dropdown">
+	<button class="side_dropbtn">Project</button>
+	<div class="side_dropdown-content">
+		<a href="#" onclick='project.menu_file_save();'>Save</a>
+		<a href="#" onclick='project.menu_file_saveas();'>Save As</a>
+		<a href="#" onclick='project.menu_file_load();'>Load</a>
+	</div>
+	</div> 
+ 
+ 
   <ul>
   <li> <a href="#" onclick=ajax.load_page("live.html","liveview");>Live View</a></li>
   <li> <a href="#" onclick=ajax.load_page("weblogix.html","weblogix");>WebLogix</a></li>
@@ -38,6 +49,36 @@
  </div>
 <div id="maincontent"></div>
 <div class="clear"></div>
+
+
+
+<div id="statusbar">
+
+<span id="status_mode">
+Online
+</span>
+
+<span id="status_error">
+Error
+</span>
+
+<span id="status_notice">
+Notice
+</span>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
 </div>
 </body>
 </html>

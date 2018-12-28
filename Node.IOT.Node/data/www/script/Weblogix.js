@@ -47,15 +47,11 @@ var weblogix = (function ()
 	local.prop_ok_click = prop_ok_click;
 	local.prop_cancel_click = prop_cancel_click;
 	
-	// Menu
-	
-	local.menu_file_save = menu_file_save;
-	local.menu_file_saveas = menu_file_saveas;
-	local.menu_file_load  = menu_file_load;
+
 	local.menu_logic_simulate = menu_logic_simulate;
 	local.menu_logic_live = menu_logic_live;
 	local.menu_logic_assemble = menu_logic_assemble;
-	local.menu_logic_download = menu_logic_download;
+	
 	
 	
 	// Private variables
@@ -140,7 +136,9 @@ var weblogix = (function ()
 
 	function init()
 	{
-		console.log("Weblogix Init");	
+		console.log(`${MODULE} Init`);
+
+		ajax.add_target("weblogix", load);		
 		
 		load_icons();
 
@@ -183,7 +181,7 @@ var weblogix = (function ()
 		
 		// Setup tool display
 		//tool_display.context = tool_display.canvas.getContext("2d");	
-		tool_display.context.canvas.width  = window.innerWidth;
+		tool_display.context.canvas.width  = window.innerWidth  - 140;
 		tool_display.context.canvas.height = 40;//indow.innerHeight;
 		tool_display.canvas_rect = tool_display.canvas.getBoundingClientRect();
 
@@ -191,8 +189,8 @@ var weblogix = (function ()
 		
 		// Setup main display
 		//main_display.context = main_display.canvas.getContext("2d");	
-		main_display.context.canvas.width  = window.innerWidth;
-		main_display.context.canvas.height = window.innerHeight - tool_display.context.canvas.height - 10;
+		main_display.context.canvas.width  = window.innerWidth - 140;
+		main_display.context.canvas.height = window.innerHeight - tool_display.context.canvas.height - 100;
 		main_display.canvas_rect = main_display.canvas.getBoundingClientRect();
 
 		//console.log("Top : " + main_display.canvas.getBoundingClientRect().top);
@@ -378,22 +376,6 @@ var weblogix = (function ()
 
 	/* Menu items */
 
-
-	function menu_file_save()
-	{
-		console.log("menu_file_save()");
-	}
-
-	function menu_file_saveas()
-	{
-		console.log("menu_file_saveas()");
-	}
-
-	function menu_file_load()
-	{
-		console.log("menu_file_load()");
-	}
-
 	function menu_logic_simulate()
 	{
 		console.log("menu_logic_simulate()");
@@ -413,12 +395,6 @@ var weblogix = (function ()
 		project.assemble();		
 	}
 
-
-	function menu_logic_download()
-	{
-		console.log("menu_logic_download()");
-		project.save_project();
-	}
 
 	/* 
 		Icons 

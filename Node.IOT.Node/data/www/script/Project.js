@@ -53,6 +53,12 @@ var project = (function ()
 	local.ws_setvar_command = ws_setvar_command;
 	
 	
+	// Menu
+	local.menu_file_save = menu_file_save;
+	local.menu_file_saveas = menu_file_saveas;
+	local.menu_file_load  = menu_file_load;
+	
+	
 	// Private variables
 	
 	const MODE_ONLINE = 1;
@@ -70,17 +76,13 @@ var project = (function ()
 	// Project Init
 	function init()
 	{
-		console.log("Logic init");
-
+		console.log(`${MODULE} Init`);
+	
 		cpu.init();
 
-		// Load test data in case load from device fails
-		load_project_object(project_test_data);
+		load_project();
 		
-		test_set_variables();
-		
-		
-		request_load();
+		error();
 	}
 
 
@@ -108,6 +110,17 @@ var project = (function ()
 		console.log("Bytecode string: " + bytecode);
 		ajax.save_systemfile("bytecode.txt", "bytecode", bytecode)
 	}
+	
+	/* Loads current project or test data if no project found */
+	function load_project()
+	{
+		mode("Offline");
+		// Load test data in case load from device fails
+		load_project_object(project_test_data);
+		test_set_variables();
+		request_load();
+	}
+	
 	
 	
 	// Return a string representing the entire project
@@ -161,7 +174,11 @@ var project = (function ()
 	{
 		// Request logic system file from device
 		// Need to reformat callback
-		ajax.load_systemfile("project.txt", "", function (event, req, type) { parse_project(req, event); } );
+		ajax.load_systemfile("project.txt", "", function (event, req, type) 
+			{ 
+				parse_project(req, event);
+				set_online();
+			} );
 	}
 
 
@@ -262,11 +279,22 @@ var project = (function ()
 		console.log("Assemble project");
 		
 		cpu.set_logic_ok(false);
-
 		
 		inst_list = assembler.assemble(nodes, variable_list);
 		
+		if (inst_list.length == 0)
+		{
+			error("Unable to assemble project");
+			return;
+		}
+		
 		bytecode = assembler.generate_bytecode(inst_list);
+
+		if (bytecode.length == 0)
+		{
+			error("Unable to generate bytecode");
+			return;
+		}
 		
 		console.log("Instruction list");
 		console.log(inst_list);
@@ -281,6 +309,8 @@ var project = (function ()
 		cpu.set_logic_ok(true);
 	
 		cpu.solve(100);
+		
+		notice("Project Assembled");
 		
 	}
 	
@@ -868,13 +898,13 @@ var project = (function ()
 	
 	function set_online()
 	{
-		
+		mode("Online");
 		logic_mode = MODE_ONLINE;
 	}
 	
 	function set_offline()
 	{
-		
+		mode("Offline");
 		logic_mode = MODE_OFFLINE;
 	}
 	
@@ -886,11 +916,25 @@ var project = (function ()
 	
 
 	
-	
-	
-	
-	
-	
+	/* Menu items */
+
+
+	function menu_file_save()
+	{
+		console.log("menu_file_save()");
+		project.save_project();
+	}
+
+	function menu_file_saveas()
+	{
+		console.log("menu_file_saveas()");
+	}
+
+	function menu_file_load()
+	{
+		console.log("menu_file_load()");
+		load_project();
+	}
 	
 
 	return local;

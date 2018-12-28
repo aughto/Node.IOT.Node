@@ -137,6 +137,28 @@ function get_element(id)
 }
 
 
+/* Set mode status area */
+function mode(t)
+{
+	get_element("status_mode").innerHTML = t;
+	console.log("Mode: " + t);
+}
 
+/* Set mode error area */
+function error(t)
+{
+	var s = "OK";
+	if (t != undefined) s = t;
+	
+	get_element("status_error").innerHTML = s;
+	console.log("Status: " + s);
+}
+
+/* Set mode notice area */
+function notice(t)
+{
+	get_element("status_notice").innerHTML = t;
+	console.log("Notice: " + t);
+}
 
 

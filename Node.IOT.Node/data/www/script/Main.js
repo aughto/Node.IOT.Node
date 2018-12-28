@@ -41,6 +41,12 @@ var main = (function ()
 		ajax.load_page(DEFAULT_PAGE);
 		
 		
+		config.init();
+		
+		liveview.init();
+		
+		vareditor.init();
+		
 		weblogix.init();
 		
 		websocket.init();

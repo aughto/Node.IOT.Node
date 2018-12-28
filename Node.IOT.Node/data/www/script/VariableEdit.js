@@ -25,7 +25,8 @@ var vareditor = (function ()
 	// Called on startup
 	function init()
 	{
-		
+		console.log(`${MODULE} Init`);
+		ajax.add_target("variables", load);
 	}
 	
 

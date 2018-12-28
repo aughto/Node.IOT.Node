@@ -14,7 +14,9 @@ var liveview = (function ()
 	var local = {};			
 
 	// Public Interface
-	local.load = load;
+	local.init = init;
+
+	//local.load = load;
 	
 	local.area_click = area_click;
 	local.update_value = update_value;
@@ -30,11 +32,18 @@ var liveview = (function ()
 		Live View 
 	*/
 
+		// Display all current values 
+	function init()
+	{
+		console.log(`${MODULE} Init`);
+		ajax.add_target("liveview", load);
+	}
+	
 	// Display all current values 
 	function load()
 	{
-		console.log("Liveview Init");	
-		
+		// Will need to generate page from IO data here
+
 		for (var i in values) refresh_value(i);
 	}
 

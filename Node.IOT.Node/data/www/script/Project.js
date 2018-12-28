@@ -2,17 +2,15 @@
 	Node.IOT
 	2018 Aughto Inc
 	Jason Hunt - nulluser@gmail.com
+	
+	File: Project.js
 */
 
 "use strict";
 
-
 /* 
 	Project 
 */
-
-
-
 
 // Global current project container
 // The project owns all of the node, gui element and config data 
@@ -49,14 +47,19 @@ var project = (function ()
 	local.remove_variable = remove_variable;
 	local.add_variable = add_variable;
 	
+	/* Websockets */
 	local.ws_set_command = ws_set_command;
 	local.ws_setvar_command = ws_setvar_command;
 	
 	
-	// Menu
+	/* Menu */
 	local.menu_file_save = menu_file_save;
 	local.menu_file_saveas = menu_file_saveas;
 	local.menu_file_load  = menu_file_load;
+	
+	/* Config */
+	local.get_config = get_config
+	local.set_config = set_config
 	
 	
 	// Private variables
@@ -68,6 +71,9 @@ var project = (function ()
 	var nodes = [];				// Editor UI nodes
 	var bytecode = "";			// Assembly bytecode
 	var inst_list = [];			// Instruction list
+	
+	var main_config = {};
+	var io_config = {};
 	
 	var logic_mode = MODE_ONLINE;
 	
@@ -90,8 +96,6 @@ var project = (function ()
 		Project saving 
 	*/
 
-
-
 	// Save project to device
 	function save_project()
 	{
@@ -111,7 +115,7 @@ var project = (function ()
 		ajax.save_systemfile("bytecode.txt", "bytecode", bytecode)
 	}
 	
-	/* Loads current project or test data if no project found */
+	// Loads current project or test data if no project found 
 	function load_project()
 	{
 		mode("Offline");
@@ -131,31 +135,11 @@ var project = (function ()
 		p.node_data = nodes_get_export_object();			// Load nodes
 		p.var_data = variables_get_export_object(); // Load variables
 		
+		p.io_config = ioconfig_get_export_object();
+		p.main_config = mainconfig_get_export_object();
+		
 		return JSON.stringify(p);
 		
-	}
-	
-	
-	
-	// TODO needs to be moved to project
-	// Create node list obect
-	// Only extract needed elements for rebuilding
-	function nodes_get_export_object()
-	{
-		var node_data = {nodes:[]};
-		
-		// node order does not matter
-		for (var i = 0; i < nodes.length; i++)
-		{
-			var n = {t:nodes[i].type, x:nodes[i].x, y:nodes[i].y};
-								
-			if (nodes[i].op1 != -1) n.o1 = nodes[i].op1;
-			if (nodes[i].op2 != -1) n.o2 = nodes[i].op2;
-								
-			node_data.nodes.push(n);
-		}
-		
-		return node_data;
 	}
 	
 	/* 
@@ -206,73 +190,78 @@ var project = (function ()
 	
 	
 	function load_project_object(p)
-	{
-		
+	{		
 		console.log("Load project data");
 		console.log(p);
-		
 		
 		// Clean out project
 		nodes = [];
 		variable_list = {};
 		variable_list.variables = [];	
 		
+		// Load node list into project
 		load_node_list(p.node_data);			
+		
+		// Load variable list into project
 		load_variable_list(p.var_data);
 		
+		// Copy config data
+		main_config = p.main_config;
+		io_config = p.io_config;
+		
+		// Reassign variable list
 		assign_variable_list();
+		
+		// Assemble loaded project
 		assemble();		
-	}
-	
-	
-	
-	// Load nodelist from JSON data
-	function load_node_list(node_data)
-	{
-		console.log("Loading nodelist ");
-		
-		nodes = [];
-		
-		//console.log(list);
-		
-		for (var i = 0; i < node_data.nodes.length; i++)
-		{
-			var n = node_data.nodes[i];
-			
-			add_node(n.x, n.y, n.t, n.o1, n.o2);
-		}
-	}
-	
-	
-	// Load variable ist from JSON data
-	function load_variable_list(var_data)
-	{
-		console.log("Loading variables ");
-		console.log(var_data);
-		
-		variable_list = {};
-		variable_list.variables = [];
-		
-		//console.log(list);
-		
-		for (var i = 0; i < var_data.vars.length; i++)
-		{
-			var v = {name : var_data.vars[i].name, 
-					type : var_data.vars[i].type};
-		
-			variable_list.variables.push(v)
-		}
-	
-		console.log("Variable list");
-		console.log(variable_list);
 	}
 	
 	/* 
 		End of Project Loading 
 	*/
+
+
+	
+	/* 
+		Config 
+	*/
+	
+
+	
+	// Return config object. Used by config editors
+	function get_config(config_type)
+	{
+		if (config_type == "ioconfig") return io_config;
+		if (config_type == "mainconfig") return main_config;
+
+		return {};
+	}
+	
+	// Set config object. Used by config editors
+	function set_config(config_type, data)
+	{
+		if (config_type == "ioconfig") io_config = data;
+		if (config_type == "mainconfig") main_config = data;
+	}
+	
+	function mainconfig_get_export_object()
+	{
+		return main_config;
+	}
+	
+	function ioconfig_get_export_object()
+	{
+		return io_config;
+	}
+
+	/* 
+		End of Config 
+	*/
 	
 	
-	/* Assembly */
+	/* 
+		Assembly 
+	*/
 	
 	function assemble()
 	{
@@ -315,9 +304,56 @@ var project = (function ()
 	}
 	
 	
+	/* 
+		End of Assembly 
+	*/
 	
-	/* Nodes */
 	
+	/* 
+		Nodes 
+	*/
+
+	// Create node list obect
+	// Only extract needed elements for rebuilding
+	function nodes_get_export_object()
+	{
+		var node_data = {nodes:[]};
+		
+		// node order does not matter
+		for (var i = 0; i < nodes.length; i++)
+		{
+			var n = {t:nodes[i].type, x:nodes[i].x, y:nodes[i].y};
+								
+			if (nodes[i].op1 != -1) n.o1 = nodes[i].op1;
+			if (nodes[i].op2 != -1) n.o2 = nodes[i].op2;
+								
+			node_data.nodes.push(n);
+		}
+		
+		return node_data;
+	}	
+	
+	
+	// Load nodelist from JSON data
+	function load_node_list(node_data)
+	{
+		console.log("Loading nodelist ");
+		
+		nodes = [];
+		
+		//console.log(list);
+		
+		for (var i = 0; i < node_data.nodes.length; i++)
+		{
+			var n = node_data.nodes[i];
+			
+			add_node(n.x, n.y, n.t, n.o1, n.o2);
+		}
+	}
+			
+	
+	
+	// Return node index at location
 	function find_node(x, y)
 	{
 		for (var i = 0; i < nodes.length; i++)
@@ -326,6 +362,7 @@ var project = (function ()
 		return -1;
 	}	
 	
+	// Return node at location
 	function get_node(x, y)
 	{
 		for (var i = 0; i < nodes.length; i++)
@@ -341,11 +378,8 @@ var project = (function ()
 		for	(var i = 0; i < nodes.length; i++)
 			callback(nodes[i], i);
 	}	
-		
-		
-		
 	
-		
+	// Add new node to node list
 	function add_node(x, y, type, op1, op2)
 	{
 		if (op1 == undefined) op1 = -1;
@@ -377,16 +411,15 @@ var project = (function ()
 
 
 	// Toggle node value
-	// Should this be in logic?
 	function toggle_node(ix, iy)
 	{
 		var ni = find_node(ix, iy);
 		
-		if (ni < 0) return;
+		if (ni < 0) return; // Not found
 			
 		var n = nodes[ni];
 		
-		if (n.op1 == -1) return;
+		if (n.op1 == -1) return; // Does not have an operand
 
 		//var f = variable_find(n.op1);
 			
@@ -411,11 +444,7 @@ var project = (function ()
 		cpu.solve(100);
 	}
 		
-
-
-
-		
-
+	// Display node list
 	function show_node_list(nodes)
 	{
 		for(var i = 0; i < nodes.length; i++)
@@ -445,74 +474,65 @@ var project = (function ()
 		console.log(nodes);
 	}
 
+	/* 
+		End of nodes 
+	*/
 
 
 
-
-
-
-/* End of nodes */
+	/* 
+		Variables 
+	*/
 	
-	
-	
-	
-	
-	
-	/* Websockets updates */
-	function send_setvariable(index, value)
+	// Get variable data
+	function variables_get_export_object()
 	{
-		websocket.send_command("setvar", index, value);
-	}
-
-
-	// Parse MQTT message
-	function ws_set_command(message)
+		// Will be moved to project save
+		
+		//console.log("Saving variablelist ");
+		
+		var var_data = {vars:[]};
+		
+		// Build temp variable list
+		for (var i = 0; i < variable_list.variables.length; i++)
+		{
+			var_data.vars[i] = {name:variable_list.variables[i].name, type:variable_list.variables[i].type};
+		}
+		
+		var_data.config = {};
+		var_data.num_din = variable_list.num_din;
+		var_data.num_dout = variable_list.num_dout;
+		var_data.num_ain = variable_list.num_ain;
+		var_data.num_aout = variable_list.num_aout;
+		var_data.num_bit = variable_list.num_bit;
+		var_data.num_tmr = variable_list.num_tmr;
+		
+		return var_data;
+	}	
+	
+	
+		// Load variable ist from JSON data
+	function load_variable_list(var_data)
 	{
-		console.log("Set command " + message.item + " " +message.value);
+		console.log("Loading variables ");
+		console.log(var_data);
+		
+		variable_list = {};
+		variable_list.variables = [];
+		
+		//console.log(list);
+		
+		for (var i = 0; i < var_data.vars.length; i++)
+		{
+			var v = {name : var_data.vars[i].name, 
+					type : var_data.vars[i].type};
+		
+			variable_list.variables.push(v)
+		}
 	
-		
-		if (message.item == "Input1") cpu.variable_update(0, message.value);
-		if (message.item == "Input2") cpu.variable_update(1, message.value);
-		if (message.item == "Input3") cpu.variable_update(2, message.value);
-		if (message.item == "Input4") cpu.variable_update(3, message.value);
-	
-		if (message.item == "Output1") cpu.variable_update(4, message.value);
-		if (message.item == "Output2") cpu.variable_update(5, message.value);
-		if (message.item == "Output3") cpu.variable_update(6, message.value);
-		if (message.item == "Output4") cpu.variable_update(7, message.value);
-		
-		
-		liveview.update_value(message.item, message.value);
+		console.log("Variable list");
+		console.log(variable_list);
 	}
-	
-	// Parse MQTT message
-	function ws_setvar_command(message)
-	{
-		console.log("Setvar command " + message.item + " " + message.value);
-	
-		
-		/*if (message.item == "Input1") variable_update(0, message.value);
-		if (message.item == "Input2") variable_update(1, message.value);
-		if (message.item == "Input3") variable_update(2, message.value);
-		if (message.item == "Input4") variable_update(3, message.value);
-	
-		if (message.item == "Output1") variable_update(4, message.value);
-		if (message.item == "Output2") variable_update(5, message.value);
-		if (message.item == "Output3") variable_update(6, message.value);
-		if (message.item == "Output4") variable_update(7, message.value);*/
-		
-		
-		liveview.update_value(message.item, message.value);
-	}
-	
-
-
-
-
-	/* Variables */
-	
-	
-	
 	
 
 		
@@ -551,24 +571,14 @@ var project = (function ()
 	}
 	*/
 
-
-
-
-
-
-
-
-
+	
+	// Sort and compute variable offsets
 	function assign_variable_list()
 	{
-	// Variables are sorted by type and then by name to assign index
-
-
 		console.log("Assign variable table");
 
 		// Sort variable list by type to assign offsets correctly
 		variable_list.variables.sort(variable_compare_type);
-		
 		
 		variable_list.num_din = 0;
 		variable_list.num_dout = 0;
@@ -601,12 +611,8 @@ var project = (function ()
 		
 		variable_list.mem_size = offset;
 		
-		
 		cpu.resize_variable_data(variable_list.mem_size);
-		
 
-		
-		
 		//console.log(nodes);
 
 		set_variable_values();
@@ -614,7 +620,7 @@ var project = (function ()
 
 
 
-	// Name compare for variables
+	// Type and Name compare for variables
 	function variable_compare_type(a,b) 
 	{
 		// Sory by type first
@@ -637,55 +643,16 @@ var project = (function ()
 	}
 
 
-
-	// Save bytecode to device
-	function variables_get_export_object()
-	{
-		// Will be moved to project save
-		
-		//console.log("Saving variablelist ");
-		
-		var var_data = {vars:[]};
-		
-		// Build temp variable list
-		for (var i = 0; i < variable_list.variables.length; i++)
-		{
-			var_data.vars[i] = {name:variable_list.variables[i].name, type:variable_list.variables[i].type};
-		}
-		
-		var_data.config = {};
-		var_data.num_din = variable_list.num_din;
-		var_data.num_dout = variable_list.num_dout;
-		var_data.num_ain = variable_list.num_ain;
-		var_data.num_aout = variable_list.num_aout;
-		var_data.num_bit = variable_list.num_bit;
-		var_data.num_tmr = variable_list.num_tmr;
-		
-		return var_data;
-	}
-
-
-
 	function set_variable_values()
 	{
 		//load_test_variables();
 	}
 		
-		/* End of Variables */
-		
-
-	
-	
+	// Return variable by index
 	function get_variable_by_index(index)
 	{
 		return variable_list.variables[index];
 	}
-	
-	
-	
-	
-	
-	
 	
 	
 	// Set variable value be name
@@ -727,19 +694,11 @@ var project = (function ()
 			console.log("Unknown type for set variable");
 			
 		}
-
-		
 		
 	}
 	
 	
-	
-	function get_variable_list()
-	{
-		return variable_list;
-	}
-	
-	
+	// Get temporaty variable list sorted by name for editing
 	function get_sorted_variable_list()
 	{
 		var tmp = {};
@@ -758,7 +717,7 @@ var project = (function ()
 		return tmp;
 	}
 	
-	
+	// Return true if variable name exists
 	function variable_exists(name)
 	{
 		// Check existing names
@@ -773,6 +732,7 @@ var project = (function ()
 	
 	// Merge in a new variable
 	// Must be able to keep existing links and values
+	// Assumes that name is valid
 	function add_variable(name, type)
 	{
 		var v = {};
@@ -818,11 +778,10 @@ var project = (function ()
 
 	}
 
-		
+	
+	// Remove variable from list by index	
 	function remove_variable(index)
 	{
-		
-			
 		var v = variable_list.variables[index];
 		
 		if (v.type == VAR_TYPES.VAR_DIN ||
@@ -834,12 +793,9 @@ var project = (function ()
 			return;	
 		}
 		
-		
 		variable_list.variables.splice(index, 1);
 		
 		assign_variable_list();
-		
-		
 		
 		for (var i = 0; i < nodes.length; i++)
 		{
@@ -858,19 +814,8 @@ var project = (function ()
 		project.assemble();				
 	//	n.op1_index = find_variable_index(n.op1);
 		
-		
-		
 	}
 		
-		
-		
-	
-	
-	
-	
-	
-	
-	
 		/*
 	// Load some timer data
 	var i = find_variable_index("Tmr_1")
@@ -891,33 +836,102 @@ var project = (function ()
 	
 	*/
 	
+	/* 
+		End of Variables 
+	*/
 	
 	
+	/* 
+		Websockets 
+	*/
 	
-	/* Logic mode control */
+	// Websocket set var command
+	function send_setvariable(index, value)
+	{
+		websocket.send_command("setvar", index, value);
+	}
+
+
+	// Parse MQTT message
+	function ws_set_command(message)
+	{
+		console.log("Set command " + message.item + " " +message.value);
+		
+		if (message.item == "Input1") cpu.variable_update(0, message.value);
+		if (message.item == "Input2") cpu.variable_update(1, message.value);
+		if (message.item == "Input3") cpu.variable_update(2, message.value);
+		if (message.item == "Input4") cpu.variable_update(3, message.value);
 	
+		if (message.item == "Output1") cpu.variable_update(4, message.value);
+		if (message.item == "Output2") cpu.variable_update(5, message.value);
+		if (message.item == "Output3") cpu.variable_update(6, message.value);
+		if (message.item == "Output4") cpu.variable_update(7, message.value);
+		
+		
+		liveview.update_value(message.item, message.value);
+	}
+	
+	// Parse MQTT message
+	function ws_setvar_command(message)
+	{
+		console.log("Setvar command " + message.item + " " + message.value);
+	
+		
+		/*if (message.item == "Input1") variable_update(0, message.value);
+		if (message.item == "Input2") variable_update(1, message.value);
+		if (message.item == "Input3") variable_update(2, message.value);
+		if (message.item == "Input4") variable_update(3, message.value);
+	
+		if (message.item == "Output1") variable_update(4, message.value);
+		if (message.item == "Output2") variable_update(5, message.value);
+		if (message.item == "Output3") variable_update(6, message.value);
+		if (message.item == "Output4") variable_update(7, message.value);*/
+		
+		
+		liveview.update_value(message.item, message.value);
+	}
+	
+		
+	/* 
+		End of Websockets 
+	*/
+
+	
+	
+	/* 
+		Logic mode control 
+	*/
+	
+	// Set online mode
 	function set_online()
 	{
 		mode("Online");
 		logic_mode = MODE_ONLINE;
 	}
 	
+	// Set offline mode
 	function set_offline()
 	{
 		mode("Offline");
 		logic_mode = MODE_OFFLINE;
 	}
 	
+	// Return true if online
 	function get_online()
 	{
-		
 		return logic_mode == MODE_ONLINE;
 	}
 	
-
+	/* 
+		End of Logic mode control 
+	*/
 	
-	/* Menu items */
-
+	
+	
+	
+	/* 
+		Menu items 
+	*/
 
 	function menu_file_save()
 	{
@@ -936,6 +950,10 @@ var project = (function ()
 		load_project();
 	}
 	
+	/* 
+		End of Menu items 
+	*/
+
 
 	return local;
 }());

@@ -96,15 +96,10 @@ var config = (function ()
 
 	 
 	 // Save config to device
-	function save_config(config_type, config_str)
+	/*function save_config(config_type, config_str)
 	{
 		console.log("Uploading config for "+config_type+": " + config_str);
 		 
-		/*var req = ajax.get_request();
-
-		req.loaded = function() { console.log("upload config: loaded"); };
-		req.error = function() { console.log("upload config: error"); };
-		*/
 		
 		var filename = "";
 		
@@ -118,15 +113,6 @@ var config = (function ()
 		ajax.save_systemfile(filename, "config", config_str)
 		
 		//   XHR.send(config_str);
-	}
-		
-	/*
-	function toHex(str) {
-		var hex = '';
-		for(var i=0;i<str.length;i++) {
-			hex += ''+str.charCodeAt(i).toString(16) + ' ';
-		}
-		return hex;
 	}*/
 
 
@@ -153,42 +139,36 @@ var config = (function ()
 			return;
 		}
 		
-		save_config(config_type, JSON.stringify(params));	
+		//save_config(config_type, JSON.stringify(params));	
+		
+		//if (config_type == "ioconfig") project.set_config(config_type, params);
+		//if (config_type == "mainconfig") project.set_mainconfig(params);
+		
+		project.set_config(config_type, params);
 		
 		return false;
 	}
 
 
-
-	// Request config data load
+	// Load config data from project
 	function load_config(config_type)
 	{
-		var filename = "";
+		var config_data = project.get_config(config_type);
 		
-		if (config_type == "mainconfig") filename = "mainconfig.txt"; else
-		if (config_type == "ioconfig") filename = "ioconfig.txt"; else
-		{
-			console.log("upload_config: invalid config type");
-			return;
-		}
+	/*		
 		
-		ajax.load_systemfile(filename, config_type, parse_formdata);
-	}
+		if (config_type == "ioconfig")
+			config_data = project.get_ioconfig();
+		
+		if (config_type == "mainconfig") 
+			config_data = project.get_mainconfig();*/
+		
 
-
-
-	// Universal form data parser. Loads ajax data into form
-	function parse_formdata(config_type, data, evt)
-	{
-		console.log("Parse config: " + config_type);
-		console.log("Form data Resp: " + data.responseText);
-						
-		var config_data = JSON.parse(data.responseText);
+		//console.log(config_data);
 		
 		var form = document.getElementById(config_type);
 		
 		var formdata = new FormData(form);
-
 		
 		//config_data.forEach(function(value, key)
 		for (var key in config_data) 
@@ -205,6 +185,8 @@ var config = (function ()
 				form.elements[key].value = config_data[key];	
 			}
 		};
+		
+		
 	}
 
 

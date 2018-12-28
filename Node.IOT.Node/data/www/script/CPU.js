@@ -85,11 +85,6 @@ var cpu = (function ()
 		logic_ok = s;
 	}
 	
-	
-	
-	
-	
-	
 	// Deep copy instruction list from external source
 	function load_inst_list(list)
 	{
@@ -98,14 +93,17 @@ var cpu = (function ()
 		inst_list = [];
 
 		for (var i = 0; i < list.length; i++)
-		{
-			var inst = {inst:list[i].inst, op1:list[i].op1, op2:list[i].op2};
-			inst_list.push(inst);
-		}
+			add_inst(list[i].inst, list[i].op1, list[i].op2);
 		
 		//console.log(inst_list);
 	}
 	
+	
+	// Add instruction to instruction list
+	function add_inst(inst, op1, op2)
+	{
+		inst_list.push({inst:inst, op1:op1, op2:op2});
+	}
 	
 	
 	

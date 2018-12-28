@@ -52,7 +52,7 @@ var ajax = (function ()
 	}	
 		
 	
-	
+	// Add callback for processing results, if needed
 	function add_target(name, func)
 	{
 		targets.push({name:name, func:func});

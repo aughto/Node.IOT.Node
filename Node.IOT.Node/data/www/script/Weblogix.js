@@ -48,8 +48,8 @@ var weblogix = (function ()
 	local.prop_cancel_click = prop_cancel_click;
 	
 
-	local.menu_logic_simulate = menu_logic_simulate;
-	local.menu_logic_live = menu_logic_live;
+	local.menu_logic_goonline = menu_logic_goonline;
+	local.menu_logic_gooffline = menu_logic_gooffline;
 	local.menu_logic_assemble = menu_logic_assemble;
 	
 	
@@ -376,13 +376,13 @@ var weblogix = (function ()
 
 	/* Menu items */
 
-	function menu_logic_simulate()
+	function menu_logic_gooffline()
 	{
 		console.log("menu_logic_simulate()");
 		project.set_offline();
 	}
 
-	function menu_logic_live()
+	function menu_logic_goonline()
 	{
 		console.log("menu_logic_live()");
 		project.set_online();

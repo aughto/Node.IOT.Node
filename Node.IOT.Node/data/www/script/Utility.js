@@ -17,6 +17,19 @@
 	System
 */
 
+function hex_string_to_array(str) 
+{ 
+	var result = [];
+	while (str.length >= 2) 
+	{ 
+        result.push(parseInt(str.substring(0, 2), 16));
+
+        str = str.substring(2, str.length);
+	}
+
+	return result;
+}
+
 
 function get_hex(num) 
 {

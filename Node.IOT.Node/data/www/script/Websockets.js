@@ -25,7 +25,7 @@ var websocket = (function ()
 
 	// Private variables
 	const UPDATE_TIME = 1000;
-	const KEEPALIVE_TIMEOUT = 5;
+	const KEEPALIVE_TIMEOUT = 10;
 	const PING_TIMEOUT = 2;
 	
 	var host_ip = "";
@@ -297,7 +297,7 @@ var websocket = (function ()
 		
 		var str = JSON.stringify(msg);
 		
-		console.log(`${MODULE} Send command: ${str}`);
+		//console.log(`${MODULE} Send command: ${str}`);
 		
 		send(str) 
 	}

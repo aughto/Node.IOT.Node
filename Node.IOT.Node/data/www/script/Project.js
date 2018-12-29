@@ -65,7 +65,7 @@ var project = (function ()
 	
 	
 	// Private variables
-	const UPDATE_TIME = 1000;	// Update period
+	const UPDATE_TIME = 250;	// Update period
 	
 	const MODE_ONLINE = 1;
 	const MODE_OFFLINE = 2;
@@ -80,7 +80,9 @@ var project = (function ()
 	
 	var logic_mode = MODE_ONLINE;
 	
-
+	var getvars_pending = 0;
+	var var_updates = 0;	
+	var last_update = 0;
 	
 	// Project Init
 	function init()
@@ -103,9 +105,16 @@ var project = (function ()
 		// Logic update timer
 	function update_timer()
 	{
+		if (get_ms() - last_update > 1000)
+		{
+			console.log("Var update rate: " + var_updates);
+			
+			var_updates = 0;
+			last_update = get_ms();
+		}
 		
 		if (logic_mode == MODE_ONLINE)
-			websocket.send_command("getvars");
+			send_getvars();
 		
 	}
 
@@ -902,6 +911,22 @@ var project = (function ()
 		Websockets 
 	*/
 	
+	
+	function send_getvars()
+	{
+		if (getvars_pending > 0) 
+		{
+			//notice("Device responding slowly");
+			return;
+		}
+		
+		getvars_pending++;
+
+		websocket.send_command("getvars");
+
+		
+	}
+	
 	// Websocket set var command
 	function send_setvariable(index, value)
 	{
@@ -948,11 +973,30 @@ var project = (function ()
 		liveview.update_value(message.item, message.value);
 	}
 	
+	
+
 
 // Parse MQTT message
 	function ws_getvars_command(message)
 	{
-		console.log("getvars command " + message.data);
+		getvars_pending--;
+		
+		
+		//console.log("getvars command " + message.data);
+		//console.log(message.data);
+		
+		var data = hex_string_to_array(message.data);
+		
+		//console.log(data);
+		
+		
+		for (var i = 0; i < variable_list.variables.length; i++)
+		{
+			var v = variable_list.variables[i];
+			
+			v.value = data[v.offset];
+		}
+		
 		
 		/*if (message.item == "Input1") variable_update(0, message.value);
 		if (message.item == "Input2") variable_update(1, message.value);
@@ -966,6 +1010,8 @@ var project = (function ()
 		
 		
 		//liveview.update_value(message.item, message.value);
+		
+		var_updates++;
 	}
 	
 		
@@ -985,6 +1031,10 @@ var project = (function ()
 	{
 		mode("<font color=green>Online</font>");
 		logic_mode = MODE_ONLINE;
+		
+				
+		getvars_pending = 0; // Clear pending
+
 	}
 	
 	// Set offline mode

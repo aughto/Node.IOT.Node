@@ -30,7 +30,7 @@ IOT iot;
 
 IOT::IOT()
 {
-
+  getvars_flag = false;
 
   
 }
@@ -46,6 +46,14 @@ void IOT::init()
   
 void IOT::update(unsigned long current)
 {
+    
+    // Only send data during update between cpu scans
+    if (getvars_flag)
+    {
+      send_variables();
+      getvars_flag = false;
+    }
+
   
 }
 
@@ -72,11 +80,19 @@ void IOT::send_message(const char *cmd, const char *item, const char *value)
  
 }
 
+char get_hex(unsigned char v)
+{
+  if (v > 9) 
+    return v - 10 + 'A';
+  else
+    return v + '0';
+}
 
 
 void IOT::send_variables()
 {
   //print_log(MODULE "send_message (param): %s %s %s \n", cmd, item, value);
+
 
   #define TMP_MAX 256
   char tmp[TMP_MAX];
@@ -87,19 +103,41 @@ void IOT::send_variables()
     return;
   }*/
 
+  // will need to reserve some memory on logic load to store the list
+  char var_char[256];
 
-  char var_data[256];
+  
 
-  strcpy(var_data, "000102030405060708");
- 
+  unsigned int index = 0;
+  
+  for (int i = 0; i < 100; i++)
+  {
+    unsigned char v = logic.get_value(i);
 
-  sprintf(tmp, "{\"cmd\":\"getvars\",\"data\":\"%s\"}", var_data);
+    var_char[index++] = get_hex(v>>4);
+    var_char[index++] = get_hex(v&0x0f);
+  }    
+
+  var_char[index] = 0; // Null terminate 
+  
+  sprintf(tmp, "{\"cmd\":\"getvars\",\"data\":\"%s\"}", var_char);
+
+  //print_log("msg: %s\n", tmp);
 
   http.send_message(tmp);
-  
- 
 }
 
+
+bool IOT::ping_message()
+{
+  char tmp[256];
+
+  sprintf(tmp, "{\"cmd\":\"ping\"}");
+
+  //print_log("msg: %s\n", tmp);
+
+  http.send_message(tmp);
+}
 
 
 
@@ -107,12 +145,16 @@ bool IOT::handle_message(const char *cmd, const char *item, const char *value)
 {
   //print_log(MODULE "handle_message (param): %s %s %s \n", cmd, item, value);
 
+
+  if (!strcmp(cmd, "ping"))
+  {
+    ping_message();
+  } else
   if (!strcmp(cmd, "getvars"))
   {
-    send_variables();
-    
+    getvars_flag = true;
+    //send_variables();
   } else
-
   if (!strcmp(cmd, "set"))
   {
     if (item == NULL)
@@ -195,12 +237,16 @@ bool IOT::handle_message(uint8_t* data)
   else
     return true;
 
-  if (!handle_message(cmd, item, value))
+  if (handle_message(cmd, item, value))
   {
-    // Send back to clients
+    print_log("Problem with WS message %s %s %s\n", cmd, item, value);
+    
+
+    
+    /*// Send back to clients
       hardware.toggle_led();
       http.send_message((char *)data);
-      return false;
+      return false;*/
   }
   
   return true;

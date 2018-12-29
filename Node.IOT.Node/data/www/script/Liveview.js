@@ -117,10 +117,10 @@ var liveview = (function ()
 	function area_click(item)
 	{
 		
-		// Only allow input and outputs changes if live, or in overried
-		if (logic_mode == MODE_LIVE)
+		// Only allow input and outputs changes if offline, or in overried
+		//if (project.get_online())
 		{
-			return;
+			//return;
 			// Make sure item is an output
 	//		if (item.toLowerCase().indexOf("output") == -1) 
 				//return;

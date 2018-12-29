@@ -121,13 +121,22 @@ h2
 	float:left;
 border:1px solid #000000;
 
-	width:23%;;
+	width:15%;;
+}
+
+#status_connection
+{
+	 display: block;
+	width:100px;
+	float:left;
+	border:1px solid #000000;
+	width:15%;;
 }
 
 #status_error
 {
 	 display: block;
-	width:33%;;
+	width:30%;;
 	float:left;
 border:1px solid #000000;
 }
@@ -138,7 +147,7 @@ border:1px solid #000000;
 	width:100px;
 	float:left;
 	
-	width:33%;;
+	width:30%;;
 border:1px solid #000000;
 }
 

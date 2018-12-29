@@ -126,6 +126,8 @@ var weblogix = (function ()
 		
 	var in_edit = 0;
 		
+	var first_load = true;
+		
 		// Debugging	
 	var count  = 0;							// Test number 
 		
@@ -195,15 +197,21 @@ var weblogix = (function ()
 
 		//console.log("Top : " + main_display.canvas.getBoundingClientRect().top);
 		
-		main_display.x_ofs = -main_display.context.canvas.width / 2.0;
-		main_display.y_ofs = -main_display.context.canvas.height / 2.0;
+		// Only adjust offets for centering when first loaded
+		if (first_load)
+		{
+			main_display.x_ofs = -main_display.context.canvas.width / 2.0;
+			main_display.y_ofs = -main_display.context.canvas.height / 2.0;
 		
-		main_display.x_ofs += (32/2) * symbol_x * main_display.zoom_scale;
-		main_display.y_ofs += (10/2) * symbol_y * main_display.zoom_scale;
+			main_display.x_ofs += (32/2) * symbol_x * main_display.zoom_scale;
+			main_display.y_ofs += (10/2) * symbol_y * main_display.zoom_scale;
+		}
 		
 		
 		main_display.update_bounds();
 		tool_display.update_bounds();
+		
+		first_load = false;
 		
 		
 	}
@@ -337,8 +345,21 @@ var weblogix = (function ()
 		if (n.op1 == -1) return;
 
 		var v = project.get_variable_by_index(n.op1);
-				
-		var value = cpu.get_byte(v.offset);
+
+		//console.log(v);
+		
+		var value = 0;
+		
+		// Get value from memory_list in online mode
+		if (project.get_online())
+		{
+			value = v.value;
+		}
+		// Otherwise use cpu value
+		else
+		{
+			value = cpu.get_byte(v.offset);
+		}
 				
 		var color = (value == 0) ?  "#ff0000" : "#0000ff" ;
 		var name = v.name;
@@ -385,6 +406,13 @@ var weblogix = (function ()
 	function menu_logic_goonline()
 	{
 		console.log("menu_logic_live()");
+		
+		if (websocket.get_connected() == false)
+		{
+			error("Unable to go online: Not Connected");
+			return;
+		}
+		
 		project.set_online();
 	}
 

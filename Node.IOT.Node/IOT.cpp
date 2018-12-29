@@ -73,13 +73,46 @@ void IOT::send_message(const char *cmd, const char *item, const char *value)
 }
 
 
+
+void IOT::send_variables()
+{
+  //print_log(MODULE "send_message (param): %s %s %s \n", cmd, item, value);
+
+  #define TMP_MAX 256
+  char tmp[TMP_MAX];
+  
+  /*if (strlen(cmd) + strlen(item) + strlen(value) + 20 > TMP_MAX)
+  {
+    print_log(MODULE "send_message too long\n");
+    return;
+  }*/
+
+
+  char var_data[256];
+
+  strcpy(var_data, "000102030405060708");
+ 
+
+  sprintf(tmp, "{\"cmd\":\"getvars\",\"data\":\"%s\"}", var_data);
+
+  http.send_message(tmp);
+  
+ 
+}
+
+
+
+
 bool IOT::handle_message(const char *cmd, const char *item, const char *value)
 {
   //print_log(MODULE "handle_message (param): %s %s %s \n", cmd, item, value);
 
+  if (!strcmp(cmd, "getvars"))
+  {
+    send_variables();
+    
+  } else
 
-
- 
   if (!strcmp(cmd, "set"))
   {
     if (item == NULL)
@@ -103,7 +136,7 @@ bool IOT::handle_message(const char *cmd, const char *item, const char *value)
       return true;
     
     //io.handle_message(cmd, item, value);
-  }
+  } else 
 
 
    if (!strcmp(cmd, "setvar"))

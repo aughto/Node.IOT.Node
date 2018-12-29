@@ -29,6 +29,8 @@ class IOT
   bool handle_message(const char *cmd, const char *item, const char *value); // Generic
   bool handle_message(uint8_t* data); // From websockets
 
+  void send_variables();
+
   void send_current();
 };
 

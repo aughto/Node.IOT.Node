@@ -26,10 +26,15 @@ var cpu = (function ()
 	local.solve = solve_logic;
 	local.load_inst_list = load_inst_list;
 
+	local.set_update_callback = set_update_callback;
+	
+	
 	/* Variable operations */
 	local.resize_variable_data = resize_variable_data;
 	local.variable_update = variable_update;
 	local.get_byte = get_byte;
+	local.set_byte = set_byte;
+	
 	local.set_timer = set_timer;
 	local.toggle_byte = toggle_byte;
 	
@@ -43,7 +48,7 @@ var cpu = (function ()
 	var inst_list = [];			// Instruction list
 	var variable_data = null; 	//  Raw byte data for variable storage 
 	var logic_ok = false;		// true if logic is ok to process
-	
+	var update_callback = null;
 	
 	/* 
 		Public 
@@ -72,11 +77,22 @@ var cpu = (function ()
 		setInterval(update_timer, UPDATE_TIME);	// Setup timer
 	}
 
+	
+	function set_update_callback(callback)
+	{
+		update_callback = callback;
+	}
+	
 
 	// Logic update timer
 	function update_timer()
 	{
+		// Donot update cpu in online mode
+		if (project.get_online()) return;
+		
 		solve_logic(100);
+		
+		if (update_callback != null) update_callback();
 	}
 
 	

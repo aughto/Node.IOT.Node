@@ -144,6 +144,14 @@ function mode(t)
 	console.log("Mode: " + t);
 }
 
+/* Set mode status area */
+function connection(t)
+{
+	get_element("status_connection").innerHTML = t;
+	console.log("Connection: " + t);
+}
+
+
 /* Set mode error area */
 function error(t)
 {

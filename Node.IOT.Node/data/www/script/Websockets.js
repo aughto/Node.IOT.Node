@@ -14,11 +14,16 @@
 // Global Websockets service object
 var websocket = (function () 
 {
-	// Private variables
+	const MODULE = "WebSocket ";
 	var local = {};		
 
-	const MODULE = "WebSocket ";
+	// Public Interface
+	local.init = init;
+	local.send_command = send_command;
+	local.get_connected = get_connected;
 	
+
+	// Private variables
 	const UPDATE_TIME = 1000;
 	const KEEPALIVE_TIMEOUT = 5;
 	const PING_TIMEOUT = 2;
@@ -34,11 +39,7 @@ var websocket = (function ()
 	var keepalive_time = 0;
 
 
-	// Public Interface
-	
-	local.init = init;
-	local.send_command = send_command;
-	
+
 	
 	/* 
 		Public 
@@ -57,10 +58,28 @@ var websocket = (function ()
 		keepalive_time = 0;
 		ping_time = 0;
 	
+		set_connected(false);
+	
 		connect();
 	}
 
 
+	function get_connected()
+	{
+		return connected;
+	}
+	
+	
+	function set_connected(state)
+	{
+		connected = state;
+		if (connected)
+			connection("<font color=green>Connected</font>");
+		else
+			connection("<font color=red>Disconnected</font>");			
+	}
+
+	
 	// Timer is used to make sure we are connected 
 	function update()
 	{
@@ -75,6 +94,7 @@ var websocket = (function ()
 		if (keepalive_time >= KEEPALIVE_TIMEOUT)
 		{
 			console.log("Timeout\n");
+			connection("<font color=red>Disconnected</font>");
 			connect();
 		}
 	}
@@ -99,7 +119,7 @@ var websocket = (function ()
 		//if (connecting == true) return;
 		
 		//connecting = true;
-		connected = false;	
+		set_connected(false);
 	
 		keepalive_time = 0;
 
@@ -127,7 +147,14 @@ var websocket = (function ()
 		}
 		catch(exception) 
 		{
-			console.log(`${MODULE} Unable to connect: ${exception}`);
+			//error(`${MODULE} Unable to connect: ${exception}`);
+
+			error(`${MODULE} Unable to connect`);
+			
+			set_connected(false);
+			
+			project.set_offline();
+			
 			return;
 		}
 		
@@ -140,6 +167,8 @@ var websocket = (function ()
 		}
 		catch(exception) 
 		{
+			set_connected(false);
+
 			console.log(exception);
 			//socket = null;
 			//connected = false;
@@ -154,7 +183,10 @@ var websocket = (function ()
 		//socket = null;
 		//connected = false;
 		////connecting = false;
-		console.log("WebSocket Error");
+		set_connected(false);
+		error("WebSocket Error");
+		
+		project.set_offline();
 		//location.reload(true);
 	}
 				
@@ -163,8 +195,10 @@ var websocket = (function ()
 	{
 		keepalive_time = 0;
 		connected = true;
-		//connecting = false
-		console.log("WebSocket Connected");
+		//connecting = false		
+		set_connected(true);
+		
+
 	}
 			
 	function on_close() 
@@ -172,7 +206,10 @@ var websocket = (function ()
 		//socket = null;
 		//connected = false;
 		//connecting = false;
-		console.log("WebSocket Disconnected");
+		set_connected(false);
+		error("WebSocket Disconnected");
+		
+		project.set_offline();
 	}	
 			
 	
@@ -197,9 +234,11 @@ var websocket = (function ()
 		//log("action: " + data.action);
 				
 		// Todo need to be able to register actions 			
-		if (data.cmd == "ping")	 recv_ping(); else
-		if (data.cmd == "set")	 project.ws_set_command(data);         else
-		if (data.cmd == "setvar")project.ws_setvar_command(data);         else
+		if (data.cmd == "ping")	   recv_ping(); else
+		if (data.cmd == "set")	   project.ws_set_command(data);         else
+		if (data.cmd == "setvar")  project.ws_setvar_command(data);      else
+		if (data.cmd == "getvars") project.ws_getvars_command(data);     else
+		
 	
 		{
 			console.log("Unknown action: " + data.cmd);
@@ -219,7 +258,7 @@ var websocket = (function ()
 		
 		catch(exception) 
 		{
-			connected == false;
+			set_connected(false);
 			console.log(exception);
 			return;
 		}
@@ -229,6 +268,11 @@ var websocket = (function ()
 	function recv_ping()
 	{
 		keepalive_time = 0;
+		
+		if (connected == false)
+		{
+			set_connected(true);
+		}
 		
 		console.log("Ping Response\n");
 	}
@@ -241,6 +285,9 @@ var websocket = (function ()
 		send(str) 
 	}
 
+	
+
+	
 
 	function send_command(cmd, item, value)
 	{
@@ -254,7 +301,7 @@ var websocket = (function ()
 		
 		send(str) 
 	}
-
+	
 
 	return local;
 }());

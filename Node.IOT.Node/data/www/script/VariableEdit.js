@@ -172,12 +172,13 @@ var vareditor = (function ()
 			// Pull data to make generation code cleaner
 			var v = variable_list.variables[i];
 			var type = get_var_type_string(v);
-			var value = cpu.get_byte(v.offset);
+			//var value = cpu.get_byte(v.offset);
+			//var value = v.value;
 			
 			out += `<tr>`;
 			out += `<td><b>${v.name}</b></td>`;
 			out += `<td><b>${type}</b></td>`;
-			out += `<td>${value}</td>`;
+			out += `<td>${v.value}</td>`;
 			out += `<td>${v.index}</td>`;
 			out += `<td>${v.offset}</td>`;
 			out += `<td><input type=button class=var_button value='(-)' onclick='vareditor.remove_variable(${v.index});'></td>`;
@@ -196,6 +197,8 @@ var vareditor = (function ()
 		out += `</tr>`;
 
 		out += `</table>`;
+		out += `<br><br>`;
+		
 		
 		document.getElementById("variablelist").innerHTML = out;
 	}

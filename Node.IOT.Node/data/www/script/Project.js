@@ -50,6 +50,8 @@ var project = (function ()
 	/* Websockets */
 	local.ws_set_command = ws_set_command;
 	local.ws_setvar_command = ws_setvar_command;
+	local.ws_getvars_command = ws_getvars_command;
+	
 	
 	
 	/* Menu */
@@ -63,10 +65,11 @@ var project = (function ()
 	
 	
 	// Private variables
+	const UPDATE_TIME = 1000;	// Update period
 	
 	const MODE_ONLINE = 1;
 	const MODE_OFFLINE = 2;
-
+	
 	var variable_list = {};  	// Variable name list
 	var nodes = [];				// Editor UI nodes
 	var bytecode = "";			// Assembly bytecode
@@ -83,14 +86,51 @@ var project = (function ()
 	function init()
 	{
 		console.log(`${MODULE} Init`);
-	
+
 		cpu.init();
+
+		cpu.set_update_callback(cpu_updated);
+		
 
 		load_project();
 		
 		error();
+		
+		setInterval(update_timer, UPDATE_TIME);	// Setup timer
 	}
 
+	
+		// Logic update timer
+	function update_timer()
+	{
+		
+		if (logic_mode == MODE_ONLINE)
+			websocket.send_command("getvars");
+		
+	}
+
+	
+	
+	
+	
+	/* 
+		CPU
+	*/
+	
+	// Called when CPU update completes to map memory values
+	function cpu_updated()
+	{
+		// Do not update variables in online mode
+		if (logic_mode == MODE_ONLINE) return;
+
+		for (var i = 0; i < variable_list.variables.length; i++)
+		{
+			var v = variable_list.variables[i];
+			v.value = cpu.get_byte(v.offset);
+			
+		}
+	}
+	
 
 	/* 
 		Project saving 
@@ -211,6 +251,13 @@ var project = (function ()
 		
 		// Reassign variable list
 		assign_variable_list();
+		
+		// Load inital variables into cpu
+		for (var i = 0; i < variable_list.variables.length; i++)
+		{
+			var v = variable_list.variables[i];
+				cpu.set_byte(v.offset, v.value);
+		}
 		
 		// Assemble loaded project
 		assemble();		
@@ -421,25 +468,34 @@ var project = (function ()
 		
 		if (n.op1 == -1) return; // Does not have an operand
 
-		//var f = variable_find(n.op1);
-			
-		//if (f == -1) return;
-
-		//variable_table[f].value = variable_table[f].value == 0 ? 1 : 0;
-		
-		cpu.toggle_byte(n.op1);
-		
-		
+		var v = variable_list.variables[n.op1];
+				
+		console.log("toggle: " + v.offset);
+	
 		// Only send toggle if live
 		if (logic_mode == MODE_ONLINE)
 		{	
-			var v = cpu.get_byte(n.op1);
+			if (v.type == VAR_TYPES.VAR_DIN || v.type == VAR_TYPES.VAR_DOUT ||
+				v.type == VAR_TYPES.VAR_AIN || v.type == VAR_TYPES.VAR_AOUT)
+			{
+				error("Cannot toggle IO in online mode");
+				return;
+			}	
+			// Toggle in value in memory list
+			v.value = v.value ? 0 : 1;
 			
-			send_setvariable(n.op1, v);
+			// Send update to device
+			send_setvariable(v.offset, v.value);
 		}
+		if (logic_mode == MODE_OFFLINE)
+		{
+			// Toggle in cpu and variable table for online mode
+			v.value = v.value ? 0 : 1;
 			
-		//variables[n.op1] = variables[n.op1]  == 0 ? 1 : 0;
-		
+			// Map into cpu
+			cpu.set_byte(v.offset, v.value);
+			//cpu.toggle_byte(v.offset);
+		}
 		
 		cpu.solve(100);
 	}
@@ -496,7 +552,8 @@ var project = (function ()
 		// Build temp variable list
 		for (var i = 0; i < variable_list.variables.length; i++)
 		{
-			var_data.vars[i] = {name:variable_list.variables[i].name, type:variable_list.variables[i].type};
+			var v = variable_list.variables[i];
+			var_data.vars[i] = {name:v.name, type:v.type, value:v.value};
 		}
 		
 		var_data.config = {};
@@ -525,7 +582,8 @@ var project = (function ()
 		for (var i = 0; i < var_data.vars.length; i++)
 		{
 			var v = {name : var_data.vars[i].name, 
-					type : var_data.vars[i].type};
+					type : var_data.vars[i].type, 
+					value : var_data.vars[i].value};
 		
 			variable_list.variables.push(v)
 		}
@@ -568,8 +626,8 @@ var project = (function ()
 		}
 		
 		return -1;
-	}
-	*/
+	}*/
+	
 
 	
 	// Sort and compute variable offsets
@@ -708,7 +766,7 @@ var project = (function ()
 		{
 			var v = variable_list.variables[i];
 			
-			tmp.variables.push({name:v.name, type:v.type, index:v.index, offset:v.offset});
+			tmp.variables.push({name:v.name, type:v.type, value:v.value, index:v.index, offset:v.offset});
 		}
 
 		// sort variable list by name for display
@@ -739,7 +797,7 @@ var project = (function ()
 		
 		v.name = name;
 		v.type = type;
-			
+		v.value = 0;
 		
 		// Find splice point
 		
@@ -747,7 +805,6 @@ var project = (function ()
 		
 		for (var i = 0; i < variable_list.variables.length && splice==0; i++)
 		{
-
 			if (variable_compare_type(v, variable_list.variables[i]) < 0)
 			{
 				splice = i;
@@ -891,7 +948,28 @@ var project = (function ()
 		liveview.update_value(message.item, message.value);
 	}
 	
+
+// Parse MQTT message
+	function ws_getvars_command(message)
+	{
+		console.log("getvars command " + message.data);
 		
+		/*if (message.item == "Input1") variable_update(0, message.value);
+		if (message.item == "Input2") variable_update(1, message.value);
+		if (message.item == "Input3") variable_update(2, message.value);
+		if (message.item == "Input4") variable_update(3, message.value);
+	
+		if (message.item == "Output1") variable_update(4, message.value);
+		if (message.item == "Output2") variable_update(5, message.value);
+		if (message.item == "Output3") variable_update(6, message.value);
+		if (message.item == "Output4") variable_update(7, message.value);*/
+		
+		
+		//liveview.update_value(message.item, message.value);
+	}
+	
+		
+	
 	/* 
 		End of Websockets 
 	*/
@@ -905,7 +983,7 @@ var project = (function ()
 	// Set online mode
 	function set_online()
 	{
-		mode("Online");
+		mode("<font color=green>Online</font>");
 		logic_mode = MODE_ONLINE;
 	}
 	

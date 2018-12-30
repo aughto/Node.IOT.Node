@@ -11,7 +11,7 @@
 var assembler = (function () 
 {
 	const MODULE = "Project   ";
-	var local = {};				
+	var local = main.register_module("assembler");				
 
 	// Public interface
 	local.assemble = assemble;

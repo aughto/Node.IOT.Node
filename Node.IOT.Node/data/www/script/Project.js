@@ -17,29 +17,32 @@
 var project = (function () 
 {
 	const MODULE = "Project   ";		
-	var local = {};						
+	var local = main.register_module("project");						
 
 	// Public Interface
 
-	/* General */
+	// Standard 
 	local.init = init;					// Global init
+	local.update = update;
+	local.second = second;
+	
+	// General
 	local.save_project = save_project;	// Save project to device
 	local.assemble = assemble;			// Assemble project
-	local.load_page = load_page;
 	
-	/* Mode Control */
+	// Mode Control 
 	local.set_online = set_online;
 	local.set_offline = set_offline;
 	local.get_online = get_online;
 	
-	/* Nodes */
+	// Nodes 
 	local.iterate_nodes = iterate_nodes;
 	local.get_node = get_node;			// Return node at location
 	local.set_node = set_node;
 	//local.find_node = find_node;		// Get node list
 	local.toggle_node = toggle_node		// Toggle a node
 
-	/* Variables */
+	// Variables 
 	local.variable_exists = variable_exists;
 	local.get_sorted_variable_list = get_sorted_variable_list; // Temporary list for variable editor
 	local.get_variable_by_index = get_variable_by_index;
@@ -48,17 +51,17 @@ var project = (function ()
 	local.remove_variable = remove_variable;
 	local.add_variable = add_variable;
 	
-	/* Websockets */
+	// Websockets 
 	local.ws_set_command = ws_set_command;
 	local.ws_setvar_command = ws_setvar_command;
 	local.ws_getvars_command = ws_getvars_command;
 	
-	/* Menu */
+	// Menu 
 	local.menu_file_save = menu_file_save;
 	local.menu_file_saveas = menu_file_saveas;
 	local.menu_file_load  = menu_file_load;
 	
-	/* Config */
+	// Config 
 	local.get_config = get_config
 	local.set_config = set_config
 	
@@ -86,40 +89,22 @@ var project = (function ()
 	var var_updates = 0;	
 	var last_update = 0;
 	
-	var cur_page = "";
-	
 	// Project Init
 	function init()
 	{
 		console.log(`${MODULE} Init`);
 
-		//cpu.init();
-
 		cpu.set_update_callback(cpu_updated);
 		
 		// Link in callback for reloader
 		ajax.add_target("reloader", reloader);
-		
 
 		load_project();
 		
 		error();
-		
-		main.hook_update(update);
-		main.hook_second(second);
-		
-		
-		//setInterval(update_timer, UPDATE_TIME);	// Setup timer
-		
-		
 	}
 
-	
-	
-	
-	
-	
-		// Logic update timer
+	// Logic update timer
 	function update()
 	{
 		//console.log(`${MODULE} Var update`);
@@ -143,60 +128,7 @@ var project = (function ()
 		last_update = get_ms();
 	}	
 	
-	
-	/* Page control */
-	function show_page(p)
-	{
-		var c1  = document.getElementById(p + "_container");	
-		
-		c1.style.display = "block";
-	}
-	
-	function hide_page(p)
-	{
-		var c1  = document.getElementById(p + "_container");	
-		
-		c1.style.display = "none";
-		
-	}
-	
-	
-	function hide_all()
-	{
-		// Hide other pages
-		hide_page("hmi");
-		hide_page("liveview");
-		hide_page("weblogix");
-		hide_page("vareditor");
-		hide_page("ioconfig");		
-		hide_page("mainconfig");
-		hide_page("system");
-		
-	}
-	
-	function load_page(p)
-	{
-		hide_all();
-		
-		console.log("Load page: " + p);
-		
-		show_page(p);
-		
-		
-		if (p == "hmi") hmi.load();
-		if (p == "liveview") liveview.load();
-		if (p == "weblogix") weblogix.load();
-		if (p == "vareditor") vareditor.load();
-		if (p == "ioconfig") config.load_config(p);
-		if (p == "mainconfig") config.load_config(p);
-		//if (p == "system") config.load_io();
-		
 
-		
-		
-		cur_page = p;
-	}
-	
 	/* 
 		CPU
 	*/

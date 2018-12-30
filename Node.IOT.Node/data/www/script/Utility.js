@@ -150,6 +150,23 @@ function get_element(id)
 }
 
 
+// Activate module div section
+function show_module(m)
+{
+	get_element(m + "_container").style.display = "block";
+}
+
+	
+// Deactivate module div section
+function hide_module(m)
+{
+	get_element(m + "_container").style.display = "none";
+}
+		
+	
+
+
+
 /* Set mode status area */
 function mode(t)
 {

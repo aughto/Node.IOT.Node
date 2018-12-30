@@ -15,10 +15,13 @@
 var websocket = (function () 
 {
 	const MODULE = "WebSocket ";
-	var local = {};		
+	var local = main.register_module("websockets");		
 
 	// Public Interface
+	
 	local.init = init;
+	local.update = update;
+	
 	local.send_command = send_command;
 	local.get_connected = get_connected;
 	
@@ -52,7 +55,7 @@ var websocket = (function ()
 		console.log(`${MODULE} Host: ${location.host}`);
 		
 		//log("Websocket Start");
-		main.hook_second(update);
+		//main.hook_second(update);
 		//setInterval(update, UPDATE_TIME);
 	
 		keepalive_time = 0;
@@ -63,13 +66,20 @@ var websocket = (function ()
 		connect();
 	}
 
-
+	// Timer is used to make sure we are connected 
+	function update()
+	{
+		check_keepalive();
+		check_ping();
+	}
+	
+	// Return true if connected
 	function get_connected()
 	{
 		return connected;
 	}
 	
-	
+	// Set connection state
 	function set_connected(state)
 	{
 		connected = state;
@@ -79,14 +89,7 @@ var websocket = (function ()
 			connection("<font color=red>Disconnected</font>");			
 	}
 
-	
-	// Timer is used to make sure we are connected 
-	function update()
-	{
-		check_keepalive();
-		check_ping();
-	}
-
+	// Check keepalives
 	function check_keepalive()
 	{
 		keepalive_time++;
@@ -99,7 +102,7 @@ var websocket = (function ()
 		}
 	}
 
-
+	// Check pings
 	function check_ping()
 	{
 		ping_time++;

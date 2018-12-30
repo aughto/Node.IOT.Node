@@ -16,12 +16,18 @@
 var config = (function () 
 {
 	const MODULE = "Config    ";
-	var local = {};				
+	
+	var local = main.register_module("config");
+	
 
 	// Public Interface
 	local.init = init;
+	local.load = load;
+	local.unload = unload;
+	
+	
 	local.save_click = save_click;
-	local.load_config = load_config;
+
 	
 	// Private variables	
 
@@ -36,15 +42,55 @@ var config = (function ()
 		//ajax.add_target("ioconfig", load_io);	
 	}
 	
-	/*function load_io(config_type)
+
+	// Load config data from project
+	function load(config_type)
 	{
-		load_config("ioconfig")
+		var config_data = project.get_config(config_type);
+		
+		show_module(config_type);
+		
+	/*		
+		
+		if (config_type == "ioconfig")
+			config_data = project.get_ioconfig();
+		
+		if (config_type == "mainconfig") 
+			config_data = project.get_mainconfig();*/
+		
+
+		//console.log(config_data);
+		
+		var form = document.getElementById(config_type);
+		
+		var formdata = new FormData(form);
+		
+		//config_data.forEach(function(value, key)
+		for (var key in config_data) 
+		{
+			//console.log("name: " + key);
+			//console.log("value: " + config_data[key]);
+			
+			if (key in form.elements)
+			{			
+				// check for checkbox
+				if (config_data[key] == "on")
+					form.elements[key].checked = true;	
+				
+				form.elements[key].value = config_data[key];	
+			}
+		};
 	}
 	
-	function load_main(config_type)
+	// Called when to hide
+	function unload()
 	{
-		load_config("mainconfig")
-	}*/
+		console.log(`${MODULE} Unload`);	
+
+		hide_module("ioconfig");
+		hide_module("mainconfig");
+	}		
+	
 	
 	// Validate a parameter
 	function validate(name, item, type)
@@ -150,45 +196,6 @@ var config = (function ()
 		return false;
 	}
 
-
-	// Load config data from project
-	function load_config(config_type)
-	{
-		var config_data = project.get_config(config_type);
-		
-	/*		
-		
-		if (config_type == "ioconfig")
-			config_data = project.get_ioconfig();
-		
-		if (config_type == "mainconfig") 
-			config_data = project.get_mainconfig();*/
-		
-
-		//console.log(config_data);
-		
-		var form = document.getElementById(config_type);
-		
-		var formdata = new FormData(form);
-		
-		//config_data.forEach(function(value, key)
-		for (var key in config_data) 
-		{
-			//console.log("name: " + key);
-			//console.log("value: " + config_data[key]);
-			
-			if (key in form.elements)
-			{			
-				// check for checkbox
-				if (config_data[key] == "on")
-					form.elements[key].checked = true;	
-				
-				form.elements[key].value = config_data[key];	
-			}
-		};
-		
-		
-	}
 
 
 

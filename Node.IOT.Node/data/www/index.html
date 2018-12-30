@@ -13,22 +13,27 @@
   <link rel="stylesheet" href="style/style.css">
 
   <script type="text/javascript" src="script/Utility.js"></script>	
-  <script type="text/javascript" src="script/AJAX.js"></script>	
-  <script type="text/javascript" src="script/Websockets.js"></script>	
+  <script type="text/javascript" src="script/Module.js"></script>
+  
+  <script type="text/javascript" src="script/Main.js"></script>
+  <script type="text/javascript" src="script/Arch.js"></script>	  
   <script type="text/javascript" src="script/Graphics.js"></script>		
-  <script type="text/javascript" src="script/Arch.js"></script>	
   <script type="text/javascript" src="script/NodeTypes.js"></script>
-  <script type="text/javascript" src="script/CPU.js"></script>	
-  <script type="text/javascript" src="script/Assembler.js"></script>
   <script type="text/javascript" src="script/Test.js"></script>
   
+  <!-- Modules -->
+  <script type="text/javascript" src="script/AJAX.js"></script>	
+  <script type="text/javascript" src="script/Websockets.js"></script>	
+  <script type="text/javascript" src="script/CPU.js"></script>	
+  <script type="text/javascript" src="script/Assembler.js"></script>
   <script type="text/javascript" src="script/VariableEdit.js"></script>	
   <script type="text/javascript" src="script/Config.js"></script>	
   <script type="text/javascript" src="script/Liveview.js"></script>
-  <script type="text/javascript" src="script/Project.js"></script>
   <script type="text/javascript" src="script/Weblogix.js"></script>
   <script type="text/javascript" src="script/HMI.js"></script>
-  <script type="text/javascript" src="script/Main.js"></script>
+  <script type="text/javascript" src="script/System.js"></script>
+  <script type="text/javascript" src="script/Project.js"></script>
+  
   
 </head>
 <body onload=main.init();>
@@ -51,13 +56,13 @@
 	</div> 
  </li>
  
-  <li> <a href="#" onclick=project.load_page("hmi");>HMI</a></li>
-  <li> <a href="#" onclick=project.load_page("liveview");>Live View</a></li>
-  <li> <a href="#" onclick=project.load_page("weblogix");>WebLogix</a></li>
-  <li> <a href="#" onclick=project.load_page("vareditor");>Variables</a></li>
-  <li> <a href="#" onclick=project.load_page("ioconfig");>IO Setup</a></li>
-  <li> <a href="#" onclick=project.load_page("mainconfig");>Config</a></li>
-  <li> <a href="#" onclick=project.load_page("system");>System</a></li>
+  <li> <a href="#" onclick=main.load_module("hmi");>HMI</a></li>
+  <li> <a href="#" onclick=main.load_module("liveview");>Live View</a></li>
+  <li> <a href="#" onclick=main.load_module("weblogix");>WebLogix</a></li>
+  <li> <a href="#" onclick=main.load_module("vareditor");>Variables</a></li>
+  <li> <a href="#" onclick=main.load_module("config","ioconfig");>IO Setup</a></li>
+  <li> <a href="#" onclick=main.load_module("config","mainconfig");>Config</a></li>
+  <li> <a href="#" onclick=main.load_module("system");>System</a></li>
   
   </ul>
  </div>

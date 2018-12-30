@@ -17,13 +17,15 @@
 var hmi = (function () 
 {
 	const MODULE = "HMI       ";
-	
-	var local = {};			
+	var local = main.register_module("hmi");		
 
 	// Public Interface 
 
+	// Standard
 	local.init = init;
 	local.load = load;
+	local.unload = unload;
+	local.update = update;
 	
 	local.prop_ok_click = prop_ok_click;
 	local.prop_cancel_click = prop_cancel_click;
@@ -126,7 +128,7 @@ var hmi = (function ()
 		load_icons();
 
 		
-		main.hook_update(update);
+//		main.hook_update(update);
 		
 		//setInterval(update_timer, UPDATE_TIME);	// Setup timer
 	}
@@ -137,13 +139,20 @@ var hmi = (function ()
 	{
 		console.log(`${MODULE} Load`);
 		
+		show_module(local.name);
+				
 		setup_display();								// Canvas
 
 		render();									// Render
 	}
 
+	// Called when to hide
+	function unload()
+	{
+		console.log(`${MODULE} Unload`);	
 
-
+		hide_module(local.name);
+	}	
 
 	function update()
 	{
@@ -882,7 +891,7 @@ var hmi = (function ()
 			} else
 			if (mode == MODE_TYPES.MODE_TOGGLE)
 			{
-				project.toggle_node(ix, iy); 
+				//project.toggle_node(ix, iy); 
 			} else
 
 			if (mode == MODE_TYPES.MODE_SELECT)

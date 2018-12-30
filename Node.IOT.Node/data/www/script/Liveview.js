@@ -11,12 +11,14 @@
 var liveview = (function () 
 {
 	const MODULE = "Liveview  ";
-	var local = {};			
+	var local = main.register_module("liveview");			
 
 	// Public Interface
-	local.init = init;
 
-	//local.load = load;
+	// Standard
+	local.init = init;
+	local.load = load;
+	local.unload = unload;
 	
 	local.area_click = area_click;
 	local.update_value = update_value;
@@ -43,10 +45,20 @@ var liveview = (function ()
 	// Display all current values 
 	function load()
 	{
+		show_module(local.name);
 		// Will need to generate page from IO data here
 
 		for (var i in values) refresh_value(i);
 	}
+	
+	// Called when to hide
+	function unload()
+	{
+		console.log(`${MODULE} Unload`);	
+
+		hide_module(local.name);
+	}		
+	
 
 	// Get curretn value from memory 
 	function get_value(item) 
@@ -105,9 +117,9 @@ var liveview = (function ()
 
 		
 		// Only send updates if live
-		if (proget.get_online())
+		if (project.get_online())
 		{
-			send_setvariable(index, parseInt(value));
+			project.send_setvariable(index, parseInt(value));
 		}
 		
 		

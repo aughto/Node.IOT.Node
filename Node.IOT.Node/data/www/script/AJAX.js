@@ -19,10 +19,14 @@
 var ajax = (function () 
 {
 	const MODULE = "AJAX      ";	
-	var local = {};				
+	var local = main.register_module("ajax");			
 	
 	// Public Interface
+	
+	// Standard
 	local.init = init;
+	local.second = second;
+	
 	local.save_systemfile = save_systemfile;
 	local.load_systemfile = load_systemfile;
 	local.load_http = load_http;
@@ -31,7 +35,7 @@ var ajax = (function ()
 	
 	// Private variables
 
-	const AJAX_UPDATE = 1000;		// Update time for housekeeping in ms
+	//const AJAX_UPDATE = 1000;		// Update time for housekeeping in ms
 	const AJAX_TIMEOUT = 5000;	// Request timeout
 	
 	var requests = [];			// List of pending requests
@@ -48,11 +52,40 @@ var ajax = (function ()
 	{
 		console.log(`${MODULE} Init`);
 
-		main.hook_second(update);
+		//main.hook_second(update);
 		
 		//setInterval(update, AJAX_UPDATE);	// Setup timer
 	}	
 		
+	
+	
+	// Periodic check for hanging requests
+	function second()
+	{
+		//console.log(`${MODULE} Update`);
+		
+		var d = new Date();
+		var cur_time = d.getMilliseconds();
+		
+		for (var i = 0; i < requests.length; i++)
+		{
+			var req = requests[i];
+			var dt = cur_time - req.reqtime;
+			
+			if (dt >= AJAX_TIMEOUT)
+			{
+				console.log(`${MODULE} Timeout on request ID ${red.id}`);
+				
+				// remove
+				requests.splice(i, 1);
+				i--;
+			}
+		}
+	};
+		
+	
+	
+	
 	
 	// Add callback for processing results, if needed
 	function add_target(name, func)
@@ -305,30 +338,7 @@ var ajax = (function ()
 		return req;
 	}
 	
-	// Periodic check for hanging requests
-	function update()
-	{
-		//console.log(`${MODULE} Update`);
-		
-		var d = new Date();
-		var cur_time = d.getMilliseconds();
-		
-		for (var i = 0; i < requests.length; i++)
-		{
-			var req = requests[i];
-			var dt = cur_time - req.reqtime;
-			
-			if (dt >= AJAX_TIMEOUT)
-			{
-				console.log(`${MODULE} Timeout on request ID ${red.id}`);
-				
-				// remove
-				requests.splice(i, 1);
-				i--;
-			}
-		}
-	};
-	
+
 	
 	return local;
 }());

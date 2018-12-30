@@ -37,12 +37,15 @@ var SYM =  {NONE : 0,
 var weblogix = (function () 
 {
 	const MODULE = "Weblogix  ";	  
-	var local = {};			
+	var local = main.register_module("weblogix");		
 
 	// Public Interface 
 
+	// Standard
 	local.init = init;
 	local.load = load;
+	local.unload = unload;
+	local.update = update;
 	
 	local.prop_ok_click = prop_ok_click;
 	local.prop_cancel_click = prop_cancel_click;
@@ -144,7 +147,7 @@ var weblogix = (function ()
 		
 		load_icons();
 		
-		main.hook_update(update);
+		//main.hook_update(update);
 
 		//setInterval(logic_ui_update_timer, UPDATE_TIME);	// Setup timer
 	}
@@ -155,14 +158,21 @@ var weblogix = (function ()
 	{
 		console.log("Load weblogix");
 		
+		show_module(local.name);		
+		
 		setup_display();								// Canvas
 
 		render();									// Render
 	}
 
+	// Called when to hide
+	function unload()
+	{
+		console.log(`${MODULE} Unload`);	
 
-
-
+		hide_module(local.name);
+	}		
+	
 	function update()
 	{
 		render();

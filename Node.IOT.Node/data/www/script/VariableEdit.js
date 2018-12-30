@@ -10,11 +10,13 @@
 var vareditor = (function () 
 {
 	const  MODULE = "VarEditor ";
-	var local = {};				
+	var local = main.register_module("vareditor");			
 	
 	// Public Interface
 	local.init = init;
 	local.load = load;
+	local.unload = unload;
+	
 	
 	local.add_variable = add_variable;				// Add varaible clicked
 	local.remove_variable = remove_variable;		// Remove variable clicked
@@ -28,14 +30,23 @@ var vareditor = (function ()
 		console.log(`${MODULE} Init`);
 		ajax.add_target("variables", load);
 	}
-	
 
 	// Called when variable editor is clicked
 	function load()
 	{
+		console.log(`${MODULE} Load`);	
+
+		show_module(local.name);
 		create_variable_table();
 	}
 		
+	// Called when to hide
+	function unload()
+	{
+		console.log(`${MODULE} Unload`);	
+
+		hide_module(local.name);
+	}		
 	
 	/* 
 		Add / Delete 

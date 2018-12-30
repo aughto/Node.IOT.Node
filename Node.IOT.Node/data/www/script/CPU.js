@@ -17,12 +17,15 @@
 var cpu = (function () 
 {
 	const MODULE = "CPU       ";
-	var local = {};		
+	var local = main.register_module("cpu");		
 
 	// Public Interface
 	
-	/* General */
+	// Standard
 	local.init = init;
+	local.update = update;
+	
+	
 	local.solve = solve_logic;
 	local.load_inst_list = load_inst_list;
 
@@ -74,29 +77,29 @@ var cpu = (function ()
 		inst_table[INST_TYPES.INST_OTU.op]    = inst_otu;
 		inst_table[INST_TYPES.INST_TMR.op]    = inst_tmr;
 
-		main.hook_update(update);
+		//main.hook_update(update);
 		
 		//setInterval(update_timer, UPDATE_TIME);	// Setup timer
 	}
 
-	
-	function set_update_callback(callback)
-	{
-		update_callback = callback;
-	}
-	
-
 	// Logic update timer
 	function update()
 	{
-		// Donot update cpu in online mode
+		// Do not update cpu in online mode
 		if (project.get_online()) return;
 		
 		solve_logic(100);
 		
 		if (update_callback != null) update_callback();
 	}
-
+	
+	
+	// Remote hook for update callback
+	function set_update_callback(callback)
+	{
+		update_callback = callback;
+	}
+	
 	
 	function set_logic_ok(s)
 	{

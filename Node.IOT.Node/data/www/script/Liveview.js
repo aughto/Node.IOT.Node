@@ -20,6 +20,7 @@ var liveview = (function ()
 	
 	local.area_click = area_click;
 	local.update_value = update_value;
+	local.load = load;
 
 	// Private variables		
 	const BGCOLOR_VALUES = ["#404040", "#5555ff"];

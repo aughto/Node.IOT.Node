@@ -21,6 +21,7 @@ var config = (function ()
 	// Public Interface
 	local.init = init;
 	local.save_click = save_click;
+	local.load_config = load_config;
 	
 	// Private variables	
 
@@ -31,11 +32,11 @@ var config = (function ()
 	{
 		console.log(`${MODULE} Init`);
 		
-		ajax.add_target("mainconfig", load_main);	
-		ajax.add_target("ioconfig", load_io);	
+		//ajax.add_target("mainconfig", load_main);	
+		//ajax.add_target("ioconfig", load_io);	
 	}
 	
-	function load_io(config_type)
+	/*function load_io(config_type)
 	{
 		load_config("ioconfig")
 	}
@@ -43,7 +44,7 @@ var config = (function ()
 	function load_main(config_type)
 	{
 		load_config("mainconfig")
-	}
+	}*/
 	
 	// Validate a parameter
 	function validate(name, item, type)

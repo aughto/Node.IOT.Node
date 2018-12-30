@@ -255,7 +255,7 @@ bool IOT::handle_message(uint8_t* data)
 
 void IOT::send_current()
 {
-  io.send_current();
+  //io.send_current();
 }
 
 

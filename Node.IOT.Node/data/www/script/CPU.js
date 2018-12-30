@@ -74,7 +74,9 @@ var cpu = (function ()
 		inst_table[INST_TYPES.INST_OTU.op]    = inst_otu;
 		inst_table[INST_TYPES.INST_TMR.op]    = inst_tmr;
 
-		setInterval(update_timer, UPDATE_TIME);	// Setup timer
+		main.hook_update(update);
+		
+		//setInterval(update_timer, UPDATE_TIME);	// Setup timer
 	}
 
 	
@@ -85,7 +87,7 @@ var cpu = (function ()
 	
 
 	// Logic update timer
-	function update_timer()
+	function update()
 	{
 		// Donot update cpu in online mode
 		if (project.get_online()) return;
@@ -121,20 +123,11 @@ var cpu = (function ()
 		inst_list.push({inst:inst, op1:op1, op2:op2});
 	}
 	
-	
-	
-	/*function get_inst_list()
-	{
-		
-		return inst_list;
-	}*/
 
-	
+	// Create and init variable data
 	function resize_variable_data(size)
 	{
-			
 		variable_data = new Uint8Array(size);
-	
 	
 		for (var i = 0; i < variable_data.length; i++)
 			variable_data[i] = 0;

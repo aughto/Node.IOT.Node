@@ -25,7 +25,7 @@ var ajax = (function ()
 	local.init = init;
 	local.save_systemfile = save_systemfile;
 	local.load_systemfile = load_systemfile;
-	local.load_page = load_page;
+	local.load_http = load_http;
 	local.add_target = add_target;
 	
 	
@@ -48,7 +48,9 @@ var ajax = (function ()
 	{
 		console.log(`${MODULE} Init`);
 
-		setInterval(update, AJAX_UPDATE);	// Setup timer
+		main.hook_second(update);
+		
+		//setInterval(update, AJAX_UPDATE);	// Setup timer
 	}	
 		
 	
@@ -122,7 +124,7 @@ var ajax = (function ()
 
 	// Load html
 	// Need to replace with callback
-	function load_page(page, target) 
+	function load_http(url, target) 
 	{
 		var req = get_request();
 
@@ -131,7 +133,7 @@ var ajax = (function ()
 		req.loaded = function(event)
 		{ 
 			//load_page_result(req, target);
-			document.getElementById("maincontent").innerHTML = req.responseText;
+			//document.getElementById("maincontent").innerHTML = req.responseText;
 	
 			// Need to preform special actions for some targerts
 			var found = false;
@@ -139,7 +141,7 @@ var ajax = (function ()
 			{
 				if (target == targets[i].name)
 				{
-					targets[i].func();
+					targets[i].func(req.responseText);
 					found = true;
 				}
 			}
@@ -151,9 +153,9 @@ var ajax = (function ()
 			//document.getElementById("page").innerHTML = "";
 		};
 	
-		var url =  `html/${page}`;
+		//var url =  `html/${page}`;
 	
-		req.tag = page;
+		req.tag = url;
 	
 		console.log(`${MODULE} Load URL: ${url}`);
 	

@@ -24,7 +24,7 @@ var websocket = (function ()
 	
 
 	// Private variables
-	const UPDATE_TIME = 1000;
+	//const UPDATE_TIME = 1000;
 	const KEEPALIVE_TIMEOUT = 10;
 	const PING_TIMEOUT = 2;
 	
@@ -48,12 +48,12 @@ var websocket = (function ()
 	// Init websocket and connect 
 	function init()
 	{
-		console.log(`${MODULE} Websocket Init`);	
+		console.log(`${MODULE} Init`);	
 		console.log(`${MODULE} Host: ${location.host}`);
 		
 		//log("Websocket Start");
-	
-		setInterval(update, UPDATE_TIME);
+		main.hook_second(update);
+		//setInterval(update, UPDATE_TIME);
 	
 		keepalive_time = 0;
 		ping_time = 0;

@@ -2,41 +2,22 @@
 	Node.IOT
 	2018 Aughto Inc
 	Jason Hunt - nulluser@gmail.com
+	
+	File: HMI.js
+	
+	Todo: Factor out as much in common with weblogix as possible
 */
 
 "use strict";
-
-// UI Symbol types 
-var SYM =  {NONE : 0,
-			MODE : 1,
-			SELECT : 2,
-			TOGGLE : 3,
-			CLEAR : 4,
-			B : 5,
-			E : 6,
-			CAPLEFT : 7,
-			CAPRIGHT : 8,
-			BRLEFT : 9,
-			BRRIGHT : 10,
-			BRDOWN : 11,
-			HORZ : 12,
-			VERT : 13,
-			XIC : 14,
-			XIO : 15,
-			OTE : 16,
-			OTL : 17,
-			OTU : 18,
-			TMR : 19,
-			BOX : 20
-		};
-
 			  
 
+			  
 	
-// Weblogix container
-var weblogix = (function () 
+// HMI container
+var hmi = (function () 
 {
-	const MODULE = "Weblogix  ";	  
+	const MODULE = "HMI       ";
+	
 	var local = {};			
 
 	// Public Interface 
@@ -99,8 +80,8 @@ var weblogix = (function ()
 	var draw_count = 0;						// Number of draw operations per render
 
 			  
-	var main_display = new DisplayType("maincanvas");
-	var tool_display = new DisplayType("toolcanvas");
+	var main_display = new DisplayType("hmi_maincanvas");
+	var tool_display = new DisplayType("hmi_toolcanvas");
 				  
 				  
 	//Symbol Size
@@ -140,20 +121,21 @@ var weblogix = (function ()
 	{
 		console.log(`${MODULE} Init`);
 
-		ajax.add_target("weblogix", load);		
+		ajax.add_target("hmi", load);		
 		
 		load_icons();
+
 		
 		main.hook_update(update);
-
-		//setInterval(logic_ui_update_timer, UPDATE_TIME);	// Setup timer
+		
+		//setInterval(update_timer, UPDATE_TIME);	// Setup timer
 	}
 
 
 	// Called when clicking on 
 	function load()
 	{
-		console.log("Load weblogix");
+		console.log(`${MODULE} Load`);
 		
 		setup_display();								// Canvas
 
@@ -182,8 +164,6 @@ var weblogix = (function ()
 
 		if (tool_display.canvas == null) return;
 		if (main_display.canvas == null) return;		
-		
-		console.log(`${MODULE} canvas ok`);
 		
 		// Setup tool display
 		//tool_display.context = tool_display.canvas.getContext("2d");	
@@ -341,7 +321,7 @@ var weblogix = (function ()
 		
 		n.draw(main_display, n.x*symbol_x, n.y*symbol_y, symbol_x, symbol_y);
 
-		//main_display.draw_text(n.x*symbol_x+3, n.y*symbol_y+3 +symbol_y*0.8,10,"#000000", i);
+		main_display.draw_text(n.x*symbol_x+3, n.y*symbol_y+3 +symbol_y*0.8,10,"#000000", i);
 		//draw_text(main_display.context, n.x*symbol_x+symbol_x*0.6+3, n.y*symbol_y+3 +symbol_y*0.6,10, 10,"#000000", n.order);
 		
 		if (!n.is_operation()) return;
@@ -881,7 +861,7 @@ var weblogix = (function ()
 		var ix = Math.floor(x / symbol_x);
 		var iy = Math.floor(y / symbol_y);
 		
-		//console.log("x: " + ix + " y: " + iy);
+		console.log("x: " + ix + " y: " + iy);
 		
 		// Ignore virtual edges
 		//if (ix >= 1 && ix <= x_cells &&  iy >= 0 && iy < y_cells - 1)

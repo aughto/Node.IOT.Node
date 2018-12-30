@@ -25,6 +25,7 @@ var project = (function ()
 	local.init = init;					// Global init
 	local.save_project = save_project;	// Save project to device
 	local.assemble = assemble;			// Assemble project
+	local.load_page = load_page;
 	
 	/* Mode Control */
 	local.set_online = set_online;
@@ -52,8 +53,6 @@ var project = (function ()
 	local.ws_setvar_command = ws_setvar_command;
 	local.ws_getvars_command = ws_getvars_command;
 	
-	
-	
 	/* Menu */
 	local.menu_file_save = menu_file_save;
 	local.menu_file_saveas = menu_file_saveas;
@@ -63,9 +62,12 @@ var project = (function ()
 	local.get_config = get_config
 	local.set_config = set_config
 	
+	local.system_restart = system_restart;
+	
+	
 	
 	// Private variables
-	const UPDATE_TIME = 250;	// Update period
+	const UPDATE_RATE = 250;	// Update period
 	
 	const MODE_ONLINE = 1;
 	const MODE_OFFLINE = 2;
@@ -84,43 +86,116 @@ var project = (function ()
 	var var_updates = 0;	
 	var last_update = 0;
 	
+	var cur_page = "";
+	
 	// Project Init
 	function init()
 	{
 		console.log(`${MODULE} Init`);
 
-		cpu.init();
+		//cpu.init();
 
 		cpu.set_update_callback(cpu_updated);
+		
+		// Link in callback for reloader
+		ajax.add_target("reloader", reloader);
 		
 
 		load_project();
 		
 		error();
 		
-		setInterval(update_timer, UPDATE_TIME);	// Setup timer
+		main.hook_update(update);
+		main.hook_second(second);
+		
+		
+		//setInterval(update_timer, UPDATE_TIME);	// Setup timer
+		
+		
 	}
 
+	
+	
+	
+	
 	
 		// Logic update timer
-	function update_timer()
+	function update()
 	{
-		if (get_ms() - last_update > 1000)
+		//console.log(`${MODULE} Var update`);
+		
+		// Rate limit remote variable update
+		if (get_ms() - last_update > UPDATE_RATE)
 		{
-			console.log("Var update rate: " + var_updates);
-			
-			var_updates = 0;
+			if (logic_mode == MODE_ONLINE)
+				send_getvars();
+
 			last_update = get_ms();
 		}
-		
-		if (logic_mode == MODE_ONLINE)
-			send_getvars();
-		
 	}
 
+	// Second timer
+	function second()
+	{
+		console.log("Var update rate: " + var_updates);
+			
+		var_updates = 0;
+		last_update = get_ms();
+	}	
 	
 	
+	/* Page control */
+	function show_page(p)
+	{
+		var c1  = document.getElementById(p + "_container");	
+		
+		c1.style.display = "block";
+	}
 	
+	function hide_page(p)
+	{
+		var c1  = document.getElementById(p + "_container");	
+		
+		c1.style.display = "none";
+		
+	}
+	
+	
+	function hide_all()
+	{
+		// Hide other pages
+		hide_page("hmi");
+		hide_page("liveview");
+		hide_page("weblogix");
+		hide_page("vareditor");
+		hide_page("ioconfig");		
+		hide_page("mainconfig");
+		hide_page("system");
+		
+	}
+	
+	function load_page(p)
+	{
+		hide_all();
+		
+		console.log("Load page: " + p);
+		
+		show_page(p);
+		
+		
+		if (p == "hmi") hmi.load();
+		if (p == "liveview") liveview.load();
+		if (p == "weblogix") weblogix.load();
+		if (p == "vareditor") vareditor.load();
+		if (p == "ioconfig") config.load_config(p);
+		if (p == "mainconfig") config.load_config(p);
+		//if (p == "system") config.load_io();
+		
+
+		
+		
+		cur_page = p;
+	}
 	
 	/* 
 		CPU
@@ -240,8 +315,8 @@ var project = (function ()
 	
 	function load_project_object(p)
 	{		
-		console.log("Load project data");
-		console.log(p);
+		//console.log("Load project data");
+		//console.log(p);
 		
 		// Clean out project
 		nodes = [];
@@ -341,15 +416,15 @@ var project = (function ()
 			return;
 		}
 		
-		console.log("Instruction list");
-		console.log(inst_list);
+		//console.log("Instruction list");
+		//console.log(inst_list);
 		
-		console.log("Bytecode");
-		console.log(bytecode);
+		//console.log("Bytecode");
+		//console.log(bytecode);
 		
 		cpu.load_inst_list(inst_list);
 		
-		assembler.show_inst_list(inst_list);
+		//assembler.show_inst_list(inst_list);
 		
 		cpu.set_logic_ok(true);
 	
@@ -479,7 +554,7 @@ var project = (function ()
 
 		var v = variable_list.variables[n.op1];
 				
-		console.log("toggle: " + v.offset);
+	//	console.log("toggle: " + v.offset);
 	
 		// Only send toggle if live
 		if (logic_mode == MODE_ONLINE)
@@ -580,8 +655,8 @@ var project = (function ()
 		// Load variable ist from JSON data
 	function load_variable_list(var_data)
 	{
-		console.log("Loading variables ");
-		console.log(var_data);
+		//console.log("Loading variables ");
+		//console.log(var_data);
 		
 		variable_list = {};
 		variable_list.variables = [];
@@ -1082,6 +1157,35 @@ var project = (function ()
 		End of Menu items 
 	*/
 
+	
+		
+	/* 
+		System 
+	*/
+	
+	// Request System Restart 
+	function system_restart()
+	{
+		console.log(`${MODULE} System restart`);
+		
+		ajax.load_http("/system_restart", "reloader");
+		
+	}
+	
+	// Keep reloading page to wait for reboom
+	function reloader()
+	{
+		console.log(`${MODULE} Reloader`);
+		
+		setInterval(function() {document.location.reload(true);}  , 3000);
+	}
+	
+	
+	
+		
+	/* 
+		End of System 
+	*/
 
 	return local;
 }());

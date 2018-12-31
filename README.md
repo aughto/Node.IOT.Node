@@ -121,6 +121,7 @@ The web interface files are stored in the /data directory of the arduino project
 The web interface is divider into modules accessed from the navigation bar on the left side.
 
 ### Project 
+![Node.IOT](https://github.com/aughto/Node.IOT.Node/blob/master/Images/Project.png "Project")
 Overall project control. Allows load, save, assemble
 
 
@@ -129,48 +130,50 @@ Interactive display for displaying current values
 
 
 ### Liveview
+![Node.IOT](https://github.com/aughto/Node.IOT.Node/blob/master/Images/Liveview.png "Liveview")
+
 Display all current inputs and outputs
 
 
 ### Weblogix
+![Node.IOT](https://github.com/aughto/Node.IOT.Node/blob/master/Images/Weblogix.png "Weblogix")
 Live ladder logic editor
 Select mode allows the users to modify the options of a cell instruction
 Toggle mode toggles the source bit of an instruction
 
-
 ### Variables
+![Node.IOT](https://github.com/aughto/Node.IOT.Node/blob/master/Images/variables "Variables")
+
 Variable configuration 
 Project must be reassembled after adding or removing a memory element
 
 ### IO Setup
+![Node.IOT](https://github.com/aughto/Node.IOT.Node/blob/master/Images/IOSetup.png "IOSetup")
+
 Name local and remove IO 
 
 
 ### Config
+![Node.IOT](https://github.com/aughto/Node.IOT.Node/blob/master/Images/Config.png "Config")
+
 General configuration 
 
 
 ### System
+![Node.IOT](https://github.com/aughto/Node.IOT.Node/blob/master/Images/System.png "System")
+
 System interface. Backup, Restore, restart, etc
-
-
 
 
 
 ## Config Files
 There are a few config files stored on the device
-project.txt: Main JSON encoded project. Contains the node list, variables, and configs.
-bytecode.txt: Contains the CPU bytecode and the Variable state.
-config.txt: Contains the config file in a format that is easy for the system to read.
 
-
-
-
-
-
-
-
-
+Name         | Use
+-------------|---------------
+project.txt  |  Main JSON encoded project. Contains the node list, variables, and configs.
+bytecode.txt |  Contains the CPU bytecode and the Variable state.
+config.txt   |  Contains the config file in a format that is easy for the system to read.
 
 
 

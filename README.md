@@ -1,8 +1,8 @@
 # Node.IOT
 IOT Platform
 
-![Node.IOT](https://github.com/aughto/Node.IOT.Node/blob/master/Images/Image1.png "Node.IOT")
-
+![Node.IOT](https://github.com/aughto/Node.IOT.Node/blob/master/DocImages/Image1.png "Node.IOT 1")
+![Node.IOT](https://github.com/aughto/Node.IOT.Node/blob/master/DocImages/Image2.png "Node.IOT 2")
 
 # Node.IOT Platform
 

@@ -23,6 +23,10 @@ Logic::Logic()
 {
    bytecode = NULL;
    bytecode_size = 0;
+
+   variables = NULL;
+   variables_size = 0;
+   
    updates = 0;
    reload_flag = false;
 }
@@ -30,35 +34,24 @@ Logic::Logic()
 
 void Logic::init()
 {
-   print_log("Logic init\n"); 
+  print_log("Logic init\n"); 
 
   // Allocate stacks
+  cr_stack = (unsigned char *)malloc(CRSTACK_MAX + 1);
 
-  variables = (unsigned char *)malloc(VARIABLE_MAX + 1);
-  cr_stack  = (unsigned char *)malloc(CRSTACK_MAX + 1);
-  or_stack  = (unsigned char *)malloc(ORSTACK_MAX + 1);
-
-  if (variables == NULL)
-  {
-    print_log("Unable to get variable memory\n");
-    return;
-  }
-    
   if (cr_stack == NULL)
   {
     print_log("Unable to get crstack memory\n");
     return;
   }
 
+  or_stack = (unsigned char *)malloc(ORSTACK_MAX + 1);
+  
   if (or_stack == NULL)
   {
     print_log("Unable to get orstack memory\n");
     return;
   }
-
-  for (int i = 0; i < 32; i++)
-   variables[i] = 0;  
-
 
   load();
 }
@@ -71,10 +64,12 @@ void Logic::load()
   load_bytecode(BYTECODE_FILENAME);
 
   show_disassembly();
+  show_variables();
 
   reload_flag = false;
-  
 }
+
+
 
 void Logic::save()
 {
@@ -113,6 +108,8 @@ void Logic::update(unsigned long current)
 // map inputs
 void Logic::map_inputs(void)
 {
+  if (variables == NULL) return;
+  
   unsigned char v;
 
   for (int i = 0; i < NUM_INPUTS; i++)
@@ -124,6 +121,7 @@ void Logic::map_inputs(void)
 
 void Logic::map_outputs(void)
 {
+  if (variables == NULL) return;
 
   // Map outputs
   unsigned int output_offset = 4;
@@ -156,53 +154,31 @@ print_log("(%c%c)", c1, c2);
 }*/
 
 
-
-
-bool Logic::load_bytecode(const char *filename)
+bool Logic::load_cpu_bytecode(File file)
 {
   if (bytecode != NULL) free(bytecode);
 
   bytecode = NULL;
   bytecode_size = 0;
-  
-  if (!filename)
-  {
-    print_log(MODULE "Logic Bytecode load: No filename\n");
-    return true;
-  }
-  
-  print_log(MODULE "Loading Config %s\n", filename);
-
-  File file = SPIFFS.open(filename, FILE_READ);
-    
-  if(!file || file.isDirectory())
-  {
-      print_log(MODULE " Failed to open bytecode file");
-      return true;
-  }
 
   // Read size
   if (read_hex32(file, bytecode_size))
   {
-    print_log("Unable to read config file\n");
-    file.close();
+    print_log("Unable to read CPU Bytecode file\n");
     return true;
   }
 
-  print_log("Bytecode size: %d\n", bytecode_size);
+  print_log("CPU Bytecode size: %d\n", bytecode_size);
 
   // Check for invalid size
-
-  if (bytecode_size > MAX_BYTECODE)
+  if (bytecode_size > BYTECODE_MAX)
   {
-    print_log("Bytecode too large: %d Limit: %d\n", bytecode_size, MAX_BYTECODE);
+    print_log("Bytecode too large: %d Limit: %d\n", bytecode_size, BYTECODE_MAX);
     return true;
   }
 
-
   // Allocate Memory
-    
-  bytecode = (unsigned char*) malloc(bytecode_size + 10 );  // Padd space so that we can always index past current instruction 
+  bytecode = (unsigned char*) malloc(bytecode_size + 10 );  // Pad space so that we can always index past current instruction 
 
   if (bytecode == NULL)
   {
@@ -210,31 +186,110 @@ bool Logic::load_bytecode(const char *filename)
     return true;
   }
 
+  // Read file
+  unsigned int index = 0;
+
+  while(index < bytecode_size)
+  {
+    unsigned char b;
+
+    if (read_hex8(file, b)) return true;
+
+    bytecode[index++] = b;
+  }
+
+  return false;
+}
+
+
+
+bool Logic::load_var_bytecode(File file)
+{
+  if (variables != NULL) free(variables);
+
+  variables = NULL;
+  variables_size = 0;
+  
+  // Read size
+  if (read_hex32(file, variables_size))
+  {
+    print_log("Unable to bytecode file\n");
+    file.close();
+    return true;
+  }
+
+  print_log("VAR Bytecode size: %d\n", variables_size);
+
+  // Check for invalid size
+
+  if (variables_size > VARIABLE_MAX)
+  {
+    print_log("Bytecode too large: %d Limit: %d\n", variables_size, VARIABLE_MAX);
+    return true;
+  }
+
+  // Allocate Memory
+  variables = (unsigned char*) malloc(variables_size + 10 );  // Pad space so that we can always index past current instruction 
+
+  if (variables == NULL)
+  {
+    print_log("Unable to load variables - Memory\n");
+    return true;
+  }
 
   // Read file
   unsigned int index = 0;
 
-  while(file.available())
+  while(index < variables_size)
   {
     unsigned char b;
 
-    if (read_hex8(file, b))
-    {
-      print_log("Unable to read config file\n");
-      file.close();
-      return true;
-    }
+    if (read_hex8(file, b)) return true;
 
-    //print_log(" %x ", b);
+    variables[index++] = b;
+  }
 
-    bytecode[index++] = b;
-        
-      //Serial.write(file.read());
-    }
+  return false;
+}
+
+
+
+
+bool Logic::load_bytecode(const char *filename)
+{
+  if (!filename)
+  {
+    print_log(MODULE "Logic Bytecode load: No filename\n");
+    return true;
+  }
   
-  file.close();
+  print_log(MODULE "Loading Bytecode %s\n", filename);
 
+  File file = SPIFFS.open(filename, FILE_READ);
+    
+  if(!file || file.isDirectory())
+  {
+      print_log(MODULE "Failed to open bytecode file");
+      return true;
+  }
+
+  if (load_cpu_bytecode(file))
+  {
+    print_log("Unable to load CPU bytecode\n");
+    file.close();
+    return true;
+  }
+
+  if (load_var_bytecode(file))
+  {
+    print_log("Unable to load VAR bytecode\n");
+    file.close();
+    return true;
+  }
+  
   print_log(MODULE "Bytecode Loaded\n");
+
+  file.close();
 
   return false;
 }

@@ -17,8 +17,8 @@
 
 
 
-#define MAX_BYTECODE  32768
-#define VARIABLE_MAX  1024
+#define BYTECODE_MAX  32768
+#define VARIABLE_MAX  32768
 #define CRSTACK_MAX   256
 #define ORSTACK_MAX   256
 
@@ -62,15 +62,20 @@ class Logic
   void savelogic(const char *filename, uint8_t *data, size_t len, int mode);
 
   
-  void show_disassembly();
   void decode_next_inst(unsigned int &i, bool newline);
-  void show_memory(char * title );
+  void show_disassembly();
+  void show_variables();
 
   void solve_logic(unsigned long dt);
 
-  unsigned char get_value(unsigned int i);
-  void set_value(unsigned int i, unsigned char v);
+  unsigned char get_byte(unsigned int i);
+  uint16_t get_word(unsigned int i);
+  
+  void set_byte(unsigned int i, unsigned char v);
+  void set_word(unsigned int i, uint16_t v);
 
+  unsigned int get_variables_size();
+  
   unsigned int get_updates() { unsigned int v = updates; updates = 0; return v; };
 
 
@@ -86,6 +91,9 @@ class Logic
   void map_inputs(void);
   void map_outputs(void);
 
+  bool load_cpu_bytecode(File file);
+  bool load_var_bytecode(File file);
+
   unsigned char check_offset(unsigned int i);
 
   bool file_loaded; // need to move into config file
@@ -98,6 +106,8 @@ class Logic
   unsigned long bytecode_size;
   
   unsigned char *variables;
+  unsigned long variables_size;
+  
   unsigned char *cr_stack;
   unsigned char *or_stack;
 

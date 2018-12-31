@@ -169,7 +169,7 @@ var vareditor = (function ()
 	function get_var_val_string(v)
 	{
 		if (v.type == VAR_TYPES.VAR_TMR)
-			return  `Base: ${v.value.base}<br>Pre:${v.value.pre}<br>Acc:${v.value.acc}`;
+			return  `Val: ${v.value.value}<br>Base: ${v.value.base}<br>Pre:${v.value.pre}<br>Acc:${v.value.acc}`;
 		
 		return v.value;
 	}

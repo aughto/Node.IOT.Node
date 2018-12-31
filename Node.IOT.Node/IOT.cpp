@@ -93,10 +93,6 @@ void IOT::send_variables()
 {
   //print_log(MODULE "send_message (param): %s %s %s \n", cmd, item, value);
 
-
-  #define TMP_MAX 256
-  char tmp[TMP_MAX];
-  
   /*if (strlen(cmd) + strlen(item) + strlen(value) + 20 > TMP_MAX)
   {
     print_log(MODULE "send_message too long\n");
@@ -104,15 +100,17 @@ void IOT::send_variables()
   }*/
 
   // will need to reserve some memory on logic load to store the list
-  char var_char[256];
 
-  
+  unsigned int size = logic.get_variables_size();
 
+  char tmp[size * 2 + 1 + 50];    // Return string also needs header
+  char var_char[size * 2 + 1];    // HEX varaible string
+ 
   unsigned int index = 0;
   
-  for (int i = 0; i < 100; i++)
+  for (int i = 0; i < size; i++)
   {
-    unsigned char v = logic.get_value(i);
+    unsigned char v = logic.get_byte(i);
 
     var_char[index++] = get_hex(v>>4);
     var_char[index++] = get_hex(v&0x0f);
@@ -174,7 +172,7 @@ bool IOT::handle_message(const char *cmd, const char *item, const char *value)
     //print_log("Value: %s\n", value);
   
 
-    if (io.set_value(item, value))
+    if (io.set_byte(item, value))
       return true;
     
     //io.handle_message(cmd, item, value);
@@ -202,10 +200,10 @@ bool IOT::handle_message(const char *cmd, const char *item, const char *value)
     unsigned int var_offset = atoi(item);
     unsigned int var_value = atoi(value);
 
-    logic.set_value(var_offset, var_value);
+    logic.set_byte(var_offset, var_value);
 
 
-    if (io.set_value(item, value))
+    if (io.set_byte(item, value))
       return true;
     
     //io.handle_message(cmd, item, value);

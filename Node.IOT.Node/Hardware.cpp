@@ -263,8 +263,8 @@ static int m = 0;
     //digitalWrite(ETH_RESET, m & 1);
 
 
-    //io.set_value("Output1", (m & 1) ? "0" : "1");
-    //io.set_value("Output2", (m & 2) ? "0" : "1");
+    //io.set_byte("Output1", (m & 1) ? "0" : "1");
+    //io.set_byte("Output2", (m & 2) ? "0" : "1");
     
 
     m++;

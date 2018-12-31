@@ -35,7 +35,7 @@ class Input
 
   bool check_getval(const String &item, String &value);
 
-  bool get_value() { return state; };
+  bool get_byte() { return state; };
 
   void update(unsigned long current);
   void publish();
@@ -64,9 +64,9 @@ class Output
   bool check_msg(const String &topic, const String &payload);
   bool check_setval(const String &item, const String &value);
   
-  bool set_value(const char * value);
-  bool set_value(unsigned char value);
-  bool get_value();
+  bool set_byte(const char * value);
+  bool set_byte(unsigned char value);
+  bool get_byte();
 
   void publish();
   

@@ -109,7 +109,7 @@ bool IO::get_input(unsigned index, unsigned char &value)
 {
   if (index >= NUM_INPUTS) return true;
   
-  value = inputs[index].get_value();
+  value = inputs[index].get_byte();
 
   return false;
 }
@@ -118,7 +118,7 @@ bool IO::set_output(unsigned index, unsigned char value)
 {
   if (index >= NUM_OUTPUTS) return true;
 
-  outputs[index].set_value(value);
+  outputs[index].set_byte(value);
 
   return false;
 }
@@ -127,13 +127,13 @@ bool IO::set_output(unsigned index, unsigned char value)
 
 
 
-bool IO::get_value(unsigned index, unsigned char &value)
+bool IO::get_byte(unsigned index, unsigned char &value)
 {
   // Inputs
   if (index < 64)
   {
     if (index >= NUM_INPUTS) return true;
-    value = inputs[index].get_value();
+    value = inputs[index].get_byte();
 
   } else
   // Outputs
@@ -141,7 +141,7 @@ bool IO::get_value(unsigned index, unsigned char &value)
   {
     index -= 64;
     if (index >= NUM_OUTPUTS) return true;
-    value = outputs[index].get_value();
+    value = outputs[index].get_byte();
 
   } 
 
@@ -149,7 +149,7 @@ bool IO::get_value(unsigned index, unsigned char &value)
 }
 
   
-bool IO::set_value(unsigned index, unsigned char value)
+bool IO::set_byte(unsigned index, unsigned char value)
 {
   index -= 64;
 
@@ -158,7 +158,7 @@ bool IO::set_value(unsigned index, unsigned char value)
 
   if (index >= NUM_OUTPUTS) return true;
 
-  outputs[index].set_value(value);
+  outputs[index].set_byte(value);
 
   return false;
 }
@@ -171,11 +171,11 @@ bool IO::set_value(unsigned index, unsigned char value)
 
 
 
-bool IO::set_value(const char * item, const char * value)
+bool IO::set_byte(const char * item, const char * value)
 {
   if (strlen(item) == 0)
   {
-    print_log(MODULE "set_value: No item\n");
+    print_log(MODULE "set_byte: No item\n");
     return true;
   }  
   
@@ -183,7 +183,7 @@ bool IO::set_value(const char * item, const char * value)
   {
     if (!strcmp(outputs[i].get_name(), item))
     {
-     if (outputs[i].set_value(value))
+     if (outputs[i].set_byte(value))
      return true;
     }
   }

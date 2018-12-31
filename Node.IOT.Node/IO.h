@@ -26,10 +26,10 @@ class IO
   bool check_setval(const String item, const String value);
   bool check_getval(const String item, String &value);
 
-  bool set_value(const char * item, const char * value);
+  bool set_byte(const char * item, const char * value);
 
-  bool get_value(unsigned index, unsigned char &value);
-  bool set_value(unsigned index, unsigned char value);
+  bool get_byte(unsigned index, unsigned char &value);
+  bool set_byte(unsigned index, unsigned char value);
 
 
   bool get_input(unsigned index, unsigned char &value);

@@ -33,6 +33,7 @@ var cpu = (function ()
 	
 	
 	/* Variable operations */
+	local.set_variable_data = set_variable_data;
 	local.resize_variable_data = resize_variable_data;
 	local.variable_update = variable_update;
 	local.get_value = get_value;
@@ -153,6 +154,23 @@ var cpu = (function ()
 	
 		variable_data[idx] = parseInt(v);
 	}	
+	
+	
+	
+	
+	function set_variable_data(data)
+	{
+		if (data.length != variable_data.length)
+		{
+			console.log(`${MODULE} Data size mismatch Local: ${variable_data.length} Remote: ${data.length}`);
+			//return;
+		}
+		
+		for (var i = 0; i < variable_data.length; i++)
+			variable_data[i] = data[i];
+	}
+	
+	
 		
 	function get_value(offset, type)
 	{

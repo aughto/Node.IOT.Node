@@ -57,6 +57,18 @@ function get_hex8(num)
     return "0".repeat(len - str.length) + str;
 }
 
+// Get 4 digit hex from integer
+function get_hex16(num) 
+{
+	num = parseInt(num);
+	
+	//console.log("Geth32 " + num + "\n");
+	
+	var len = 4;
+    var str = num.toString(16);
+    return "0".repeat(len - str.length) + str;
+}
+
 // Get 8 digit hex from integer
 function get_hex32(num) 
 {

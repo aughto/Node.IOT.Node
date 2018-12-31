@@ -388,10 +388,12 @@ var weblogix = (function ()
 		{
 			value = cpu.get_value(v.offset, v.type);
 			
-			if (v.type == VAR_TYPES.VAR_TMR)
-				value = value.value;
 		}
-				
+			
+		// Extract value from composite types
+		if (v.type == VAR_TYPES.VAR_TMR)
+			value = value.value;
+			
 		var color = (value == 0) ?  "#ff0000" : "#0000ff" ;
 		var name = v.name;
 				

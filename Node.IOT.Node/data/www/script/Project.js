@@ -71,7 +71,7 @@ var project = (function ()
 	
 	var variable_list = {};  	// Variable name list
 	var nodes = [];				// Editor UI nodes
-	var bytecode = "";			// Assembly bytecode
+	var cpu_bytecode = "";			// Assembly bytecode
 	var inst_list = [];			// Instruction list
 	
 	var main_config = {};
@@ -129,15 +129,9 @@ var project = (function ()
 	{
 		// Do not update variables in online mode
 		if (logic_mode == MODE_ONLINE) return;
-		
-		
-		// Load new values into memory list
-		for (var i = 0; i < variable_list.variables.length; i++)
-		{
-			var v = variable_list.variables[i];
-			v.value = cpu.get_value(v.offset, v.type);
-			
-		}
+	
+		// Load updated variable data from CPU
+		get_variable_values();
 	}
 	
 
@@ -160,8 +154,16 @@ var project = (function ()
 		// Save bytecode file
 		//str = generate_bytecode();
 		// Save current bytecode to file
-		console.log("Bytecode string: " + bytecode);
-		ajax.save_systemfile("bytecode.txt", "bytecode", bytecode)
+		
+		var mem_bytecode = generate_variable_bytecode();
+		var proj_bytecode = cpu_bytecode + mem_bytecode;
+		
+		console.log("CPU Bytecode string: " + cpu_bytecode);
+		console.log("Mem Bytecode string: " + mem_bytecode);
+		
+		console.log("Project Bytecode string: " + proj_bytecode);
+		
+		ajax.save_systemfile("bytecode.txt", "bytecode", proj_bytecode)
 		
 		var cfg_str = get_config_string();
 		console.log("Config string: " + cfg_str);
@@ -177,8 +179,6 @@ var project = (function ()
 		request_load();
 	}
 	
-	
-	
 	// Return a string representing the entire project
 	function get_project_string()
 	{
@@ -191,44 +191,7 @@ var project = (function ()
 		p.main_config = mainconfig_get_export_object();
 		
 		return JSON.stringify(p);
-		
 	}
-	
-	// Converts one element of an object into a json string
-	// This will generate a  {"key" : "value"} string from the key and value passed
-	function get_keyvalue_sring(k, v)
-	{
-		var o = {};
-		o[k] = v;
-		return JSON.stringify(o);
-	}
-	
-	
-	// Converts a flat json object into a string for the config file
-	// Each {"key":"value"} json string is store on it's own line
-	// This is done to make loading the config on the device less complex
-	function get_config_json_string(obj)
-	{
-		var str = "";
-		
-		for (var key in obj) 
-			str += get_keyvalue_sring(key, obj[key]) + "\n";
-		
-		return str;
-	}
-	
-	
-	// Return a string representing the entire project
-	function get_config_string()
-	{
-		var config_str = "";
-
-		config_str += get_config_json_string(mainconfig_get_export_object());
-		config_str += get_config_json_string(ioconfig_get_export_object());
-		
-		return config_str;
-	}	
-	
 	
 	/* 
 		End of project saving 
@@ -272,11 +235,10 @@ var project = (function ()
 			return;
 		}
 		
-		
 		load_project_object(p);
 	}
 	
-	
+	// Load passed object into current project 
 	function load_project_object(p)
 	{		
 		//console.log("Load project data");
@@ -313,8 +275,39 @@ var project = (function ()
 	/* 
 		Config 
 	*/
-	
 
+	// Converts one element of an object into a json string
+	// This will generate a  {"key" : "value"} string from the key and value passed
+	function get_keyvalue_sring(k, v)
+	{
+		var o = {};
+		o[k] = v;
+		return JSON.stringify(o);
+	}
+	
+	// Converts a flat json object into a string for the config file
+	// Each {"key":"value"} json string is store on it's own line
+	// This is done to make loading the config on the device less complex
+	function get_config_json_string(obj)
+	{
+		var str = "";
+		
+		for (var key in obj) 
+			str += get_keyvalue_sring(key, obj[key]) + "\n";
+		
+		return str;
+	}
+	
+	// Return a string representing the entire project
+	function get_config_string()
+	{
+		var config_str = "";
+
+		config_str += get_config_json_string(mainconfig_get_export_object());
+		config_str += get_config_json_string(ioconfig_get_export_object());
+		
+		return config_str;
+	}	
 	
 	// Return config object. Used by config editors
 	function get_config(config_type)
@@ -365,9 +358,9 @@ var project = (function ()
 			return;
 		}
 		
-		bytecode = assembler.generate_bytecode(inst_list);
+		cpu_bytecode = assembler.generate_bytecode(inst_list);
 
-		if (bytecode.length == 0)
+		if (cpu_bytecode.length == 0)
 		{
 			error("Unable to generate bytecode");
 			return;
@@ -743,6 +736,48 @@ var project = (function ()
 	}
 
 
+	/* TODO, Has to be a better way to manage the variables in the list and cpu *.
+	
+	/* Getting and setting values */
+	function generate_variable_bytecode()
+	{
+		var out = "";
+		var offset = 0;
+
+		// Compute memory bytecode from current variable values
+		for (var i = 0; i < variable_list.variables.length; i++)
+		{
+			var v = variable_list.variables[i];
+		
+			// Decode type and increment offset
+			if (v.type == VAR_TYPES.VAR_DIN)  {out += get_hex8(v.value); offset += VAR_SIZE.VAR_DIN;  } else
+			if (v.type == VAR_TYPES.VAR_DOUT) {out += get_hex8(v.value); offset += VAR_SIZE.VAR_DOUT; } else
+			if (v.type == VAR_TYPES.VAR_AIN)  {out += get_hex8(v.value); offset += VAR_SIZE.VAR_AIN;  } else
+			if (v.type == VAR_TYPES.VAR_AOUT) {out += get_hex8(v.value); offset += VAR_SIZE.VAR_AOUT; } else
+			if (v.type == VAR_TYPES.VAR_BIT)  {out += get_hex8(v.value); offset += VAR_SIZE.VAR_BIT;  } else
+			if (v.type == VAR_TYPES.VAR_TMR)  
+			{
+				out += get_hex8(v.value.value);			
+				out += get_hex8(v.value.base);			
+				out += get_hex16(v.value.pre);			
+				out += get_hex16(v.value.acc);		
+				offset += VAR_SIZE.VAR_TMR;				
+			}
+		}
+			
+		return get_hex32(offset) + out;
+	}
+		
+	
+	// Return variable by index
+	function get_variable_by_index(index)
+	{
+		return variable_list.variables[index];
+	}
+	
+	
+	
+	// Set CPU values from memory_list
 	function set_variable_values()
 	{
 		
@@ -755,14 +790,70 @@ var project = (function ()
 		//load_test_variables();
 	}
 		
-	// Return variable by index
-	function get_variable_by_index(index)
+	/* Get variable values from CPU */	
+	function get_variable_values()
 	{
-		return variable_list.variables[index];
+		
+		// Load new values into memory list
+		for (var i = 0; i < variable_list.variables.length; i++)
+		{
+			var v = variable_list.variables[i];
+			v.value = cpu.get_value(v.offset, v.type);
+		}		
+		
+		/*for (var i = 0; i < variable_list.variables.length; i++)
+		{
+			var v = variable_list.variables[i];
+			set_variable_index(v.index, v.value)
+		}*/
+		
+		//load_test_variables();
 	}
 	
+	function set_variable_data(data)
+	{
+		//console.log(data);
+		
+		// Set variable data into CPU
+		
+		cpu.set_variable_data(data);
+		
+		// Local values back variable list
+		get_variable_values();
+		
+		// Extract CPU data into variables
+		
+		
+		/*for (var i = 0; i < variable_list.variables.length; i++)
+		{
+			var v = variable_list.variables[i];
+			
+			if (v.type == VAR_TYPES.VAR_TMR)
+			{
+				
+				
+			}
+
+
+			v.value = data[v.offset];
+		}*/
+		
+	}	
 	
-		// Set variable value be name
+	
+	/*function load_cpu_variables()
+	{	
+		
+		// Load new values into memory list
+		for (var i = 0; i < variable_list.variables.length; i++)
+		{
+			var v = variable_list.variables[i];
+			v.value = cpu.get_value(v.offset, v.type);
+		}
+	}*/
+	
+	
+	// Set variable value be name
 	function set_variable_index(i, value)
 	{
 		var v = variable_list.variables[i];
@@ -791,12 +882,7 @@ var project = (function ()
 		
 	}
 	
-	
-	
-	
-	
-	
-	
+
 	
 	
 	// Set variable value be name
@@ -815,6 +901,12 @@ var project = (function ()
 		set_variable_index(i, value);
 		
 	}
+	
+	
+	
+	
+	/* End of Getting and setting values */
+
 	
 	
 	// Get temporaty variable list sorted by name for editing
@@ -1027,16 +1119,12 @@ var project = (function ()
 		
 		var data = hex_string_to_array(message.data);
 		
-		//console.log(data);
 		
 		
-		for (var i = 0; i < variable_list.variables.length; i++)
-		{
-			var v = variable_list.variables[i];
-			
-			v.value = data[v.offset];
-		}
+		set_variable_data(data);
 		
+		
+
 		
 		/*if (message.item == "Input1") variable_update(0, message.value);
 		if (message.item == "Input2") variable_update(1, message.value);

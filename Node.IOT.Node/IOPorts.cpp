@@ -158,13 +158,13 @@ bool Output::check_setval(const String &item, const String &value)
 }
 
 
-bool Output::set_value(const char * value)
+bool Output::set_byte(const char * value)
 {
   //print_log(MODULE "Output set value %s %s\n", name.c_str(), value);
   
   if (strlen(value) == 0) 
   {
-    print_log(MODULE "set_value: No value\n");
+    print_log(MODULE "set_byte: No value\n");
     return true;
   }  
 
@@ -173,7 +173,7 @@ bool Output::set_value(const char * value)
   return false;
 }
 
-bool Output::set_value(unsigned char value)
+bool Output::set_byte(unsigned char value)
 {
   //print_log(MODULE "Output set value %d\n", value);
     
@@ -183,7 +183,7 @@ bool Output::set_value(unsigned char value)
 }
 
 
-bool Output::get_value()
+bool Output::get_byte()
 {
   return state;
 }

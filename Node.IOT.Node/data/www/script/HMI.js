@@ -53,7 +53,7 @@ var hmi = (function ()
 	
 	const INVALID_OBJECT = -1;					// Sentinel for no object selection
 	
-	const UPDATE_TIME = 100;
+	//const UPDATE_TIME = 100;
 	
 	var ZOOM_RATE = 0.05;					// Mouse wheel zoom rate
 	var GRID_FACTOR = 2.0;					// Grid snap divisor ft / GF

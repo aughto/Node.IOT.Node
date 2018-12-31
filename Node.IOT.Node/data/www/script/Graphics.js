@@ -74,7 +74,9 @@ function DisplayType(name)
 	this.get_world_x = function (sx) { return (sx + this.x_ofs) / this.zoom_scale; }						// Screen X to World X
 	this.get_world_y = function (sy) { return (sy + this.y_ofs) / this.zoom_scale; }						// Screen Y to World Y 
 	
-	
+	this.get_screen_x = function (wx) {	return wx * this.zoom_scale - this.x_ofs;}						// World X to Screen X
+	this.get_screen_y = function (wy) {	return wy * this.zoom_scale - this.y_ofs;}						// World Y to Screen Y
+
 	
 	
 	this.apply_zoom = function(x, y, z, rate)
@@ -125,8 +127,6 @@ function DisplayType(name)
 		this.context.restore();
 	}
 	
-	//function get_screen_x(wx) {	return wx * main_display.zoom_scale - x_ofs;}						// World X to Screen X
-	//function get_screen_y(wy) {	return wy * main_display.zoom_scale - y_ofs;}						// World Y to Screen Y
 	//function grid_round(v)    { return +(v*GRID_FACTOR).toFixed(1)/GRID_FACTOR; }     	// Apply snap to grid
 
 	

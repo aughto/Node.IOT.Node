@@ -123,7 +123,7 @@ var hmi = (function ()
 	{
 		console.log(`${MODULE} Init`);
 
-		ajax.add_target("hmi", load);		
+//		ajax.add_target("hmi", load);		
 		
 		load_icons();
 

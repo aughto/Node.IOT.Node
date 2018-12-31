@@ -49,9 +49,10 @@ var project = (function ()
 	local.get_sorted_variable_list = get_sorted_variable_list; // Temporary list for variable editor
 	local.get_variable_by_index = get_variable_by_index;
 	local.set_variable = set_variable;	// Set variable value by name
-
-	local.remove_variable = remove_variable;
+	local.set_variable_index = set_variable_index;
+	local.remove_variable = remove_variable;	
 	local.add_variable = add_variable;
+	local.send_setvariable = send_setvariable;
 	
 	// Websockets 
 	local.ws_set_command = ws_set_command;
@@ -128,11 +129,11 @@ var project = (function ()
 	{
 		// Do not update variables in online mode
 		if (logic_mode == MODE_ONLINE) return;
-
+return;
 		for (var i = 0; i < variable_list.variables.length; i++)
 		{
 			var v = variable_list.variables[i];
-			v.value = cpu.get_byte(v.offset);
+			v.value = cpu.get_value(v.offset, v.type);
 			
 		}
 	}
@@ -167,7 +168,6 @@ var project = (function ()
 		mode("Offline");
 		// Load test data in case load from device fails
 		load_project_object(project_test_data);
-		test_set_variables();
 		request_load();
 	}
 	
@@ -257,13 +257,6 @@ var project = (function ()
 		
 		// Reassign variable list
 		assign_variable_list();
-		
-		// Load inital variables into cpu
-		for (var i = 0; i < variable_list.variables.length; i++)
-		{
-			var v = variable_list.variables[i];
-				cpu.set_byte(v.offset, v.value);
-		}
 		
 		// Assemble loaded project
 		assemble();		
@@ -491,6 +484,7 @@ var project = (function ()
 			v.value = v.value ? 0 : 1;
 			
 			// Send update to device
+			console.log("Send set");
 			send_setvariable(v.offset, v.value);
 		}
 		if (logic_mode == MODE_OFFLINE)
@@ -604,7 +598,7 @@ var project = (function ()
 	// Find index for variable by name
 	function find_variable_index(n)
 	{
-		console.log("find_variable_index");
+		//console.log("find_variable_index");
 		
 		for (var i = 0; i < variable_list.variables.length; i++)
 		{
@@ -709,6 +703,13 @@ var project = (function ()
 
 	function set_variable_values()
 	{
+		
+		for (var i = 0; i < variable_list.variables.length; i++)
+		{
+			var v = variable_list.variables[i];
+			set_variable_index(v.index, v.value)
+		}
+		
 		//load_test_variables();
 	}
 		
@@ -719,15 +720,47 @@ var project = (function ()
 	}
 	
 	
+		// Set variable value be name
+	function set_variable_index(i, value)
+	{
+		var v = variable_list.variables[i];
+		
+		// Determine type
+		if (v.type == VAR_TYPES.VAR_DIN)  cpu.set_byte(v.offset, value);
+		if (v.type == VAR_TYPES.VAR_DOUT) cpu.set_byte(v.offset, value);
+		if (v.type == VAR_TYPES.VAR_AIN)  cpu.set_byte(v.offset, value);
+		if (v.type == VAR_TYPES.VAR_AOUT) cpu.set_byte(v.offset, value);
+		if (v.type == VAR_TYPES.VAR_BIT)  cpu.set_byte(v.offset, value);
+		if (v.type == VAR_TYPES.VAR_TMR) 
+		{
+			//fields[1] = fields[1].toUpperCase();
+			
+			cpu.set_timer(v.offset, {value:value.value, base:value.base, pre:value.pre, acc:value.acc});
+			
+			//if (fields[1] == "ACC") cpu.set_word(v.offset + 2, value); else
+			//if (fields[1] == "PRE") { console.log("pre " + v.offset); cpu.set_word(v.offset + 4, value);  }
+			
+			
+		} else
+		{
+			console.log("Unknown type for set variable " + get_hex(v.type));
+			
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	// Set variable value be name
 	function set_variable(name, value)
 	{
-		console.log("set_variable");
-		console.log(variable_list);
-		
-//		name = "bit1";
-		
-		var fields = name.split("."); // Split into fields for variable options
+		console.log("set_variable name: " + name + " value: " + value);
 		
 		var i = find_variable_index(fields[0]);
 		
@@ -737,27 +770,7 @@ var project = (function ()
 			return;
 		}
 
-		var v = variable_list.variables[i];
-		
-		// Determine type
-		if (v.type == VAR_TYPES.DIN)  cpu.set_byte(v.offset, value);
-		if (v.type == VAR_TYPES.DOUT) cpu.set_byte(v.offset, value);
-		if (v.type == VAR_TYPES.AIN)  cpu.set_byte(v.offset, value);
-		if (v.type == VAR_TYPES.AOUT) cpu.set_byte(v.offset, value);
-		if (v.type == VAR_TYPES.BIT)  cpu.set_byte(v.offset, value);
-		if (v.type == VAR_TYPES.TMR) 
-		{
-			fields[1] = fields[1].toUpperCase();
-			
-			if (fields[1] == "ACC") cpu.set_word(v.offset + 2, value); else
-			if (fields[1] == "PRE") cpu.set_word(v.offset + 4, value); 
-			
-			
-		} else
-		{
-			console.log("Unknown type for set variable");
-			
-		}
+		set_variable_index(i, value);
 		
 	}
 	
@@ -804,6 +817,12 @@ var project = (function ()
 		v.name = name;
 		v.type = type;
 		v.value = 0;
+		
+		// Composite types
+		if (v.type == VAR_TYPES.VAR_TMR)
+		{
+			v.value = {value:0, base:0, pre:0, acc:0};
+		}
 		
 		// Find splice point
 		
@@ -879,26 +898,7 @@ var project = (function ()
 		
 	}
 		
-		/*
-	// Load some timer data
-	var i = find_variable_index("Tmr_1")
-	cpu.set_timer(variable_list.variables[i].offset, {value:0, acc:0, pre:500} );
 
-	var i = find_variable_index("Tmr_2")
-	cpu.set_timer(variable_list.variables[i].offset, {value:0, acc:0, pre:500} );
-
-	var i = find_variable_index("Tmr_3")
-	cpu.set_timer(variable_list.variables[i].offset, {value:0, acc:0, pre:500} );
-
-	var i = find_variable_index("Tmr_4")
-	cpu.set_timer(variable_list.variables[i].offset, {value:0, acc:0, pre:500} );
-
-	var i = find_variable_index("Tmr_5")
-	cpu.set_timer(variable_list.variables[i].offset, {value:0, acc:0, pre:500} );
-	
-	
-	*/
-	
 	/* 
 		End of Variables 
 	*/
@@ -927,6 +927,7 @@ var project = (function ()
 	// Websocket set var command
 	function send_setvariable(index, value)
 	{
+		console.log("Send set: " + index + " " + value);
 		websocket.send_command("setvar", index, value);
 	}
 

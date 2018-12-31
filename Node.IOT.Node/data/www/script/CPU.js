@@ -35,8 +35,13 @@ var cpu = (function ()
 	/* Variable operations */
 	local.resize_variable_data = resize_variable_data;
 	local.variable_update = variable_update;
+	local.get_value = get_value;
 	local.get_byte = get_byte;
+
+	local.set_value = get_value;
 	local.set_byte = set_byte;
+	local.set_word = set_word;
+	
 	
 	local.set_timer = set_timer;
 	local.toggle_byte = toggle_byte;
@@ -142,12 +147,25 @@ var cpu = (function ()
 		if (idx < 0 || idx >= variable_data.length)
 		{
 			console.log("variable_update: Invalid memory reference: " + idx);
+			logic_ok = false;
 			return;
 		}
 	
 		variable_data[idx] = parseInt(v);
 	}	
 		
+	function get_value(offset, type)
+	{
+		if (type == VAR_TYPES.VAR_DIN) return get_byte(offset);
+		if (type == VAR_TYPES.VAR_DOUT) return get_byte(offset);
+		if (type == VAR_TYPES.VAR_AIN) return get_byte(offset);
+		if (type == VAR_TYPES.VAR_AOUT) return get_byte(offset);
+		if (type == VAR_TYPES.VAR_BIT) return get_byte(offset);
+		if (type == VAR_TYPES.VAR_TMR) return get_timer(offset);
+		
+		return 0;
+	}
+	
 	
 	// Get byte from memory location
 	function get_byte(offset)
@@ -155,6 +173,7 @@ var cpu = (function ()
 		if (offset < 0 || offset >= variable_data.length)
 		{
 			console.log("get_byte: Invalid location ("+offset+")\n");
+			logic_ok = false;
 			return 0;
 		}
 	
@@ -167,6 +186,7 @@ var cpu = (function ()
 		if (offset < 0 || offset + 1 >= variable_data.length)
 		{
 			console.log("get_byte: Invalid location ("+offset+")\n");
+			logic_ok = false;
 			return 0;
 		}
 	
@@ -174,6 +194,17 @@ var cpu = (function ()
 	}
 	
 	
+	function set_value(offset, type)
+	{
+		if (type == VAR_TYPES.VAR_DIN) return set_byte(offset);
+		if (type == VAR_TYPES.VAR_DOUT) return set_byte(offset);
+		if (type == VAR_TYPES.VAR_AIN) return set_byte(offset);
+		if (type == VAR_TYPES.VAR_AOUT) return set_byte(offset);
+		if (type == VAR_TYPES.VAR_BIT) return set_byte(offset);
+		if (type == VAR_TYPES.VAR_TMR) return set_timer(offset);
+		
+		return 0;
+	}	
 	
 	// Set byte at memory location
 	function set_byte(offset, v)
@@ -181,6 +212,7 @@ var cpu = (function ()
 		if (offset < 0 || offset >= variable_data.length)
 		{
 			console.log("set_byte: Invalid location ("+offset+")\n");
+			logic_ok = false;
 			return 0;
 		}
 	
@@ -194,6 +226,7 @@ var cpu = (function ()
 		if (offset < 0 || offset + 1 >= variable_data.length)
 		{
 			console.log("set_byte: Invalid location ("+offset+")\n");
+			logic_ok = false;
 			return 0;
 		}
 	
@@ -339,7 +372,7 @@ var cpu = (function ()
 			
 		timer.value = state.cr;
 			
-		//console.log("cr: " + cr + " value: " + timer.value + " op1: " + inst.op1 + " Val: " + timer.value + " Pre: " + timer.pre + " Acc:" + timer.acc);
+		//console.log("cr: " + state.cr + " value: " + timer.value + " Pre: " + timer.pre + " Acc:" + timer.acc);
 		
 		set_timer(state.inst.op1, timer);
 	}

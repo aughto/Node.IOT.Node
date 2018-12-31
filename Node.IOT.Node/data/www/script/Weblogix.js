@@ -129,6 +129,8 @@ var weblogix = (function ()
 		
 	var mode = MODE_TYPES.MODE_TOGGLE;
 	
+	var min_node_x = 0;
+	var min_node_y = 0;
 	
 	
 
@@ -136,7 +138,7 @@ var weblogix = (function ()
 	{
 		console.log(`${MODULE} Init`);
 
-		ajax.add_target("weblogix", load);		
+		//ajax.add_target("weblogix", load);		
 		
 
 		load_icons();
@@ -175,7 +177,11 @@ var weblogix = (function ()
 		System
 	*/
 
-
+	function find_upperleft(n)
+	{
+		if (n.x < min_node_x) min_node_x = n.x;
+		if (n.y < min_node_y) min_node_y = n.y;
+	}
 
 	// Resize canvas to fit screen
 	function resize_canvas()
@@ -205,11 +211,21 @@ var weblogix = (function ()
 		// Only adjust offets for centering when first loaded
 		if (first_load)
 		{
-			main_display.x_ofs = -main_display.context.canvas.width / 2.0;
-			main_display.y_ofs = -main_display.context.canvas.height / 2.0;
+			min_node_x = 1000;
+			min_node_y = 1000;
+			
+			project.iterate_nodes(find_upperleft);
+			console.log("Min node x " + min_node_x + " y " + min_node_y);
+				
+			// Allign offsets so upper left node is in upper left position 
+			main_display.x_ofs = min_node_x * symbol_x * main_display.zoom_scale;
+			main_display.y_ofs = min_node_y * symbol_y * main_display.zoom_scale;
+			
+			//main_display.x_ofs = -main_display.context.canvas.width / 2.0;
+			//main_display.y_ofs = -main_display.context.canvas.height / 2.0;
 		
-			main_display.x_ofs += (32/2) * symbol_x * main_display.zoom_scale;
-			main_display.y_ofs += (10/2) * symbol_y * main_display.zoom_scale;
+			//main_display.x_ofs += (32/2) * symbol_x * main_display.zoom_scale;
+			//main_display.y_ofs += (10/2) * symbol_y * main_display.zoom_scale;
 		}
 		
 		
@@ -351,6 +367,13 @@ var weblogix = (function ()
 
 		var v = project.get_variable_by_index(n.op1);
 
+		if (v == undefined)
+		{
+			console.log("UNdefined var " + n.op1);
+			return;
+			
+		}
+		
 		//console.log(v);
 		
 		var value = 0;
@@ -363,7 +386,10 @@ var weblogix = (function ()
 		// Otherwise use cpu value
 		else
 		{
-			value = cpu.get_byte(v.offset);
+			value = cpu.get_value(v.offset, v.type);
+			
+			if (v.type == VAR_TYPES.VAR_TMR)
+				value = value.value;
 		}
 				
 		var color = (value == 0) ?  "#ff0000" : "#0000ff" ;
@@ -1154,13 +1180,13 @@ var weblogix = (function ()
 		{
 			var c1  = document.getElementById("variable_select");	
 			
-			var variable_offset = c1.value;
+			var variable_index = c1.value;
 
 			//console.log("Variable select: " + variable_offset);
 		
-			if (variable_offset != "")
+			if (variable_index != "")
 			{
-				n.op1 = parseInt(variable_offset);
+				n.op1 = parseInt(variable_index);
 				
 				//n.op1_index =  find_variable_index(n.op1); // relink index
 				//assemble();
@@ -1234,12 +1260,12 @@ var weblogix = (function ()
 		for (var i = 0; i < variable_list.variables.length; i++)
 		{
 			var name = variable_list.variables[i].name;
-			var offset = variable_list.variables[i].offset;
+			var index = variable_list.variables[i].index;
 			
 			
-			var sel = n.op1 == offset;
+			var sel = n.op1 == index;
 			
-			s += "<option value="+offset+" "+ (sel ? "selected":"") + "> " + name + "</option> \n";
+			s += "<option value="+index+" "+ (sel ? "selected":"") + "> " + name + "</option> \n";
 		}
 		
 		

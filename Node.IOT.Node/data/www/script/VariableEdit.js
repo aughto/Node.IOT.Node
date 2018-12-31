@@ -165,7 +165,16 @@ var vareditor = (function ()
 		return "x";	
 	}
 
-
+	// Convert variable type into string
+	function get_var_val_string(v)
+	{
+		if (v.type == VAR_TYPES.VAR_TMR)
+			return  `Base: ${v.value.base}<br>Pre:${v.value.pre}<br>Acc:${v.value.acc}`;
+		
+		return v.value;
+	}
+	
+	
 	// Create variable table 
 	function create_variable_table()
 	{
@@ -183,13 +192,14 @@ var vareditor = (function ()
 			// Pull data to make generation code cleaner
 			var v = variable_list.variables[i];
 			var type = get_var_type_string(v);
+			var value = get_var_val_string(v);
 			//var value = cpu.get_byte(v.offset);
 			//var value = v.value;
 			
 			out += `<tr>`;
 			out += `<td><b>${v.name}</b></td>`;
 			out += `<td><b>${type}</b></td>`;
-			out += `<td>${v.value}</td>`;
+			out += `<td>${value}</td>`;
 			out += `<td>${v.index}</td>`;
 			out += `<td>${v.offset}</td>`;
 			out += `<td><input type=button class=var_button value='(-)' onclick='vareditor.remove_variable(${v.index});'></td>`;

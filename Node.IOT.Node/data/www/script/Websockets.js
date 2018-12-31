@@ -20,7 +20,7 @@ var websocket = (function ()
 	// Public Interface
 	
 	local.init = init;
-	local.update = update;
+	local.second = second;
 	
 	local.send_command = send_command;
 	local.get_connected = get_connected;
@@ -32,6 +32,7 @@ var websocket = (function ()
 	const PING_TIMEOUT = 2;
 	
 	var host_ip = "";
+	var base_host = "";
 	var host = "";
 	var websocket_port = 80;  
 	
@@ -52,7 +53,9 @@ var websocket = (function ()
 	function init()
 	{
 		console.log(`${MODULE} Init`);	
-		console.log(`${MODULE} Host: ${location.host}`);
+		
+		base_host = location.host;
+		console.log(`${MODULE} Host: ${base_host}`);
 		
 		//log("Websocket Start");
 		//main.hook_second(update);
@@ -67,8 +70,11 @@ var websocket = (function ()
 	}
 
 	// Timer is used to make sure we are connected 
-	function update()
+	function second()
 	{
+		// Check for local mode
+		if (base_host == "") return;
+		
 		check_keepalive();
 		check_ping();
 	}
@@ -118,6 +124,8 @@ var websocket = (function ()
 	// Connect to socket server 
 	function connect()
 	{
+		// Check for load file mode. Do not attempt connect
+		if (base_host == "") return;
 		// Do not try to reconnect if we are already connecting 
 		//if (connecting == true) return;
 		

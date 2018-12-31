@@ -121,7 +121,7 @@ The web interface files are stored in the /data directory of the arduino project
 The web interface is divider into modules accessed from the navigation bar on the left side.
 
 ### Project 
-![Node.IOT](https://github.com/aughto/Node.IOT.Node/blob/master/Images/Project.png "Project")
+![Node.IOT](https://github.com/aughto/Node.IOT.Node/blob/master/DocImages/Project.png "Project")
 Overall project control. Allows load, save, assemble
 
 
@@ -130,37 +130,37 @@ Interactive display for displaying current values
 
 
 ### Liveview
-![Node.IOT](https://github.com/aughto/Node.IOT.Node/blob/master/Images/Liveview.png "Liveview")
+![Node.IOT](https://github.com/aughto/Node.IOT.Node/blob/master/DocImages/Liveview.png "Liveview")
 
 Display all current inputs and outputs
 
 
 ### Weblogix
-![Node.IOT](https://github.com/aughto/Node.IOT.Node/blob/master/Images/Weblogix.png "Weblogix")
+![Node.IOT](https://github.com/aughto/Node.IOT.Node/blob/master/DocImages/Weblogix.png "Weblogix")
 Live ladder logic editor
 Select mode allows the users to modify the options of a cell instruction
 Toggle mode toggles the source bit of an instruction
 
 ### Variables
-![Node.IOT](https://github.com/aughto/Node.IOT.Node/blob/master/Images/variables "Variables")
+![Node.IOT](https://github.com/aughto/Node.IOT.Node/blob/master/DocImages/variables "Variables")
 
 Variable configuration 
 Project must be reassembled after adding or removing a memory element
 
 ### IO Setup
-![Node.IOT](https://github.com/aughto/Node.IOT.Node/blob/master/Images/IOSetup.png "IOSetup")
+![Node.IOT](https://github.com/aughto/Node.IOT.Node/blob/master/DocImages/IOSetup.png "IOSetup")
 
 Name local and remove IO 
 
 
 ### Config
-![Node.IOT](https://github.com/aughto/Node.IOT.Node/blob/master/Images/Config.png "Config")
+![Node.IOT](https://github.com/aughto/Node.IOT.Node/blob/master/DocImages/Config.png "Config")
 
 General configuration 
 
 
 ### System
-![Node.IOT](https://github.com/aughto/Node.IOT.Node/blob/master/Images/System.png "System")
+![Node.IOT](https://github.com/aughto/Node.IOT.Node/blob/master/DocImages/System.png "System")
 
 System interface. Backup, Restore, restart, etc
 

@@ -131,7 +131,7 @@ var project = (function ()
 		if (logic_mode == MODE_ONLINE) return;
 		
 		
-		
+		// Load new values into memory list
 		for (var i = 0; i < variable_list.variables.length; i++)
 		{
 			var v = variable_list.variables[i];
@@ -195,6 +195,7 @@ var project = (function ()
 	}
 	
 	// Converts one element of an object into a json string
+	// This will generate a  {"key" : "value"} string from the key and value passed
 	function get_keyvalue_sring(k, v)
 	{
 		var o = {};
@@ -204,7 +205,8 @@ var project = (function ()
 	
 	
 	// Converts a flat json object into a string for the config file
-	// Each key:value json object is store on it's own line
+	// Each {"key":"value"} json string is store on it's own line
+	// This is done to make loading the config on the device less complex
 	function get_config_json_string(obj)
 	{
 		var str = "";

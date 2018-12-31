@@ -129,7 +129,9 @@ var project = (function ()
 	{
 		// Do not update variables in online mode
 		if (logic_mode == MODE_ONLINE) return;
-return;
+		
+		
+		
 		for (var i = 0; i < variable_list.variables.length; i++)
 		{
 			var v = variable_list.variables[i];

@@ -32,8 +32,9 @@ class Config
   void update(unsigned long current);
       
  private:
-
+  bool load_config(const char *filename);
   bool load(const char * filename);
+  bool parse_line(char * line);
 };
 
 

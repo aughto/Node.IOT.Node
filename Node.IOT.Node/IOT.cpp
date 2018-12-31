@@ -230,9 +230,9 @@ bool IOT::handle_message(uint8_t* data)
   JsonObject& root = jsonBuffer.parseObject((const char*)data);
   if (root.success()) 
   {
-    if (root.containsKey("cmd"))  cmd = (char *)root["cmd"].asString();
-    if (root.containsKey("item")) item = (char *)root["item"].asString();
-    if (root.containsKey("value"))  value = (char *)root["value"].asString();        
+    if (root.containsKey("cmd"))   cmd = (char *)root["cmd"].asString();
+    if (root.containsKey("item"))  item = (char *)root["item"].asString();
+    if (root.containsKey("value")) value = (char *)root["value"].asString();        
   } 
   else
     return true;

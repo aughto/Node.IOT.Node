@@ -4,7 +4,11 @@
  (C) 2018 Jason Hunt
   nulluser@gmail.com
 
-  FILE: NMQTT.cpp
+  FILE: Config.cpp
+
+  The config file is stored as a list of single element JSON objects terminaded by new line chars
+  This is done because there is not enough memory to load the entire project json object into memory
+  
 */
 
 #define MODULE_CONFIG
@@ -26,16 +30,13 @@ Config config;
 
 Config::Config()
 {
- 
 }
 
 
-
+// Init
 void Config::init()
 {
-  load(MAINCONFIG_FILENAME);
-  load(IOCONFIG_FILENAME);
-  
+  load_config(CONFIG_FILENAME);
   show();
 }
 
@@ -66,7 +67,7 @@ bool get_module(const char *key, char *module, const unsigned int max)
   return false;
 }
 
-
+// Get key name from key
 bool get_name(const char *key, char *name, const unsigned int max)
 {
   char *pch =  strchr(key, '_');
@@ -92,25 +93,112 @@ bool get_name(const char *key, char *name, const unsigned int max)
   return false;
 }
 
+// Parse config line and apply settings
+bool Config::parse_line(char * line)
+{
+  //print_log("Parsing line (%s)\n", line);
 
-bool Config::load(const char *filename)
+  DynamicJsonBuffer jsonBuffer(CONFIG_LINE_MAX);
+
+  JsonObject &root = jsonBuffer.parseObject(line);
+
+  if (!root.success())
+  {
+    Serial.println(F("Failed to parse config file"));
+    return true;
+  }
+
+
+  // Need to just extract key[0]
+  for( const auto& kv : root  ) 
+  {
+      // portion of key before first "_" contains which module it applies to 
+      // Extract module and key name
+      char module[MODULE_NAME_MAX+1]; // Leave space for term
+      char name[CONFIG_NAME_MAX+1];
+      
+      char *value = (char *)kv.value.as<char*>();
+
+      if (get_module(kv.key, module, MODULE_NAME_MAX)) continue;
+      if (get_name(kv.key, name, MODULE_NAME_MAX)) continue;
+
+      //print_log(MODULE "Module: (%s) Name: (%s) Value: (%s)\n", module, name, value);
+
+      // TODO Need to link in modules to get rid of this list
+      if (!strcmp(module, "network")) network.set_config(name, value);
+      if (!strcmp(module, "aws")) aws.set_config(name, value);
+      if (!strcmp(module, "mqtt")) mqtt.set_config(name, value);
+      if (!strcmp(module, "http")) http.set_config(name, value);
+  }
+ 
+}
+
+// Read next line from file
+bool get_next_line(File file, char * line, unsigned int LINE_MAX)
+{
+  unsigned int index = 0;
+  
+  while (file.available() && index < LINE_MAX - 1)
+  {
+    char ch = file.read();
+   
+    // Check for end of line
+    if (ch == '\n')
+    {
+      line[index] = 0; // Null term
+      return false;    // Done
+    }
+
+    line[index++] = ch;
+  }
+  
+  return true;
+}
+
+
+
+
+
+// Load config file
+bool Config::load_config(const char *filename)
 {
   if (!filename)
   {
-    print_log(MODULE "Config load: No filename\n");
+    print_log(MODULE "load_config: No filename\n");
     return true;
   }
   
-  print_log(MODULE "Loading Config %s\n", filename);
-
   File file = SPIFFS.open(filename, FILE_READ);
     
   if(!file || file.isDirectory())
   {
-      print_log(MODULE " Failed to open file config file");
+      print_log(MODULE "Failed to open file config file (%s)\n", filename);
       return true;
   }
 
+  print_log(MODULE "Loading Config %s\n", filename);
+
+  //Serial.println("Read file:");
+    
+  /*while(file.available())
+  {
+    char ch = file.read();
+    print_log("%c", ch);
+  }*/
+
+  char line[CONFIG_LINE_MAX];
+
+  while(file.available())
+  {
+    if (!get_next_line(file, line, CONFIG_LINE_MAX))
+      parse_line(line);
+  }
+
+ 
+
+
+  
+  /*
   DynamicJsonBuffer jsonBuffer(1024);
 
   JsonObject &root = jsonBuffer.parseObject(file);
@@ -119,17 +207,17 @@ bool Config::load(const char *filename)
   {
     Serial.println(F("Failed to parse config file"));
     
-    /*String s; // string not long enough, need to load to buffer
-    root.prettyPrintTo(s);
-    print_log("Json: %s\n", s.c_str());*/
+    //String s; // string not long enough, need to load to buffer
+    //root.prettyPrintTo(s);
+    //print_log("Json: %s\n", s.c_str());
     
     return true;
   }
+*/
 
 
-
-  /* send config values to system objects */
-  for( const auto& kv : root  ) 
+  // send config values to system objects 
+  /*for( const auto& kv : root  ) 
   {
       // portion of key before first "_" contains which module it applies to 
       // Extract module and key name
@@ -149,7 +237,7 @@ bool Config::load(const char *filename)
       
       
       
-  }
+  }*/
 
 /*
     
@@ -183,6 +271,28 @@ bool Config::load(const char *filename)
 
   return false;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void Config::show()
 {

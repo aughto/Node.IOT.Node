@@ -151,15 +151,19 @@ return;
 		console.log("Saving project to device");	
 		
 		// Save project file
-		var str = get_project_string();
-		console.log("Project string: " + str);	
-		ajax.save_systemfile("project.txt", "logic", str)
+		var proj_str = get_project_string();
+		console.log("Project string: " + proj_str);	
+		ajax.save_systemfile("project.txt", "logic", proj_str)
 			
 		// Save bytecode file
 		//str = generate_bytecode();
 		// Save current bytecode to file
 		console.log("Bytecode string: " + bytecode);
 		ajax.save_systemfile("bytecode.txt", "bytecode", bytecode)
+		
+		var cfg_str = get_config_string();
+		console.log("Config string: " + cfg_str);
+		ajax.save_systemfile("config.txt", "config", cfg_str)
 	}
 	
 	// Loads current project or test data if no project found 
@@ -187,6 +191,40 @@ return;
 		return JSON.stringify(p);
 		
 	}
+	
+	// Converts one element of an object into a json string
+	function get_keyvalue_sring(k, v)
+	{
+		var o = {};
+		o[k] = v;
+		return JSON.stringify(o);
+	}
+	
+	
+	// Converts a flat json object into a string for the config file
+	// Each key:value json object is store on it's own line
+	function get_config_json_string(obj)
+	{
+		var str = "";
+		
+		for (var key in obj) 
+			str += get_keyvalue_sring(key, obj[key]) + "\n";
+		
+		return str;
+	}
+	
+	
+	// Return a string representing the entire project
+	function get_config_string()
+	{
+		var config_str = "";
+
+		config_str += get_config_json_string(mainconfig_get_export_object());
+		config_str += get_config_json_string(ioconfig_get_export_object());
+		
+		return config_str;
+	}	
+	
 	
 	/* 
 		End of project saving 

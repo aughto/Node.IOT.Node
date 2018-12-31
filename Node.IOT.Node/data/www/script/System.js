@@ -18,6 +18,8 @@ var system = (function ()
 	local.load = load;
 	local.unload = unload;
 	
+	// System
+	local.restart = restart;
 
 	// Private variables
 
@@ -26,6 +28,9 @@ var system = (function ()
 	function init()
 	{
 		console.log(`${MODULE} Init`);
+		
+		// Link in callback for reloader
+		ajax.add_target("reloader", reloader);
 	}
 
 	// Called when variable editor is clicked
@@ -43,6 +48,33 @@ var system = (function ()
 
 		hide_module(local.name);
 	}		
+	
+	/* 
+		System 
+	*/
+	
+	// Request System Restart 
+	function restart()
+	{
+		console.log(`${MODULE} System restart`);
+		
+		ajax.load_http("/system_restart", "reloader");
+		
+	}
+	
+	// Keep reloading page to wait for reboom
+	function reloader()
+	{
+		console.log(`${MODULE} Reloader`);
+		
+		setInterval(function() {document.location.reload(true);}  , 3000);
+	}
+	
+			
+	/* 
+		End of System 
+	*/	
+	
 	
 	return local;
 }());

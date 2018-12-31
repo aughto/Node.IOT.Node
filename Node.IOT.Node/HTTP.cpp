@@ -211,8 +211,10 @@ void HTTP::load_handlers(AsyncWebServer *server)
   // Request system restart.  Need to replace with generic commands
   server->on("/system_restart", HTTP_GET, [](AsyncWebServerRequest *request)
   {  
+    print_log("\n\nOn restart\n\n");
     hardware.restart(); 
-    request->redirect("/html/reloader.html");
+    request->send(200, "text/plain", "Restarting");
+    //request->redirect("/");
   });
 
 

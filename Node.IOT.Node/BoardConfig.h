@@ -151,9 +151,10 @@
 // Config
 #define MAINCONFIG_FILENAME "/mainconfig.txt"
 #define IOCONFIG_FILENAME "/ioconfig.txt"
+
 #define BYTECODE_FILENAME "/bytecode.txt"
 #define LOGIC_FILENAME "/logic.txt"
-
+#define CONFIG_FILENAME "/config.txt"
 
 #define CONFIG_NULL "Unset"
 
@@ -170,6 +171,7 @@
 #define CONFIG_TOPIC_MAX  128
 #define CONFIG_USER_MAX   64
 #define CONFIG_PASS_MAX   64
+#define CONFIG_LINE_MAX   512
 
 #define START_DELAY       3000
 

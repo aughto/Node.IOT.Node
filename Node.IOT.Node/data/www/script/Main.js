@@ -37,8 +37,6 @@ var main = (function ()
 	local.menu_file_saveas = menu_file_saveas;
 	local.menu_file_load  = menu_file_load;
 	
-	// System
-	local.system_restart = system_restart;
 	
 	// Private variables
 	const DEFAULT_PAGE = "liveview";	// Default Page
@@ -65,8 +63,7 @@ var main = (function ()
 	
 		load_module(DEFAULT_PAGE);
 	
-		// Link in callback for reloader
-		ajax.add_target("reloader", reloader);
+
 	
 		setup_timers();
 	}
@@ -215,31 +212,7 @@ var main = (function ()
 	*/	
 	
 			
-	/* 
-		System 
-	*/
-	
-	// Request System Restart 
-	function system_restart()
-	{
-		console.log(`${MODULE} System restart`);
-		
-		ajax.load_http("/system_restart", "reloader");
-		
-	}
-	
-	// Keep reloading page to wait for reboom
-	function reloader()
-	{
-		console.log(`${MODULE} Reloader`);
-		
-		setInterval(function() {document.location.reload(true);}  , 3000);
-	}
-	
-			
-	/* 
-		End of System 
-	*/
+
 
 	return local;
 }());

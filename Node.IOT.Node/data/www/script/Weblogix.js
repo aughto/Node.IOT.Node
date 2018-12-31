@@ -7,7 +7,7 @@
 "use strict";
 
 // UI Symbol types 
-var SYM =  {NONE : 0,
+const SYM =  {NONE : 0,
 			MODE : 1,
 			SELECT : 2,
 			TOGGLE : 3,
@@ -50,34 +50,27 @@ var weblogix = (function ()
 	local.prop_ok_click = prop_ok_click;
 	local.prop_cancel_click = prop_cancel_click;
 	
-
-	local.menu_logic_goonline = menu_logic_goonline;
-	local.menu_logic_gooffline = menu_logic_gooffline;
-	local.menu_logic_assemble = menu_logic_assemble;
-	
-	
 	
 	// Private variables
 
 	// UI Modes
-	var MODE_TYPES = {MODE_NONE		: 0x01, 
+	const MODE_TYPES = {MODE_NONE		: 0x01, 
 				  MODE_MEMORY	: 0x02, 
 				  MODE_EDIT		: 0x03,
 				  MODE_TOGGLE   : 0x04,
 				  MODE_SELECT	: 0x05};
 
-	var UIMODE = {NONE : 0, SELECT : 1, MSELECT : 2, RESIZE : 3, MOVE : 4, DRAG : 5}	// UI Modes
-	var OBJMODE = {NONE : 0, ADD : 1}	// UI Modes
-			  
-
+	const UIMODE = {NONE : 0, SELECT : 1, MSELECT : 2, RESIZE : 3, MOVE : 4, DRAG : 5}	// UI Modes
+	const OBJMODE = {NONE : 0, ADD : 1}	// UI Modes
+		  
 	
-	const INVALID_OBJECT = -1;					// Sentinel for no object selection
+	const INVALID_OBJECT = -1;				// Sentinel for no object selection
 	
-	const UPDATE_TIME = 100;
+	//const UPDATE_TIME = 100;
 	
 	var ZOOM_RATE = 0.05;					// Mouse wheel zoom rate
 	var GRID_FACTOR = 2.0;					// Grid snap divisor ft / GF
-	var WHEEL_FACTOR = 40.0;					// Factor for mouse wheel correction
+	var WHEEL_FACTOR = 40.0;				// Factor for mouse wheel correction
 			  
 	var mouse_l_down = 0;					// True if left mouse button down
 	var mouse_r_down = 0;					// True if right mouse button down
@@ -145,11 +138,9 @@ var weblogix = (function ()
 
 		ajax.add_target("weblogix", load);		
 		
-		load_icons();
-		
-		//main.hook_update(update);
+		setup_display();								// Canvas
 
-		//setInterval(logic_ui_update_timer, UPDATE_TIME);	// Setup timer
+		load_icons();
 	}
 
 
@@ -159,8 +150,6 @@ var weblogix = (function ()
 		console.log("Load weblogix");
 		
 		show_module(local.name);		
-		
-		setup_display();								// Canvas
 
 		render();									// Render
 	}
@@ -387,6 +376,9 @@ var weblogix = (function ()
 	// Main render
 	function render()
 	{
+		// Do not render if not current module
+		if (!main.is_current(local)) return;
+
 		draw_count = 0;
 		
 		if (main_display.canvas == null) return; // {("Unable to load canvas"); return; }
@@ -407,35 +399,6 @@ var weblogix = (function ()
 	/* 
 		End of graphics 
 	*/
-
-
-	/* Menu items */
-
-	function menu_logic_gooffline()
-	{
-		console.log("menu_logic_simulate()");
-		project.set_offline();
-	}
-
-	function menu_logic_goonline()
-	{
-		console.log("menu_logic_live()");
-		
-		if (websocket.get_connected() == false)
-		{
-			error("Unable to go online: Not Connected");
-			return;
-		}
-		
-		project.set_online();
-	}
-
-
-	function menu_logic_assemble()
-	{
-		console.log("menu_logic_assemble()");
-		project.assemble();		
-	}
 
 
 	/* 

@@ -45,7 +45,6 @@ var cpu = (function ()
 	local.set_logic_ok = set_logic_ok;	
 	
 	// Private variables
-	const UPDATE_TIME = 100;	// Update period
 	
 	var inst_table = [];		// Instruction jump table
 	var inst_list = [];			// Instruction list
@@ -76,10 +75,6 @@ var cpu = (function ()
 		inst_table[INST_TYPES.INST_OTL.op]    = inst_otl;
 		inst_table[INST_TYPES.INST_OTU.op]    = inst_otu;
 		inst_table[INST_TYPES.INST_TMR.op]    = inst_tmr;
-
-		//main.hook_update(update);
-		
-		//setInterval(update_timer, UPDATE_TIME);	// Setup timer
 	}
 
 	// Logic update timer

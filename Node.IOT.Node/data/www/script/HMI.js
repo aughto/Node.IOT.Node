@@ -156,6 +156,8 @@ var hmi = (function ()
 
 	function update()
 	{
+		//console.log(`${MODULE} Update`);
+
 		render();
 	}
 
@@ -366,6 +368,9 @@ var hmi = (function ()
 	// Main render
 	function render()
 	{
+		// Do not render if not current module
+		if (!main.is_current(local)) return;
+		
 		draw_count = 0;
 		
 		if (main_display.canvas == null) return; // {("Unable to load canvas"); return; }

@@ -28,6 +28,8 @@ var project = (function ()
 	
 	// General
 	local.save_project = save_project;	// Save project to device
+	local.load_project = load_project;	// Save project to device
+	
 	local.assemble = assemble;			// Assemble project
 	
 	// Mode Control 
@@ -56,18 +58,9 @@ var project = (function ()
 	local.ws_setvar_command = ws_setvar_command;
 	local.ws_getvars_command = ws_getvars_command;
 	
-	// Menu 
-	local.menu_file_save = menu_file_save;
-	local.menu_file_saveas = menu_file_saveas;
-	local.menu_file_load  = menu_file_load;
-	
 	// Config 
 	local.get_config = get_config
 	local.set_config = set_config
-	
-	local.system_restart = system_restart;
-	
-	
 	
 	// Private variables
 	const UPDATE_RATE = 250;	// Update period
@@ -96,9 +89,6 @@ var project = (function ()
 
 		cpu.set_update_callback(cpu_updated);
 		
-		// Link in callback for reloader
-		ajax.add_target("reloader", reloader);
-
 		load_project();
 		
 		error();
@@ -750,11 +740,11 @@ var project = (function ()
 		var v = variable_list.variables[i];
 		
 		// Determine type
-		if (v.type == VAR_TYPES.DIN) cpu.set_byte(v.offset, value);
+		if (v.type == VAR_TYPES.DIN)  cpu.set_byte(v.offset, value);
 		if (v.type == VAR_TYPES.DOUT) cpu.set_byte(v.offset, value);
-		if (v.type == VAR_TYPES.AIN) cpu.set_byte(v.offset, value);
+		if (v.type == VAR_TYPES.AIN)  cpu.set_byte(v.offset, value);
 		if (v.type == VAR_TYPES.AOUT) cpu.set_byte(v.offset, value);
-		if (v.type == VAR_TYPES.BIT) cpu.set_byte(v.offset, value);
+		if (v.type == VAR_TYPES.BIT)  cpu.set_byte(v.offset, value);
 		if (v.type == VAR_TYPES.TMR) 
 		{
 			fields[1] = fields[1].toUpperCase();
@@ -1020,9 +1010,7 @@ var project = (function ()
 		
 		var_updates++;
 	}
-	
 		
-	
 	/* 
 		End of Websockets 
 	*/
@@ -1038,10 +1026,8 @@ var project = (function ()
 	{
 		mode("<font color=green>Online</font>");
 		logic_mode = MODE_ONLINE;
-		
-				
+						
 		getvars_pending = 0; // Clear pending
-
 	}
 	
 	// Set offline mode
@@ -1061,64 +1047,6 @@ var project = (function ()
 		End of Logic mode control 
 	*/
 	
-	
-	
-	
-	/* 
-		Menu items 
-	*/
-
-	function menu_file_save()
-	{
-		console.log("menu_file_save()");
-		project.save_project();
-	}
-
-	function menu_file_saveas()
-	{
-		console.log("menu_file_saveas()");
-	}
-
-	function menu_file_load()
-	{
-		console.log("menu_file_load()");
-		load_project();
-	}
-	
-	/* 
-		End of Menu items 
-	*/
-
-	
-		
-	/* 
-		System 
-	*/
-	
-	// Request System Restart 
-	function system_restart()
-	{
-		console.log(`${MODULE} System restart`);
-		
-		ajax.load_http("/system_restart", "reloader");
-		
-	}
-	
-	// Keep reloading page to wait for reboom
-	function reloader()
-	{
-		console.log(`${MODULE} Reloader`);
-		
-		setInterval(function() {document.location.reload(true);}  , 3000);
-	}
-	
-	
-	
-		
-	/* 
-		End of System 
-	*/
-
 	return local;
 }());
 

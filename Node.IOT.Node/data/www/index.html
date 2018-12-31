@@ -12,14 +12,14 @@
   <title>Node.IOT</title>
   <link rel="stylesheet" href="style/style.css">
 
+  <!-- Support -->
   <script type="text/javascript" src="script/Utility.js"></script>	
   <script type="text/javascript" src="script/Module.js"></script>
-  
-  <script type="text/javascript" src="script/Main.js"></script>
   <script type="text/javascript" src="script/Arch.js"></script>	  
   <script type="text/javascript" src="script/Graphics.js"></script>		
   <script type="text/javascript" src="script/NodeTypes.js"></script>
   <script type="text/javascript" src="script/Test.js"></script>
+  <script type="text/javascript" src="script/Main.js"></script>
   
   <!-- Modules -->
   <script type="text/javascript" src="script/AJAX.js"></script>	
@@ -33,28 +33,27 @@
   <script type="text/javascript" src="script/HMI.js"></script>
   <script type="text/javascript" src="script/System.js"></script>
   <script type="text/javascript" src="script/Project.js"></script>
-  
-  
 </head>
+
 <body onload=main.init();>
 
 <div id="header" onclick=location.reload();><span id=banner>Node.IOT</span></div>
 <div id="content">
- <div id="sidebar" id=nav>
-   <ul>
-   <li>
- 	<div class="side_dropdown">
+<div id="sidebar" id=nav>
+  <ul>
+  <li>
+    <div class="side_dropdown">
 	<button class="side_dropbtn">Project</button>
 	<div class="side_dropdown-content">
-		<a href="#" onclick='weblogix.menu_logic_goonline();'>Go Online</a>
-		<a href="#" onclick='weblogix.menu_logic_gooffline();'>Go Offline</a>
-		<a href="#" onclick='weblogix.menu_logic_assemble();'>Assemble</a>
-		<a href="#" onclick='project.menu_file_save();'>Save</a>
-		<a href="#" onclick='project.menu_file_saveas();'>Save As</a>
-		<a href="#" onclick='project.menu_file_load();'>Load</a>
+		<a href="#" onclick='main.menu_goonline();'>Go Online</a>
+		<a href="#" onclick='main.menu_gooffline();'>Go Offline</a>
+		<a href="#" onclick='main.menu_assemble();'>Assemble</a>
+		<a href="#" onclick='main.menu_file_save();'>Save</a>
+		<a href="#" onclick='main.menu_file_saveas();'>Save As</a>
+		<a href="#" onclick='main.menu_file_load();'>Load</a>
 	</div>
 	</div> 
- </li>
+  </li>
  
   <li> <a href="#" onclick=main.load_module("hmi");>HMI</a></li>
   <li> <a href="#" onclick=main.load_module("liveview");>Live View</a></li>
@@ -267,7 +266,7 @@
 <h2>System</h2>
 
 <table class=config_table border=1>
-<tr><td>System Restart</td><td><input type=submit value=Request onclick=project.system_restart()></td></tr>
+<tr><td>System Restart</td><td><input type=submit value=Request onclick=main.system_restart()></td></tr>
 </table>
 
 </div>

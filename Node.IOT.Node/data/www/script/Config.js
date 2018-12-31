@@ -19,20 +19,17 @@ var config = (function ()
 	
 	var local = main.register_module("config");
 	
-
 	// Public Interface
 	local.init = init;
 	local.load = load;
 	local.unload = unload;
 	
-	
 	local.save_click = save_click;
 
-	
 	// Private variables	
 
 	// Parameters types
-	var PARAM_TYPE = {NAME:1, INT:2, IP:3, HOST:4};
+	const PARAM_TYPE = {NAME:1, INT:2, IP:3, HOST:4};
 
 	function init()
 	{

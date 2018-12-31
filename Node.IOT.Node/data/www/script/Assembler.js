@@ -13,6 +13,8 @@ var assembler = (function ()
 	const MODULE = "Project   ";
 	var local = main.register_module("assembler");				
 
+	local.init = init;
+	
 	// Public interface
 	local.assemble = assemble;
 	local.generate_bytecode = generate_bytecode;
@@ -29,6 +31,14 @@ var assembler = (function ()
 	/* 
 		Main Assembly 
 	*/
+	
+	
+	function init()
+	{
+		
+		
+	}
+	
 
 
 	// Assemble nodes.  Takes node list and returns an instruction list

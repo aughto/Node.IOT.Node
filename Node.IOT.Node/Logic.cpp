@@ -29,6 +29,9 @@ Logic::Logic()
    
    updates = 0;
    reload_flag = false;
+
+   last_update  = 0;
+   
 }
 
 
@@ -94,7 +97,10 @@ void Logic::update(unsigned long current)
     c = 0;
   }*/
 
-  unsigned long dt = 1;
+  // need to do rollover math
+  
+  unsigned long dt = current - last_update;
+  last_update = current;
 
   map_inputs();
 

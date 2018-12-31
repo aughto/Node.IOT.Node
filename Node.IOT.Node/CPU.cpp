@@ -281,7 +281,7 @@ void Logic::solve_logic(unsigned long dt)
       set_byte(op1, cr);    // Set value
       set_word(op1+4, acc);   // Set acc
       
-      print_log("Crt: %d  Cr %d  V: %d B: %d Pre: %d  Acc: %d\n", crt, cr, value, base, pre, acc);
+      //print_log("dt: %d  Crt: %d  Cr %d  V: %d B: %d Pre: %d  Acc: %d\n", dt, crt, cr, value, base, pre, acc);
 
     } 
     else

@@ -116,6 +116,8 @@ class Logic
 
   unsigned int updates;
 
+  unsigned long last_update;
+  
   bool reload_flag;
 };
 

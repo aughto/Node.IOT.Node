@@ -142,7 +142,7 @@ var project = (function ()
 	// Save project to device
 	function save_project()
 	{
-		assemble();		
+//		assemble();		
 		
 		console.log("Saving project to device");	
 		
@@ -348,6 +348,8 @@ var project = (function ()
 	{
 		console.log("Assemble project");
 		
+		
+		
 		cpu.set_logic_ok(false);
 		
 		inst_list = assembler.assemble(nodes, variable_list);
@@ -381,6 +383,9 @@ var project = (function ()
 		cpu.solve(100);
 		
 		notice("Project Assembled");
+		
+		// Need to save project
+		save_project();
 		
 	}
 	
@@ -990,7 +995,7 @@ var project = (function ()
 
 		assign_variable_list();
 		
-		project.assemble();		
+		assemble();		
 
 	}
 
@@ -1027,7 +1032,7 @@ var project = (function ()
 			
 		}
 			
-		project.assemble();				
+		assemble();				
 	//	n.op1_index = find_variable_index(n.op1);
 		
 	}

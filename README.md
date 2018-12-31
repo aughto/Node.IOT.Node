@@ -44,13 +44,14 @@ The OR stack maintains the results of previous branches so that the COLLECT inst
 Memory is divided into partitions using a variable partition table.
 The following types of memory are supported:
 
+ Type | Data |
+-------|-------
 Bit | 1 bit value
 Byte | 8 bit value
 Word | 16 bit value
 Int | 32 bit value
 Float | 32 bit floating point 
 Timer | 16 bit  timer
-
 	PRE: 16 bit preset 
 	TB:   Adjustable timebase.  0 =1ms, 1 = 0.01 sec, 2 = 0.1 sec, 3: 1 sec.
 	ACC: 16 bit accumulator
@@ -117,6 +118,16 @@ There are a few config files stored on the device
 project.txt: Main JSON encoded project. Contains the node list, variables, and configs.
 bytecode.txt: Contains the CPU bytecode and the Variable state.
 config.txt: Contains the config file in a format that is easy for the system to read.
+
+
+
+
+
+
+
+
+
+
 
 
 

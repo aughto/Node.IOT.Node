@@ -109,6 +109,9 @@ var vareditor = (function ()
 	// Add variable click
 	function add_variable()
 	{
+		// Need to go offline if change was made
+		project.set_offline();
+
 		// Get form values
 		var var_name = document.getElementById("var_name").value;	
 		var var_type = document.getElementById("var_type").value;	
@@ -136,6 +139,9 @@ var vareditor = (function ()
 	// Add variable click
 	function remove_variable(index)
 	{
+		// Need to go offline if change was made
+		project.set_offline();
+			
 		// Remove from project
 		project.remove_variable(index);
 		

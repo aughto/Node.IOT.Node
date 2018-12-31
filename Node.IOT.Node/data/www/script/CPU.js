@@ -132,6 +132,12 @@ var cpu = (function ()
 	function resize_variable_data(size)
 	{
 		variable_data = new Uint8Array(size);
+		
+		if (size.length == 0)  
+		{
+			error("No variable data");
+			return;
+		}
 	
 		for (var i = 0; i < variable_data.length; i++)
 			variable_data[i] = 0;

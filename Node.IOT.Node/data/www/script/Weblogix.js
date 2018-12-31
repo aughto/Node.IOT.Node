@@ -1188,7 +1188,12 @@ var weblogix = (function ()
 		
 			if (variable_index != "")
 			{
+				var old = n.op1;
 				n.op1 = parseInt(variable_index);
+				
+				// Need to go offline if change was made
+				if (old != n.op1)
+					project.set_offline();
 				
 				//n.op1_index =  find_variable_index(n.op1); // relink index
 				//assemble();

@@ -123,7 +123,7 @@ var ajax = (function ()
 	
 
 	// Save generic data as system file 
-	function load_systemfile(filename, filetype, callback)
+	function load_systemfile(filename, filetype, load_callback, error_callback)
 	{
 		console.log(`${MODULE} Loading system file ${filename} type ${filetype}`);
 		//console.log("Data: " + data);
@@ -134,12 +134,18 @@ var ajax = (function ()
 		{ 
 			console.log(`${MODULE} get_systemfile ${filename}: loaded`); 
 	
-			callback(filetype, req, event);
+			if (load_callback != undefined)
+			if (load_callback != null)
+				load_callback(req.responseText);
 		};		
 		
 		req.error = function()  
 		{ 
 			console.log(`${MODULE} load_systemfile ${filename}: Error`); 
+			
+			if (error_callback != undefined)
+			if (error_callback != null)
+				error_callback();
 		};
 		
 		req.tag = `Load system file ${filename}`;
@@ -157,7 +163,7 @@ var ajax = (function ()
 
 	// Load html
 	// Need to replace with callback
-	function load_http(url, target) 
+	function load_http(url, target, load_callback, error_callback) 
 	{
 		var req = get_request();
 
@@ -178,11 +184,24 @@ var ajax = (function ()
 					found = true;
 				}
 			}
+			
+			if (load_callback != undefined)
+			if (load_callback != null)
+				load_callback(req.responseText);
+				
+			
+			
 		};
 				
 		req.error = function() 
 		{ 
 			console.log(`${MODULE} Unable to load page`);
+			
+			if (error_callback != undefined)
+			if (error_callback != null)
+				error_callback(req);
+
+			
 			//document.getElementById("page").innerHTML = "";
 		};
 	

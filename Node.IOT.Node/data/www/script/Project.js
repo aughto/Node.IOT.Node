@@ -69,7 +69,7 @@ var project = (function ()
 	const MODE_ONLINE = 1;
 	const MODE_OFFLINE = 2;
 	
-	var variable_list = {};  	// Variable name list
+	var variable_list = {variables:[]};  	// Variable name list
 	var nodes = [];				// Editor UI nodes
 	var cpu_bytecode = "";			// Assembly bytecode
 	var inst_list = [];			// Instruction list
@@ -173,9 +173,9 @@ var project = (function ()
 	// Loads current project or test data if no project found 
 	function load_project()
 	{
-		mode("Offline");
+		set_offline();
 		// Load test data in case load from device fails
-		load_project_object(project_test_data);
+		//load_project_object(project_test_data);
 		request_load();
 	}
 	
@@ -203,31 +203,47 @@ var project = (function ()
 		Project Loading 
 	*/
 
+	
+	function project_loaded_online(data)
+	{
+		set_online();
+		parse_project(data);
+	}
+	
+	function project_loaded_offline(data)
+	{
+		set_offline();
+		parse_project(data);
+	}
+	
+	
+	// Unable to load main project, load default project
+	function project_load_fail()
+	{
+		ajax.load_http("files/defaultproject.txt", "", project_loaded_offline, null);	
+	}
+	
 
 	// Request config data load
 	function request_load()
 	{
 		// Request logic system file from device
 		// Need to reformat callback
-		ajax.load_systemfile("project.txt", "", function (event, req, type) 
-			{ 
-				parse_project(req, event);
-				set_online();
-			} );
+		ajax.load_systemfile("project.txt", "", project_loaded_online, project_load_fail);
 	}
 
 
 	// Deal with logic data response from device
-	function parse_project(data, evt)
+	function parse_project(data)
 	{
 		console.log("Parsing Logic file");
-		console.log("Logic: " + data.responseText);
+		console.log("Logic: " + data);
 	
 		var p = {};
 			
 		try
 		{
-			p = JSON.parse(data.responseText)
+			p = JSON.parse(data)
 		}
 		catch(ex)
 		{
@@ -385,7 +401,7 @@ var project = (function ()
 		notice("Project Assembled");
 		
 		// Need to save project
-		save_project();
+		//save_project();
 		
 	}
 	
@@ -481,6 +497,8 @@ var project = (function ()
 	// Set node symbol at location
 	function set_node(x, y, s)
 	{
+		project.set_offline();
+		
 		// Get node index for location
 		var ni = find_node(x, y);
 		

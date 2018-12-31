@@ -125,7 +125,7 @@ var hmi = (function ()
 
 //		ajax.add_target("hmi", load);		
 		
-		load_icons();
+		//load_icons();
 
 		
 //		main.hook_update(update);
@@ -139,11 +139,11 @@ var hmi = (function ()
 	{
 		console.log(`${MODULE} Load`);
 		
-		show_module(local.name);
+		//show_module(local.name);
 				
-		setup_display();								// Canvas
+		//setup_display();								// Canvas
 
-		render();									// Render
+		//render();									// Render
 	}
 
 	// Called when to hide

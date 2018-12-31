@@ -138,7 +138,6 @@ var weblogix = (function ()
 
 		ajax.add_target("weblogix", load);		
 		
-		setup_display();								// Canvas
 
 		load_icons();
 	}
@@ -149,7 +148,10 @@ var weblogix = (function ()
 	{
 		console.log("Load weblogix");
 		
-		show_module(local.name);		
+		show_module(local.name);	
+
+		setup_display();								// Canvas
+	
 
 		render();									// Render
 	}

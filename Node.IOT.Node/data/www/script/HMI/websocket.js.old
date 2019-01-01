@@ -7,7 +7,7 @@
 	Provides websocket interface
 */
 
-var websocket = (function () 
+var hmiwebsocket = (function () 
 {
 	var local = {};
 

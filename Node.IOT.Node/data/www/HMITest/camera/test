@@ -1,3 +1,0 @@
-wget 'http://10.0.0.115:88/cgi-bin/CGIProxy.fcgi?cmd=snapPicture2&usr=justin&pwd=HouseDog417' -O /tmp/image.jpg
-
-

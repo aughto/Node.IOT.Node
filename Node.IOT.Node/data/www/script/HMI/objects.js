@@ -48,19 +48,19 @@ var objects = (function ()
 
 		
 		// Bind into websockets events
-		websocket.add_handler("obj", "list",   process_object_list);	
-		websocket.add_handler("obj", "update", process_update_object);	
-		websocket.add_handler("obj", "add",    process_add_object);		
-		websocket.add_handler("obj", "delete", process_delete_object);	
+		//websocket.add_handler("obj", "list",   process_object_list);	
+		//websocket.add_handler("obj", "update", process_update_object);	
+		//websocket.add_handler("obj", "add",    process_add_object);		
+		//websocket.add_handler("obj", "delete", process_delete_object);	
 	
-		websocket.add_handler("tags", "values", parse_tag_data);	
-		websocket.add_handler("tags", "list", parse_tag_list);	
+		//websocket.add_handler("tags", "values", parse_tag_data);	
+		//websocket.add_handler("tags", "list", parse_tag_list);	
 		
-	websocket.add_handler("cam", "data",   process_cam_data);	
+	//websocket.add_handler("cam", "data",   process_cam_data);	
 	
 	
 	
-		websocket.add_handler("", "connected", process_connected);	
+		//websocket.add_handler("", "connected", process_connected);	
 	
 		// bind into ui events
 		graphics.add_handler("object_moved", request_update);
@@ -100,7 +100,7 @@ var objects = (function ()
 		
 		log(MODULE + "Request tag list:" + JSON.stringify(command));
 		
-		websocket.command(command);	
+		//websocket.command(command);	
 	
 
 	}
@@ -500,7 +500,7 @@ function create_tag_lookup()
 		
 		log(MODULE + "Request tag list:" + JSON.stringify(command));
 		
-		websocket.command(command);	
+		//websocket.command(command);	
 	
 	
 		command.target = "obj";
@@ -509,7 +509,7 @@ function create_tag_lookup()
 		
 		log(MODULE + "Request view:" + JSON.stringify(command));
 		
-		websocket.command(command);
+		//websocket.command(command);
 	}
 
 
@@ -646,7 +646,7 @@ function create_tag_lookup()
 		
 		//log(MODULE + "Move command: " + JSON.stringify(command));
 		
-		websocket.command(command);
+		//websocket.command(command);
 	}
 
 	// Deal with object update from network
@@ -701,7 +701,7 @@ function create_tag_lookup()
 		// Strip out internal state
 		//log(MODULE + "command str: " +  JSON.stringify(command));
 		
-		websocket.command(command);
+		//websocket.command(command);
 	}
 
 
@@ -773,7 +773,7 @@ function create_tag_lookup()
 	log("Request Delete: " + command.id);
 		
 	
-		websocket.command(command);
+		//websocket.command(command);
 	}
 
 	// Deal with object delete from network
@@ -812,7 +812,7 @@ function create_tag_lookup()
 	console.log("Add object");
 	console.log(obj);
 		
-		request_add_object(obj);	
+		//request_add_object(obj);	
 
 		
 			var tmp = object_types.load_object(obj.id, obj.view, obj.type,
@@ -997,7 +997,7 @@ function create_tag_lookup()
 		// Strip out internal state
 		//log(MODULE + "command str: " +  JSON.stringify(command));
 		
-		websocket.command(command);
+		//websocket.command(command);
 	}
 
 

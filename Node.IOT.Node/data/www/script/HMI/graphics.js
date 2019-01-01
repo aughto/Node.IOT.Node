@@ -266,7 +266,7 @@ var graphics = (function ()
 
 
 		obj = document.getElementById("edit_box");	
-		obj.style.top = header_height;
+		//obj.style.top = "60px";//header_height;
 		//obj.style.left = context.canvas.width - edit_width - 30;
 		//obj.style.height = context.canvas.height - 20;
 		//obj.style.right = context.canvas.width - 30;

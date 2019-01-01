@@ -189,6 +189,12 @@ var properties = (function ()
 		
 		objects.request_update(index);
 		
+		
+		
+		//console.log("Updated");
+		//console.log(o);
+		
+		
 		graphics.render();
 	}
 
@@ -345,13 +351,32 @@ var properties = (function ()
 				var tag_name = "";
 			
 			
+				var var_list = project.get_sorted_variable_list();
+			
+				//console.log("Var list");
+				//console.log(var_list);
+			
 				var select_text = "";
 			
 				select_text+= "<select id=" + property.id +" height=32 style='width: " +entry_width+ "'>";	
 			
 				var tag_id = property.value;
 		
-				for (var j = 0; j < tags.length; j++)
+				//console.log("tagid: " + tag_id);
+				for (var i = 0; i < var_list.variables.length; i++)
+				{
+					//console.log("index: " + index);
+					var index = var_list.variables[i].index;
+					var name = var_list.variables[i].name;
+					
+					var selected = tag_id == index ? "selected" : "";
+					
+					
+					select_text += `<option value='${index}' ${selected}>${name}</option>`;
+				}
+		
+		
+				/*for (var j = 0; j < tags.length; j++)
 				{
 					if (tags[j].id == tag_id)
 					{
@@ -360,7 +385,7 @@ var properties = (function ()
 					}
 				else
 					select_text += "<option value='"+tags[j].id + "'>" + tags[j].name + "</option>";
-				}
+				}*/
 		
 				select_text += "</select>";
 				

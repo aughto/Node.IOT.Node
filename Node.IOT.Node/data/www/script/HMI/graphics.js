@@ -71,6 +71,8 @@ var graphics = (function ()
 	
 	local.reset_zoom 			= function() { zoom_scale = DEFAULT_ZOOM; };
 
+	local.get_objects			= function() { return disp_objects; } ;
+	
 	local.get_object 			= function(i) { return disp_objects[i]; };
 	
 	local.get_id_object			= function(id) { return get_id_object(id); };
@@ -946,6 +948,35 @@ var graphics = (function ()
 		context.translate(-x_ofs, -y_ofs);
 		context.scale(zoom_scale, zoom_scale);
 
+		for (var i = 0; i < disp_objects.length; i++)
+		{
+			var tad_id = disp_objects[i].custom_properties.tag;
+			
+//			console.log(disp_objects[i]);
+			
+			if (tad_id != undefined)
+			{
+				var v = project.get_variable_by_index(tad_id);
+				var value = v.value;
+				
+				if (v.type == VAR_TYPES.VAR_TMR)
+					value = v.value.value;
+				
+				//console.log(v);
+				
+				disp_objects[i].update(disp_objects[i], value);
+			}
+			
+			
+		}
+	
+		
+		
+		
+		
+		
+		
+		
 		// draw layers lowest to highest (presorted)
 		for (var i = 0; i < disp_objects.length; i++)
 		{
@@ -960,7 +991,8 @@ var graphics = (function ()
 			//	log("drawing " +i +" " +  disp_objects[i].id + " " + JSON.stringify(disp_objects[i]));
 			
 			//console.log("Draw: %o", disp_objects[i]);
-			
+					
+		
 			
 			disp_objects[i].draw();
 			

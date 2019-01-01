@@ -30,7 +30,7 @@ var objects = (function ()
 	
 	local.rebuild_tag_lookup = function() { create_tag_lookup(); }
 	
-
+	local.process_object_list = process_object_list;
 	
 	
 	// Private
@@ -513,15 +513,22 @@ function create_tag_lookup()
 	}
 
 
+	
+	
+	
+	
 	// Parse list data from object server
 	function process_object_list(data)
 	{
+		
+		console.log("Process object list");
+		
 		// Clear current objects
 		graphics.remove_objects();
 		
 		//disp_objects.length = 0;
 		
-		var list = data.data;
+		var list = data;
 //		var prev = disp_objects.length;
 		var count = list.length;
 				
@@ -546,7 +553,7 @@ function create_tag_lookup()
 		graphics.render();
 		
 		
-		hmi_main.set_loaded();
+		hmi.set_loaded();
 		
 		
 		
@@ -565,7 +572,7 @@ function create_tag_lookup()
 			// TODO these need to be pre-parsed by server, not returned as strings
 			
 			
-			try
+		/*	try
 			{
 				disp_properties = JSON.parse(data.disp_properties); // Temp for conversion
 			}
@@ -583,10 +590,12 @@ function create_tag_lookup()
 				log(MODULE + "process_object_list: Unable to parse custom_properties (" + e.message + ") " + data.custom_properties);
 			}
 			
+			(*/
+			
 			
 			var tmp = object_types.load_object(data.id, data.view, data.type,
-												disp_properties, 
-												custom_properties);
+												data.disp_properties, 
+												data.custom_properties);
 			
 			
 			
@@ -809,8 +818,7 @@ function create_tag_lookup()
 		if (obj.type == "") return;
 		
 	
-	console.log("Add object");
-	console.log(obj);
+
 		
 		//request_add_object(obj);	
 

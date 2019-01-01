@@ -190,6 +190,12 @@ var project = (function ()
 		p.io_config = ioconfig_get_export_object();
 		p.main_config = mainconfig_get_export_object();
 		
+		p.hmi = hmi.get_export_object();
+		
+		var tmp = hmi.get_export_object();
+		console.log("HMI Data");
+		console.log(JSON.stringify(tmp));
+		
 		return JSON.stringify(p);
 	}
 	
@@ -274,6 +280,9 @@ var project = (function ()
 		// Copy config data
 		main_config = p.main_config;
 		io_config = p.io_config;
+		
+		hmi.set_import_data(p.hmi);
+		
 		
 		// Reassign variable list
 		assign_variable_list();

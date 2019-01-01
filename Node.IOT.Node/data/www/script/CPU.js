@@ -194,6 +194,8 @@ var cpu = (function ()
 	// Get byte from memory location
 	function get_byte(offset)
 	{
+		if (variable_data == undefined) {console.log("var undefined"); return; }
+		
 		if (offset < 0 || offset >= variable_data.length)
 		{
 			console.log("get_byte: Invalid location ("+offset+")\n");
@@ -207,6 +209,8 @@ var cpu = (function ()
 	// Get word from memory location
 	function get_word(offset)
 	{
+		if (variable_data == undefined) {console.log("var undefined"); return; }
+		
 		if (offset < 0 || offset + 1 >= variable_data.length)
 		{
 			console.log("get_byte: Invalid location ("+offset+")\n");

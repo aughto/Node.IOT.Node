@@ -57,9 +57,8 @@ var object_types = (function ()
 		
 		
 		
-		console.log("type: ( " + JSON.stringify(object_defs[0]) + " ) " );
-		
-		console.log("my object: %o",object_defs[0]);
+		//console.log("type: ( " + JSON.stringify(object_defs[0]) + " ) " );
+		//console.log("my object: %o",object_defs[0]);
 		//console.log("my object: %o",Rect);
 		
 		

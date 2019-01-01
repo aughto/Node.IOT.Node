@@ -32,7 +32,6 @@
   <script type="text/javascript" src="script/Config.js"></script>	
   <script type="text/javascript" src="script/Liveview.js"></script>
   <script type="text/javascript" src="script/Weblogix.js"></script>
-  <script type="text/javascript" src="script/HMI.js"></script>
   <script type="text/javascript" src="script/System.js"></script>
   <script type="text/javascript" src="script/Project.js"></script>
   
@@ -48,7 +47,7 @@
     <script type="text/javascript" src="script/HMI/properties.js"></script>	
     <script type="text/javascript" src="script/HMI/objects.js"></script>
     <script type="text/javascript" src="script/HMI/object_types.js"></script>  
-    <script type="text/javascript" src="script/HMI/main.js"></script>
+    <script type="text/javascript" src="script/HMI/HMI.js"></script>
   
   
 </head>
@@ -130,26 +129,17 @@
 		<li><a href="index.php?cmd=view_show">Add</a>
 			<ul>
 			  <li><a href ='#' onclick=objects.ui_add('rect'); >Rectangle</a></li>
-			  
 			  <li><a href ='#' onclick=objects.ui_add('vardisplay'); >Var Display</a></li> 
 			  <li><a href ='#' onclick=objects.ui_add('varinput'); >Var Input</a></li> 
 			  <li><a href ='#' onclick=objects.ui_add('bitdisplay'); >Bit Display</a></li> 
 			  <li><a href ='#' onclick=objects.ui_add('bitinput'); >Bit Input</a></li> 					  
-			  <li><a href ='#' onclick=objects.ui_add('camera'); >Camera</a></li> 					  
-			  
-			  <li><a href ='#' onclick=objects.ui_add('rack'); >Rack</a>
-		
-			  
-			  </li>
-			  <li><a href ='#' onclick=objects.ui_add('module'); >Module</a></li>
-
 			</ul>  
 		</li>            
-		<li><a href="index.php?cmd=view_show&view_mode=run">Run Mode</a> </li>
+		<li><a href="#" onclick=hmi.set_mode('run');>Run Mode</a> </li>
+		<li><a href="#" onclick=hmi.set_mode('edit');>Edit Mode</a> </li>
 			
 		</ul>
 				
-
 
 		</li>
 		

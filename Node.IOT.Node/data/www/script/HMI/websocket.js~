@@ -1,0 +1,210 @@
+/*
+	Websockets interface
+	Version 0.6
+	
+	2016 jason.hunt
+	
+	Provides websocket interface
+*/
+
+var websocket = (function () 
+{
+	var local = {};
+
+	/* Public */
+	local.start = function(host) {start(host);}
+	local.add_handler =  function (target, action, func) {add_handler(target, action, func);};
+	local.send = function(d) { send(d); };
+	local.command = function(c) { command(c);};
+	
+	/* Private */
+	var MODULE = "[WebSocket] ";
+	var CHECK_INTERVAL = 10000;
+
+	// Internal States
+	var STATE = {DISCONNECTED: 1, CONNECTING: 2, CONNECTED: 3};
+	
+	var websocket_host = "";
+
+	var socket;						// Websocket
+	var client_id = "";
+	
+	
+	// External event handlers
+	function event_connected_handler() { log("ec");};
+	function event_disconnected_handler() { };
+	function event_error_handler() { };
+	
+	
+	
+	var handlers  = Array();		// Action handlers
+	
+	var state = STATE.DISCONNECTED;
+	
+	// Init websocket and connect 
+	function start(host)
+	{
+		state = STATE.DISCONNECTED;
+	
+		websocket_host = host;
+			
+		connect();
+		
+		setInterval(function(){ timer() }, CHECK_INTERVAL);
+	}
+
+	// Add action handler
+	function add_handler (target, action, handler_func)
+	{
+		// Internal Events
+		if (action == "connected") 	event_connected_handler = handler_func;
+		if (action == "disconnected") 	event_disconnected_handler = handler_func;
+		if (action == "error") 	event_error_handler = handler_func;
+		
+		handlers.push ( { target: target, action : action, func : handler_func} );
+	}
+
+	// Timer is used to make sure we are connected 
+	function timer()
+	{
+		// Check for connection
+		if (state != STATE.CONNECTED) 
+		{
+			connect();
+			return;
+		}
+	}
+
+	// Send data to server 
+	function send(data) 
+	{
+		if (state != STATE.CONNECTED) return;
+	
+		try 
+		{
+			socket.send(data);
+		}
+		catch(exception) 
+		{
+			state = STATE.DISCONNECTED;
+			log(MODULE + exception);
+			return;
+		}
+	}
+	
+	// Form command string and send
+	function command(com)
+	{
+		var command_str = JSON.stringify(com);
+		websocket.send(command_str);
+	}
+	
+	// Deal with error
+	function event_error(msg)
+	{
+		log(MODULE + "Error" + JSON.stringify(msg));
+		state = STATE.DISCONNECTED;
+		event_error_handler() 
+		//location.reload(true);
+	}
+	
+	// Deal with connect
+	function event_open(msg)
+	{
+		state = STATE.CONNECTED;
+		log(MODULE + "Connected");
+		event_connected_handler();
+	}
+	
+	// Deal with disconnect
+	function event_close(msg)
+	{
+		state = STATE.DISCONNECTED;
+		log(MODULE + "Disconnected");	
+		event_disconnected_handler() 
+	}
+
+	// Deal with server message 
+	function event_receive(msg) 
+	{
+		console.log(JSON.stringify(msg));
+
+		try
+		{
+			var data = JSON.parse(msg.data);
+		}
+		catch (e)
+		{
+			log(MODULE + "Bad JSON: " + msg.data);
+			return;
+		}
+
+		//log(MODULE + "Length: " + msg.data.length);
+		//log(MODULE + "Message length: " + msg.data.length + " msg: " + msg.data);
+		
+		// Internal messages
+		if (data.target == "client")
+		{
+			if (data.action == "setid")
+			{
+				client_id = data.id;
+				log(MODULE + "Set client id:" + client_id);
+				return;
+			}
+			
+			if (data.action == "error")
+			{
+				log(MODULE + "Server Error: " + data.error);
+				return;
+			}			
+		}
+		
+		// Look for a handler
+		for (var i = 0; i < handlers.length; i++)
+		{
+			if (data.target == handlers[i].target)
+			{
+				if (data.action == handlers[i].action)
+				{
+					handlers[i].func(data);
+					return;
+				}
+			}
+		}
+		
+		log(MODULE + "Could not find handler for " + data.target + " " + data.action);
+	}
+
+	// Connect to socket server 
+	function connect()
+	{
+		// Do not try to reconnect if we are already connecting 
+		if (state == STATE.CONNECTING) return;
+
+		log(MODULE + "Connecting to " + websocket_host);
+		
+		state = STATE.CONNECTING;
+
+		socket = new WebSocket(websocket_host);	
+		
+		try 
+		{
+			socket.onerror   = event_error; 
+			socket.onopen    = event_open; 
+			socket.onclose   = event_close;
+			socket.onmessage = event_receive; 
+		}
+		catch(exception) 
+		{
+			state = STATE.DICONNECTED;
+			log(MODULE + exception);
+		}
+	}
+	
+	return local;
+}());
+	
+
+
+
+

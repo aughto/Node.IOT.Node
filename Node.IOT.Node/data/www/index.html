@@ -11,6 +11,8 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <title>Node.IOT</title>
   <link rel="stylesheet" href="style/style.css">
+  <link rel="stylesheet" href="style/hmistyle.css">
+  
 
   <!-- Support -->
   <script type="text/javascript" src="script/Utility.js"></script>	
@@ -33,6 +35,23 @@
   <script type="text/javascript" src="script/HMI.js"></script>
   <script type="text/javascript" src="script/System.js"></script>
   <script type="text/javascript" src="script/Project.js"></script>
+  
+  
+  
+    <!-- HMI -->
+   <script type="text/javascript" src="Script/HMI/graph.js"></script>
+    <script type="text/javascript" src="Script/HMI/utility.js"></script>	
+    <script type="text/javascript" src="Script/HMI/ajax.js"></script>
+    <script type="text/javascript" src="Script/HMI/object_types.js"></script>  
+    <script type="text/javascript" src="Script/HMI/graphics.js"></script>		
+    <script type="text/javascript" src="Script/HMI/ui.js"></script>	
+    <script type="text/javascript" src="Script/HMI/properties.js"></script>	
+    <script type="text/javascript" src="Script/HMI/websocket.js"></script>	
+    <script type="text/javascript" src="Script/HMI/objects.js"></script>
+    <script type="text/javascript" src="Script/HMI/object_types.js"></script>  
+    <script type="text/javascript" src="Script/HMI/main.js"></script>
+  
+  
 </head>
 
 <body onload=main.init();>
@@ -72,18 +91,86 @@
 <!-- HMI -->
 <div id="hmi_container" style="display:none">
 
-  <div id=elements_container >
-  <div id="hmi_tool_container" tabindex="0" style="position:relative;">
-  <canvas id="hmi_toolcanvas" class="display_class" width="800" height="55" style="border:1px solid #000000;"></canvas> 
-  </div>
-  </div>
-  
-  <div id="hmi_canvas_container" tabindex="0" style="position:relative; float:clear">
-  <canvas id="hmi_maincanvas" class="display_class" width="800" height="600" style="border:1px solid #000000;"></canvas> 
-  </div>
-  
-  <div id="hmi_properties_container" tabindex="0" style="position:absolute; float:clear">
-  </div>
+
+<div id=hmiheader>
+
+
+<div id="main_nav">
+  <ul>
+    <li>
+      <a class="navbar-brand" href="index.php?cmd=view_show&view_mode=edit">Edit</a>
+			
+      <ul>
+        <li>
+          <a href="index.php?cmd=view_show">Views</a>
+          <ul>
+            <li><a href ='#' onclick=ui.set_view('1');>Overview</a></li>
+            <li><a href ='#' onclick=ui.set_view('2');>View 1</a></li>
+            <li><a href ='#' onclick=ui.set_view('3');>View 2</a></li>
+            <li><a href ='#' onclick=ui.set_view('4');>View 3</a></li>
+            <li><a href ='#' onclick=ui.set_view('5');>View 4</a></li>
+          </ul>
+        </li>
+				  
+		<li>
+			<a  href="index.php?cmd=view_show">Layers</a>
+			<ul>
+			  <li><a href ='#' onclick=ui.set_layer('All');>All Layers</a></li>
+			  <li><a href ='#' onclick=ui.set_layer('1');>Layer 1</a></li>
+			  <li><a href ='#' onclick=ui.set_layer('2');>Layer 2</a></li>
+			  <li><a href ='#' onclick=ui.set_layer('3');>Layer 3</a></li>
+			  <li><a href ='#' onclick=ui.set_layer('4');>Layer 4</a></li>
+			  <li><a href ='#' onclick=ui.set_layer('5');>Layer 5</a></li>
+			  <li><a href ='#' onclick=ui.set_layer('6');>Layer 6</a></li>
+			  <li><a href ='#' onclick=ui.set_layer('7');>Layer 7</a></li>
+			  <li><a href ='#' onclick=ui.set_layer('8');>Layer 8</a></li>
+			  <li><a href ='#' onclick=ui.set_layer('9');>Layer 9</a></li>
+			  <li><a href ='#' onclick=ui.set_layer('10');>Layer 10</a></li>
+			</ul>  
+		</li>
+		<li><a href="index.php?cmd=view_show">Add</a>
+			<ul>
+			  <li><a href ='#' onclick=objects.ui_add('rect'); >Rectangle</a></li>
+			  
+			  <li><a href ='#' onclick=objects.ui_add('vardisplay'); >Var Display</a></li> 
+			  <li><a href ='#' onclick=objects.ui_add('varinput'); >Var Input</a></li> 
+			  <li><a href ='#' onclick=objects.ui_add('bitdisplay'); >Bit Display</a></li> 
+			  <li><a href ='#' onclick=objects.ui_add('bitinput'); >Bit Input</a></li> 					  
+			  <li><a href ='#' onclick=objects.ui_add('camera'); >Camera</a></li> 					  
+			  
+			  <li><a href ='#' onclick=objects.ui_add('rack'); >Rack</a>
+		
+			  
+			  </li>
+			  <li><a href ='#' onclick=objects.ui_add('module'); >Module</a></li>
+
+			</ul>  
+		</li>            
+		<li><a href="index.php?cmd=view_show&view_mode=run">Run Mode</a> </li>
+			
+		</ul>
+				
+
+
+		</li>
+		
+	</ul>
+</div>
+
+</div>
+
+
+<br><br>
+	
+
+		
+	<div id="canvas_box" tabindex=0>
+	<canvas id="hmimaincanvas"></canvas>
+	</div>
+	
+	<div id="edit_box"></div>
+
+
 </div>
 <!-- End of HMI -->
 

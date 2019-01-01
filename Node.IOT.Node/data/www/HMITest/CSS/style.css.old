@@ -1,0 +1,340 @@
+html 
+{
+  //overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+body
+{
+  font-family: Technic;
+  padding: 0px;
+   margin: 0px;  
+}
+
+
+.canvas_cont_class
+{
+	left:0px;
+  	width : 100%;
+	position:absolute;
+  
+  height:100%;
+  
+}
+
+form { display: inline; }
+
+
+
+.display_class
+{
+  left : 0;
+  border-style: solid;
+  padding: 0px;
+  margin: 0px;
+  border:0px solid #000000;
+  position:absolute; 
+  
+  
+}
+
+
+.menu_class
+{
+	border:0px solid #000000;
+	height:74px;
+	width:100%;
+
+}
+
+
+
+.edit_class
+{
+	position:absolute;
+	//display:none;
+	
+	border:2px solid #000000;
+	
+	opacity:0.90;
+    filter:alpha(opacity=40);
+    z-index: 1000; 
+	background: #eeeeee;
+	top:0px;
+	height:100%;
+	width:230px;
+	float:right;
+	 overflow-y: scroll;
+	
+	
+}
+
+
+
+.debug_class
+{
+	border:1px solid #000000;
+	
+	opacity:0.90;
+    filter:alpha(opacity=40);
+    z-index: 1000; 
+	background: #eeeeee;
+	height:20px;
+	
+	width:100%;
+		
+	left:0;
+	
+	position:absolute;		
+		
+}
+
+#nav_link 
+{
+    text-decoration: none;
+    color: white;
+    font-size: 18px;
+    padding: 6px;
+    display:inline-block;
+}
+
+
+
+/*a {
+	text-decoration: none;
+	color: inherit;
+}*/
+
+
+/*li {
+
+    float: left;
+}*/
+
+/*li a, .dropbtn {
+	display: inline-block;
+	color: white;
+	text-align:left;
+	padding: 14px 7px;
+	text-decoration: none;
+}*/
+
+/*li a:hover, .dropdown:hover .dropbtn {
+    background-color: #ff1a1a;
+}*/
+
+/*.dropdown {
+   display: inline-block;
+}*/
+
+/*.dropdown:hover {
+	background-color: #ff1a1a;
+}*/
+
+/*.dropdown-content 
+{
+    display: none;
+    position: absolute;
+    background-color: #000000;
+    min-width: 160px;
+    	background-color: #080;
+		
+}*/
+
+/*.dropdown-content a 
+{
+	//z-index = 10000;
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}*/
+
+/*.dropdown-content a:hover {background-color: #333;}*/
+
+/*.dropdown:hover .dropdown-content {
+    display: block;
+}*/
+/*------------------------------------*\
+	HEADER
+\*------------------------------------*/
+
+#header
+{
+	
+	font-size: 40px;
+	text-align: left;
+	height: 70px;
+	padding: 2px;
+	width: auto;
+	margin-bottom: -29px;
+	background-image: url("../Images/banner1.jpg");
+	background-size: 100%;
+	background-repeat: no-repeat;
+
+
+}
+
+#header a
+{
+    text-decoration: none;
+	color: #3333ff;
+}
+
+
+
+
+/*------------------------------------*\
+	NAV
+\*------------------------------------*/
+
+#nav
+{
+	list-style:none;
+	font-weight:bold;
+	/* Clear floats */
+	float:left;
+	width:100%;
+	/* Bring the nav above everything else--uncomment if needed.*/
+	position:relative;
+	z-index:5;
+    margin: 0;
+    padding: 0;	
+	background-color: #050505;
+}
+
+
+#nav li
+{
+	float:left;
+	margin-right:10px;
+	position:relative;
+}
+
+#nav a
+{
+	display: inline-block;
+	padding:5px;
+	color:#fff;
+	background-color:inherit;
+	text-decoration:none;
+	
+	text-align: center;
+}
+
+#nav a:hover
+{
+	/*color:#fff;*/
+	/*background-color:#6b0c36;*/
+	text-decoration:underline;
+	background-color: #3333ff;
+}
+	
+
+
+/*--- DROPDOWN ---*/
+#nav ul{
+	/*background:#fff; /* Adding a background makes the dropdown work properly in IE7+. Make this as close to your page's background as possible (i.e. white page == white background). */
+	/*background:rgba(255,255,255,0); /* But! Let's make the background fully transparent where we can, we don't actually want to see it if we can help it... */
+	list-style-type:none;
+	position:absolute;
+	left:-9999px; /* Hide off-screen when not needed (this is more accessible than display:none;) */
+    list-style-type: none;
+    overflow: hidden;
+    background-color: #050505;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+	margin: 0;
+    padding: 0;
+}
+
+#nav ul li
+{
+	padding-top:1px; /* Introducing a padding between the li and the a give the illusion spaced items */
+	float:none;
+}
+
+#nav ul li ul 
+{
+	overflow: hidden;
+	position:absolute;
+	list-style-type:none;
+}
+
+#nav li
+{
+	float: left;
+}
+
+#nav ul li
+{
+	float: left;
+	list-style-type:none;
+    overflow: hidden;
+    background-color: #050505;
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
+}
+
+#nav ul a
+{
+	white-space:nowrap; /* Stop text wrapping and creating multi-line dropdown items */
+	color: #ffffff;
+    text-decoration: none;
+    display: block;
+	min-width: 60px;
+	text-align: left;
+}
+
+#nav li:hover ul
+{ /* Display the dropdown on hover */
+	left:0; /* Bring back on-screen when needed */
+}
+
+#nav ul li:hover ul ul
+{ /* Display the dropdown on hover */
+	left:0; /* Bring back on-screen when needed */
+}
+
+#nav li:hover a
+{ /* These create persistent hover states, meaning the top-most link stays 'hovered' even when your cursor has moved down the list. */
+	/*background:#444;*/
+	text-decoration:none;
+}
+
+
+#nav li:hover ul a
+{ /* The persistent hover state does however create a global style for links even before they're hovered. Here we undo these effects. */
+	text-decoration:none;
+		/*background:#666;*/
+}
+
+#nav ul li:hover ul ul a
+{ /* The persistent hover state does however create a global style for links even before they're hovered. Here we undo these effects. */
+	text-decoration:none;
+		/*background:#666;*/
+}
+
+#nav li:hover ul li a:hover{ /* Here (YOU'RE DOING NOTHING HERE, this is never going to be applied to any element) we define the most explicit hover states--what happens when you hover each individual link. */
+	/*background:#555;*/
+	
+}
+
+//*#nav li a:hover {
+    background-color: #ff1a1a;
+}*/
+#nav ul li {display: block; float: right;}
+/*#nav ul li:hover {background: #ff1a1a;}*/
+#nav ul li:hover ul {display: block;}
+#nav ul li ul {
+  position: absolute;
+  width: auto;
+  display: none;
+}
+#nav ul li ul li { 
+  background: inherit; 
+  display: block; 
+}
+#nav ul li ul li a {display:block !important;} 
+#nav ul li ul li:hover {background: inherit;}
+
+

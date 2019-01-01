@@ -1,0 +1,66 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="imagecanvas" width="800" height="600"></canvas>
+    <script>
+	
+	
+	var cam_address = "10.0.0.115:88";
+	
+	//var imageURI = "http://" + cam_address + "/cgi-bin/CGIProxy.fcgi?cmd=snapPicture2&usr=justin&pwd=HouseDog417&";
+	var imageURI = "/camera/get_image.php"; //http://" + cam_address + "/cgi-bin/CGIProxy.fcgi?cmd=snapPicture2&usr=justin&pwd=HouseDog417&";
+	
+	
+	var timeoutPeriod = 100;
+	
+	var x=0, y=0;
+	var image_x = 640, image_y = 480;
+	var img = new Image();
+
+	img.onload = function() 
+	{
+		console.log("Onload");
+		var canvas = document.getElementById("imagecanvas");
+		var context = canvas.getContext("2d");
+
+		context.drawImage(img, x, y, image_x, image_y);
+		//x+=20; y+=20;
+		//setTimeout(reload_image, timeoutPeriod);
+	};
+
+	function reload_image() 
+	{
+		// just change src attribute, will always trigger the onload callback
+		//img.src = imageURI + '?d=' + Date.now();
+	}
+	
+	//reload_image();
+	
+	
+	
+	
+	function reload_image2()
+	{
+		console.log("request reload");
+	
+		img.src = imageURI + '?d=' + Date.now();
+	}	
+	
+	
+	setInterval(reload_image2, 2000);
+	
+	
+
+	  
+    </script>
+  </body>
+</html> 
+

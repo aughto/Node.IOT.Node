@@ -12,8 +12,7 @@
   <title>Node.IOT</title>
   <link rel="stylesheet" href="style/style.css">
   <link rel="stylesheet" href="style/hmistyle.css">
-  
-
+ 
   <!-- Support -->
   <script type="text/javascript" src="script/Utility.js"></script>	
   <script type="text/javascript" src="script/Module.js"></script>
@@ -35,20 +34,17 @@
   <script type="text/javascript" src="script/System.js"></script>
   <script type="text/javascript" src="script/Project.js"></script>
   
-  
-  
-    <!-- HMI -->
-   <script type="text/javascript" src="script/HMI/graph.js"></script>
-    <script type="text/javascript" src="script/HMI/utility.js"></script>	
-    <script type="text/javascript" src="script/HMI/ajax.js"></script>
-    <script type="text/javascript" src="script/HMI/object_types.js"></script>  
-    <script type="text/javascript" src="script/HMI/graphics.js"></script>		
-    <script type="text/javascript" src="script/HMI/ui.js"></script>	
-    <script type="text/javascript" src="script/HMI/properties.js"></script>	
-    <script type="text/javascript" src="script/HMI/objects.js"></script>
-    <script type="text/javascript" src="script/HMI/object_types.js"></script>  
-    <script type="text/javascript" src="script/HMI/HMI.js"></script>
-  
+  <!-- HMI Need to rename and merge into main-->
+  <script type="text/javascript" src="script/HMI/graph.js"></script>
+  <script type="text/javascript" src="script/HMI/utility.js"></script>	
+  <script type="text/javascript" src="script/HMI/ajax.js"></script>
+  <script type="text/javascript" src="script/HMI/object_types.js"></script>  
+  <script type="text/javascript" src="script/HMI/graphics.js"></script>		
+  <script type="text/javascript" src="script/HMI/ui.js"></script>	
+  <script type="text/javascript" src="script/HMI/properties.js"></script>	
+  <script type="text/javascript" src="script/HMI/objects.js"></script>
+  <script type="text/javascript" src="script/HMI/object_types.js"></script>  
+  <script type="text/javascript" src="script/HMI/HMI.js"></script>
   
 </head>
 
@@ -89,15 +85,11 @@
 <!-- HMI -->
 <div id="hmi_container" style="display:none">
 
-
-<div id=hmiheader>
-
-
-<div id="main_nav">
+  <div id=hmiheader>
+  <div id="main_nav">
   <ul>
     <li>
       <a class="navbar-brand" href="index.php?cmd=view_show&view_mode=edit">Edit</a>
-			
       <ul>
         <li>
           <a href="index.php?cmd=view_show">Views</a>
@@ -109,7 +101,6 @@
             <li><a href ='#' onclick=ui.set_view('5');>View 4</a></li>
           </ul>
         </li>
-				  
 		<li>
 			<a  href="index.php?cmd=view_show">Layers</a>
 			<ul>
@@ -144,21 +135,16 @@
 		</li>
 		
 	</ul>
-</div>
+  </div> <!-- End main nav -->
+  </div> <!-- End HMI Header -->
 
-</div>
-
-
-<br><br>
-	
-
+  <br><br>
 		
-	<div id="canvas_box" tabindex=0>
-	<canvas id="hmimaincanvas"></canvas>
-	</div>
+  <div id="canvas_box" tabindex=0>
+  <canvas id="hmimaincanvas"></canvas>
+  </div>
 	
-	<div id="edit_box"></div>
-
+  <div id="edit_box"></div>
 
 </div>
 <!-- End of HMI -->
@@ -166,20 +152,20 @@
 
 <!-- Liveview Editor -->
 <div id="liveview_container" style="display:none">
-<h2>Live</h2>
-<table class=io_table onselectstart="return false" ondragstart="return false" >
-<tr>
-<td id=Output1 onclick=liveview.area_click(this.id)>Out 1</td>
-<td id=Output2 onclick=liveview.area_click(this.id)>Out 2</td>
-<td id=Output3 onclick=liveview.area_click(this.id)>Out 3</td>
-<td id=Output4 onclick=liveview.area_click(this.id)>Out 4</td>
-</tr>
-<tr>
-<td id=Input1 onclick=liveview.area_click(this.id)>In 1</td>
-<td id=Input2 onclick=liveview.area_click(this.id)>In 2</td>
-<td id=Input3 onclick=liveview.area_click(this.id)>In 3</td>
-<td id=Input4 onclick=liveview.area_click(this.id)>In 4</td>
-</tr>
+  <h2>Live</h2>
+  <table class=io_table onselectstart="return false" ondragstart="return false" >
+  <tr>
+    <td id=Output1 onclick=liveview.area_click(this.id)>Out 1</td>
+    <td id=Output2 onclick=liveview.area_click(this.id)>Out 2</td>
+    <td id=Output3 onclick=liveview.area_click(this.id)>Out 3</td>
+    <td id=Output4 onclick=liveview.area_click(this.id)>Out 4</td>
+  </tr>
+  <tr>
+    <td id=Input1 onclick=liveview.area_click(this.id)>In 1</td>
+    <td id=Input2 onclick=liveview.area_click(this.id)>In 2</td>
+    <td id=Input3 onclick=liveview.area_click(this.id)>In 3</td>
+    <td id=Input4 onclick=liveview.area_click(this.id)>In 4</td>
+  </tr>
 </table>
 </div>
 <!-- End of liveview -->
@@ -187,7 +173,6 @@
 
 <!-- Weblogix Editor -->
 <div id="weblogix_container" style="display:none">
-
   <div id=elements_container >
   <div id="tool_container" tabindex="0" style="position:relative;">
   <canvas id="toolcanvas" class="display_class" width="800" height="55" style="border:1px solid #000000;"></canvas> 
@@ -200,168 +185,155 @@
 
   <div id="properties_container" tabindex="0" style="position:absolute; float:clear">
   </div>
-
-  </body>
-</html>
 </div>
 <!-- End of Weblogix Editor -->
 
 <!-- Variable Editor -->
 <div id="vareditor_container" style="display:none">
-<div id=variablelist> </div>
+  <div id=variablelist> </div>
 </div>
 <!-- End of Variable Editor -->
 
 
 <!-- IO Config Editor -->
 <div id="ioconfig_container" style="display:none">
-<div id=iolist> </div>
+  <div id=iolist> </div>
 
-<h2>IO Setup</h2>
-<form id=ioconfig  action="javascript:void(0);" onsubmit="config.save_click('ioconfig');">
+  <h2>IO Setup</h2>
+  <form id=ioconfig  action="javascript:void(0);" onsubmit="config.save_click('ioconfig');">
 
-<table class=config_table border=1>
+  <table class=config_table border=1>
 
-<tr><th colspan = 2><b>Input 1</b></th></tr>
-<tr><td>Name</td><td><input name="io_input1_name"></td></tr>
-<tr><td>Topic</td><td><input name="io_input1_topic"></td></tr>
-<tr><td>Publish</td><td><input type="checkbox" name="io_input1_pub"></td></tr>
-<tr><td>Inverted</td><td><input type="checkbox" name="io_input1_inverted"></td></tr>
-<tr><td>Enabled</td><td><input type="checkbox" name="io_input1_enabled"></td></tr>
+  <tr><th colspan = 2><b>Input 1</b></th></tr>
+  <tr><td>Name</td><td><input name="io_input1_name"></td></tr>
+  <tr><td>Topic</td><td><input name="io_input1_topic"></td></tr>
+  <tr><td>Publish</td><td><input type="checkbox" name="io_input1_pub"></td></tr>
+  <tr><td>Inverted</td><td><input type="checkbox" name="io_input1_inverted"></td></tr>
+  <tr><td>Enabled</td><td><input type="checkbox" name="io_input1_enabled"></td></tr>
 
-<tr><th colspan = 2><b>Input 2</b></th></tr>
-<tr><td>Name</td><td><input name="io_input2_name"></td></tr>
-<tr><td>Topic</td><td><input name="io_input2_topic"></td></tr>
-<tr><td>Publish</td><td><input type="checkbox" name="io_input2_pub"></td></tr>
-<tr><td>Inverted</td><td><input type="checkbox" name="io_input2_inverted"></td></tr>
-<tr><td>Enabled</td><td><input type="checkbox" name="io_input2_enabled"></td></tr>
+  <tr><th colspan = 2><b>Input 2</b></th></tr>
+  <tr><td>Name</td><td><input name="io_input2_name"></td></tr>
+  <tr><td>Topic</td><td><input name="io_input2_topic"></td></tr>
+  <tr><td>Publish</td><td><input type="checkbox" name="io_input2_pub"></td></tr>
+  <tr><td>Inverted</td><td><input type="checkbox" name="io_input2_inverted"></td></tr>
+  <tr><td>Enabled</td><td><input type="checkbox" name="io_input2_enabled"></td></tr>
 
+  <tr><th colspan = 2><b>Input 3</b></th></tr>
+  <tr><td>Name</td><td><input name="io_input3_name"></td></tr>
+  <tr><td>Topic</td><td><input name="io_input3_topic"></td></tr>
+  <tr><td>Publish</td><td><input type="checkbox" name="io_input3_pub"></td></tr>
+  <tr><td>Inverted</td><td><input type="checkbox" name="io_input3_inverted"></td></tr>
+  <tr><td>Enabled</td><td><input type="checkbox" name="io_input3_enabled"></td></tr>
 
-<tr><th colspan = 2><b>Input 3</b></th></tr>
-<tr><td>Name</td><td><input name="io_input3_name"></td></tr>
-<tr><td>Topic</td><td><input name="io_input3_topic"></td></tr>
-<tr><td>Publish</td><td><input type="checkbox" name="io_input3_pub"></td></tr>
-<tr><td>Inverted</td><td><input type="checkbox" name="io_input3_inverted"></td></tr>
-<tr><td>Enabled</td><td><input type="checkbox" name="io_input3_enabled"></td></tr>
+  <tr><th colspan = 2><b>Input 4</b></th></tr>
+  <tr><td>Name</td><td><input name="io_input4_name"></td></tr>
+  <tr><td>Topic</td><td><input name="io_input4_topic"></td></tr>
+  <tr><td>Publish</td><td><input type="checkbox" name="io_input4_pub"></td></tr>
+  <tr><td>Inverted</td><td><input type="checkbox" name="io_input4_inverted"></td></tr>
+  <tr><td>Enabled</td><td><input type="checkbox" name="io_input4_enabled"></td></tr>
 
-<tr><th colspan = 2><b>Input 4</b></th></tr>
-<tr><td>Name</td><td><input name="io_input4_name"></td></tr>
-<tr><td>Topic</td><td><input name="io_input4_topic"></td></tr>
-<tr><td>Publish</td><td><input type="checkbox" name="io_input4_pub"></td></tr>
-<tr><td>Inverted</td><td><input type="checkbox" name="io_input4_inverted"></td></tr>
-<tr><td>Enabled</td><td><input type="checkbox" name="io_input4_enabled"></td></tr>
+  <tr><th colspan = 2><b>Output 1</b></th></tr>
+  <tr><td>Name</td><td><input name="io_output1_name"></td></tr>
+  <tr><td>Topic</td><td><input name="io_output_topic"></td></tr>
+  <tr><td>Subscribe</td><td><input type="checkbox" name="io_output1_sub"></td></tr>
+  <tr><td>Inverted</td><td><input type="checkbox" name="io_output1_inverted"></td></tr>
+  <tr><td>Enabled</td><td><input type="checkbox" name="io_output1_enabled"></td></tr>
 
+  <tr><th colspan = 2><b>Output 2</b></th></tr>
+  <tr><td>Name</td><td><input name="io_output2_name"></td></tr>
+  <tr><td>Topic</td><td><input name="io_output2_topic"></td></tr>
+  <tr><td>Subscribe</td><td><input type="checkbox" name="io_output2_sub"></td></tr>
+  <tr><td>Inverted</td><td><input type="checkbox" name="io_output2_inverted"></td></tr>
+  <tr><td>Enabled</td><td><input type="checkbox" name="io_output2_enabled"></td></tr>
 
-<tr><th colspan = 2><b>Output 1</b></th></tr>
-<tr><td>Name</td><td><input name="io_output1_name"></td></tr>
-<tr><td>Topic</td><td><input name="io_output_topic"></td></tr>
-<tr><td>Subscribe</td><td><input type="checkbox" name="io_output1_sub"></td></tr>
-<tr><td>Inverted</td><td><input type="checkbox" name="io_output1_inverted"></td></tr>
-<tr><td>Enabled</td><td><input type="checkbox" name="io_output1_enabled"></td></tr>
+  </table>
+  <input type=submit value=Save>
+  </form>
 
-<tr><th colspan = 2><b>Output 2</b></th></tr>
-<tr><td>Name</td><td><input name="io_output2_name"></td></tr>
-<tr><td>Topic</td><td><input name="io_output2_topic"></td></tr>
-<tr><td>Subscribe</td><td><input type="checkbox" name="io_output2_sub"></td></tr>
-<tr><td>Inverted</td><td><input type="checkbox" name="io_output2_inverted"></td></tr>
-<tr><td>Enabled</td><td><input type="checkbox" name="io_output2_enabled"></td></tr>
-
-</table>
-
-<input type=submit value=Save>
-
-</form>
-
-<br><br>
+  <br><br>
 </div>
 <!-- End of IO Config Editor -->
 
 <!-- Main Config Editor -->
 <div id="mainconfig_container" style="display:none">
 
-<h2>Config</h2>
-<form id=mainconfig  action="javascript:void(0);" onsubmit="event.preventDefault(); config.save_click('mainconfig');">
+  <h2>Config</h2>
+  <form id=mainconfig  action="javascript:void(0);" onsubmit="event.preventDefault(); config.save_click('mainconfig');">
 
-<table class=config_table border=1>
+  <table class=config_table border=1>
 
-<tr><th colspan = 2><b>General</b></th></tr>
-<tr><td>Node Name</td><td><input name="network_node_name" value=""></td></tr>
+  <tr><th colspan = 2><b>General</b></th></tr>
+  <tr><td>Node Name</td><td><input name="network_node_name" value=""></td></tr>
 
-<tr><th colspan = 2><b>Network</b></th></tr>
-<tr><td>DHCP</td><td><input type="checkbox" name="network_dhcp_enabled"></td></tr>
-<tr><td>IP Address</td><td><input name="network_ip"></td></tr>
-<tr><td>Subnet Mask</td><td><input name="network_mask"></td></tr>
-<tr><td>Gateway</td><td><input name="network_gw"></td></tr>
-<tr><td>DNS</td><td><input name="network_dns"></td></tr>
+  <tr><th colspan = 2><b>Network</b></th></tr>
+  <tr><td>DHCP</td><td><input type="checkbox" name="network_dhcp_enabled"></td></tr>
+  <tr><td>IP Address</td><td><input name="network_ip"></td></tr>
+  <tr><td>Subnet Mask</td><td><input name="network_mask"></td></tr>
+  <tr><td>Gateway</td><td><input name="network_gw"></td></tr>
+  <tr><td>DNS</td><td><input name="network_dns"></td></tr>
 
-<tr><th colspan = 2><b>Ethernet</b></th></tr>
-<tr><td>Enabled</td><td><input type="checkbox" name="network_eth_enabled"></td></tr>
+  <tr><th colspan = 2><b>Ethernet</b></th></tr>
+  <tr><td>Enabled</td><td><input type="checkbox" name="network_eth_enabled"></td></tr>
 
-<tr><th colspan = 2><b>Wireless</b></th></tr>
-<tr><td>Enabled</td><td><input type="checkbox" name="network_wifi_enabled"></td></tr>
-<tr><td>SSID</td><td><input name="network_wifi_ssid"></td></tr>
-<tr><td>Password</td><td><input name="network_wifi_pass"></td></tr>
+  <tr><th colspan = 2><b>Wireless</b></th></tr>
+  <tr><td>Enabled</td><td><input type="checkbox" name="network_wifi_enabled"></td></tr>
+  <tr><td>SSID</td><td><input name="network_wifi_ssid"></td></tr>
+  <tr><td>Password</td><td><input name="network_wifi_pass"></td></tr>
 
-<tr><th colspan = 2><b>Webserver</b></th></tr>
-<tr><td>Port</td><td><input name="http_port"></td></tr>
-<tr><td>Username</td><td><input name="http_user"></td></tr>
-<tr><td>Password</td><td><input name="http_pass"></td></tr>
+  <tr><th colspan = 2><b>Webserver</b></th></tr>
+  <tr><td>Port</td><td><input name="http_port"></td></tr>
+  <tr><td>Username</td><td><input name="http_user"></td></tr>
+  <tr><td>Password</td><td><input name="http_pass"></td></tr>
 
-<tr><th colspan = 2><b>MQTT</b></th></tr>
-<tr><td>Enabled</td><td><input type="checkbox" name="mqtt_enabled"></td></tr>
-<tr><td>Client ID</td><td><input name="mqtt_client_id"></td></tr>
-<tr><td>Username</td><td><input name="mqtt_user"></td></tr>
-<tr><td>Password</td><td><input name="mqtt_pass"></td></tr>
-<tr><td>Broker</td><td><input name="mqtt_host"></td></tr>
-<tr><td>Pub Topic</td><td><input name="mqtt_pub_topic"></td></tr>
-<tr><td>Sub Topic</td><td><input name="mqtt_sub_topic"></td></tr>
+  <tr><th colspan = 2><b>MQTT</b></th></tr>
+  <tr><td>Enabled</td><td><input type="checkbox" name="mqtt_enabled"></td></tr>
+  <tr><td>Client ID</td><td><input name="mqtt_client_id"></td></tr>
+  <tr><td>Username</td><td><input name="mqtt_user"></td></tr>
+  <tr><td>Password</td><td><input name="mqtt_pass"></td></tr>
+  <tr><td>Broker</td><td><input name="mqtt_host"></td></tr>
+  <tr><td>Pub Topic</td><td><input name="mqtt_pub_topic"></td></tr>
+  <tr><td>Sub Topic</td><td><input name="mqtt_sub_topic"></td></tr>
 
-<tr><th colspan = 2><b>AWS</b></th></tr>
-<tr><td>Enabled</td><td><input type="checkbox" name="aws_enabled"></td></tr>
-<tr><td>Client ID</td><td><input name="aws_client_id"></td></tr>
-<tr><td>Broker</td><td><input name="aws_host"></td></tr>
-<tr><td>Pub Topic</td><td><input name="aws_pub_topic"></td></tr>
-<tr><td>Sub Topic</td><td><input name="aws_sub_topic"></td></tr>
+  <tr><th colspan = 2><b>AWS</b></th></tr>
+  <tr><td>Enabled</td><td><input type="checkbox" name="aws_enabled"></td></tr>
+  <tr><td>Client ID</td><td><input name="aws_client_id"></td></tr>
+  <tr><td>Broker</td><td><input name="aws_host"></td></tr>
+  <tr><td>Pub Topic</td><td><input name="aws_pub_topic"></td></tr>
+  <tr><td>Sub Topic</td><td><input name="aws_sub_topic"></td></tr>
 
-<tr><th colspan = 2><b>RestAPI</b></th></tr>
-<tr><td>Enabled</td><td><input type="checkbox" name="rest_enabled"></td></tr>
+  <tr><th colspan = 2><b>RestAPI</b></th></tr>
+  <tr><td>Enabled</td><td><input type="checkbox" name="rest_enabled"></td></tr>
 
-</table>
-
-<input type=submit value=Save>
-
-</form>
-
-<br><br>
+  </table>
+  <input type=submit value=Save>
+  </form>
+  <br><br>
 </div>
 <!-- End of Main Config Editor -->
 
 
 <!-- System -->
 <div id="system_container" style="display:none">
-<h2>System</h2>
+  <h2>System</h2>
 
-<table class=config_table border=1>
-<tr><td>System Restart</td><td><input type=submit value=Request onclick=system.restart()></td></tr>
-</table>
+  <table class=config_table border=1>
+  <tr><td>System Restart</td><td><input type=submit value=Request onclick=system.restart()></td></tr>
+  </table>
 
 </div>
 <!-- End of System -->
 
-</div>
+</div> <!-- End of main content -->
 
 <div class="clear"></div>
 
 <div id="statusbar">
-
-<span id="status_mode">Online</span>
-<span id="status_connection"></span>
-<span id="status_error">Error</span>
-<span id="status_notice">Notice</span>
-
+  <span id="status_mode">Online</span>
+  <span id="status_connection"></span>
+  <span id="status_error">Error</span>
+  <span id="status_notice">Notice</span>
 </div>
 
-
-</div>
+</div><!-- End of Content -->
 </body>
 </html>

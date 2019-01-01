@@ -59,7 +59,8 @@ var hmi = (function ()
 		properties.start();
 		object_types.start(); // Need to choose order
 	
-		
+			setInterval(timer, TIMER_INTERVAL);	// Setup timer
+	
 //		main.hook_update(update);
 		
 		//setInterval(update_timer, UPDATE_TIME);	// Setup timer
@@ -81,9 +82,9 @@ var hmi = (function ()
 	
 		//ajax_taglist();									// Request tag list
 
-		setInterval(timer, TIMER_INTERVAL);	// Setup timer
 	
-		timer();											// Initial update of timer
+	
+		graphics.resize();
 	
 		graphics.render();									// Render
 	

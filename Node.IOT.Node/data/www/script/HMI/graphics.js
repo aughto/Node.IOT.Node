@@ -25,6 +25,9 @@ var graphics = (function ()
 	// Public 
 	local.start 				= function() { start(); };
 	
+	local.resize = resize;
+	
+	
 	local.get_canvas_rect 		= function() { return canvas_rect; };
 	
 	local.update_display_bounds = function() { update_display_bounds(); };

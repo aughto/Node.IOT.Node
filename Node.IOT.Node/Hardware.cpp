@@ -301,7 +301,7 @@ void Hardware::restart()
 #ifdef ENABLE_RTC
 void Hardware::init_rtc()
 {
-  //return;
+  return;
   
   print_log(MODULE "RTC Init\n");
 
@@ -323,7 +323,7 @@ void Hardware::init_rtc()
     // rtc.adjust(DateTime(2014, 1, 21, 3, 0, 0));
   }
   
-  update_time();
+  //update_time();
   
 }
 #endif

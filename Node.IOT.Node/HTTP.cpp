@@ -208,6 +208,23 @@ void HTTP::load_handlers(AsyncWebServer *server)
             );
             
 
+  // Get value
+  server->on("/getvalue", HTTP_GET, 
+              [&](AsyncWebServerRequest *request){ process_getvalue(request);},
+              NULL, 
+              NULL
+            );
+
+  // Set value
+  server->on("/setvalue", HTTP_GET, 
+              [&](AsyncWebServerRequest *request){ process_setvalue(request);},
+              NULL, 
+              NULL
+            );
+
+
+
+
   // Request system restart.  Need to replace with generic commands
   server->on("/system_restart", HTTP_GET, [](AsyncWebServerRequest *request)
   {  
@@ -280,6 +297,9 @@ void HTTP::load_handlers(AsyncWebServer *server)
   // Catch-All Handlers
   // Any request that can not find a Handler that canHandle it
   // ends in the callbacks below.
+
+
+  
   server->onNotFound(onNotFound);
   server->onFileUpload(onUpload);
   //server.onRequestBody(onBody);
@@ -402,6 +422,74 @@ void HTTP::process_getsystemfile_post(AsyncWebServerRequest *request)
 
 
 
+// process request for get system file 
+void HTTP::process_getvalue(AsyncWebServerRequest *request)
+{
+  //print_log(MODULE "process_getvalue\n");
+
+  //show_params("process_getvalue", request);
+
+  //get specific header by name
+  if(!request->hasParam("name"))
+  {
+    print_log("Request no name\n");
+    request->send(400, "text/plain", "No name");
+    return;
+  }
+  
+  AsyncWebParameter* h = request->getParam("name");
+
+  const char *name = h->value().c_str();
+  
+  /*
+   * //Serial.printf("Name: %s\n", name);
+ 
+  char tmp[strlen(name) + 20];
+  
+  static int v = 0;
+
+  v++;
+
+  sprintf(tmp, "{%s:%d}", name, v);
+
+  print_log(MODULE "Sending %s\n", tmp);
+  
+  request->send(200, "text/plain", tmp);
+*/
+  AsyncResponseStream *response = request->beginResponseStream("text/html");
+
+  static int value = 0;
+  value++;
+
+  response->printf("{%s:%d}", name, value);
+
+  request->send(response);
+ 
+ 
+}
+
+// process request for get system file 
+void HTTP::process_setvalue(AsyncWebServerRequest *request)
+{
+  print_log(MODULE "process_getvalue\n");
+
+  show_params("process_getvalue", request);
+
+  request->send(200, "text/plain", "Data Value");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -411,6 +499,9 @@ void HTTP::process_getsystemfile_post(AsyncWebServerRequest *request)
 void HTTP::onNotFound(AsyncWebServerRequest *request)
 {
   print_log(MODULE "ON Not found Request %s\n", request->url().c_str());
+
+  show_params("Not found", request);
+
 
    request->send(404, "text/plain", "Not Found");
   //Handle Unknown Request
@@ -620,7 +711,7 @@ void HTTP::save_systemfile(const char *filename, int filetype, uint8_t *data, si
 /* Debugging */
 
 
-void HTTP::show_params(char * header, AsyncWebServerRequest *request)
+void show_params(char * header, AsyncWebServerRequest *request)
 {
   print_log(MODULE "Params %s\n", header);
 

@@ -39,7 +39,7 @@ class HTTP
   bool set_config(const char *name, const char *value);
   void show_config();
 
-  void show_params(char * header, AsyncWebServerRequest *request);
+  //void show_params(char * header, AsyncWebServerRequest *request);
 
   void send_message(char *message);
 
@@ -71,6 +71,9 @@ class HTTP
 
   void process_getsystemfile_post(AsyncWebServerRequest *request);
 
+  void process_getvalue(AsyncWebServerRequest *request);
+  void process_setvalue(AsyncWebServerRequest *request);
+  
 
   static void onNotFound(AsyncWebServerRequest *request);
   static void onRequest(AsyncWebServerRequest *request);
@@ -99,6 +102,8 @@ class HTTP
   char pass[CONFIG_PASS_MAX];
 
 };
+
+void show_params(char * header, AsyncWebServerRequest *request);
 
 
 extern HTTP http;

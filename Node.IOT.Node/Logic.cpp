@@ -37,7 +37,7 @@ Logic::Logic()
 
 void Logic::init()
 {
-  print_log("Logic init\n"); 
+  print_log(MODULE "Logic init\n"); 
 
   // Allocate stacks
   cr_stack = (unsigned char *)malloc(CRSTACK_MAX + 1);
@@ -62,12 +62,12 @@ void Logic::init()
 
 void Logic::load()
 {
-  print_log("Logic Load\n");
+  print_log(MODULE "Logic Load\n");
 
   load_bytecode(BYTECODE_FILENAME);
 
-  show_disassembly();
-  show_variables();
+  //show_disassembly();
+  //show_variables();
 
   reload_flag = false;
 }
@@ -170,16 +170,16 @@ bool Logic::load_cpu_bytecode(File file)
   // Read size
   if (read_hex32(file, bytecode_size))
   {
-    print_log("Unable to read CPU Bytecode file\n");
+    print_log(MODULE "Unable to read CPU Bytecode file\n");
     return true;
   }
 
-  print_log("CPU Bytecode size: %d\n", bytecode_size);
+  print_log(MODULE "CPU Bytecode size: %d\n", bytecode_size);
 
   // Check for invalid size
   if (bytecode_size > BYTECODE_MAX)
   {
-    print_log("Bytecode too large: %d Limit: %d\n", bytecode_size, BYTECODE_MAX);
+    print_log(MODULE "Bytecode too large: %d Limit: %d\n", bytecode_size, BYTECODE_MAX);
     return true;
   }
 
@@ -188,7 +188,7 @@ bool Logic::load_cpu_bytecode(File file)
 
   if (bytecode == NULL)
   {
-    print_log("Unable to load bytecode - Memory\n");
+    print_log(MODULE "Unable to load bytecode - Memory\n");
     return true;
   }
 
@@ -219,18 +219,18 @@ bool Logic::load_var_bytecode(File file)
   // Read size
   if (read_hex32(file, variables_size))
   {
-    print_log("Unable to bytecode file\n");
+    print_log(MODULE "Unable to bytecode file\n");
     file.close();
     return true;
   }
 
-  print_log("VAR Bytecode size: %d\n", variables_size);
+  print_log(MODULE "VAR Bytecode size: %d\n", variables_size);
 
   // Check for invalid size
 
   if (variables_size > VARIABLE_MAX)
   {
-    print_log("Bytecode too large: %d Limit: %d\n", variables_size, VARIABLE_MAX);
+    print_log(MODULE "Bytecode too large: %d Limit: %d\n", variables_size, VARIABLE_MAX);
     return true;
   }
 
@@ -281,14 +281,14 @@ bool Logic::load_bytecode(const char *filename)
 
   if (load_cpu_bytecode(file))
   {
-    print_log("Unable to load CPU bytecode\n");
+    print_log(MODULE "Unable to load CPU bytecode\n");
     file.close();
     return true;
   }
 
   if (load_var_bytecode(file))
   {
-    print_log("Unable to load VAR bytecode\n");
+    print_log(MODULE "Unable to load VAR bytecode\n");
     file.close();
     return true;
   }

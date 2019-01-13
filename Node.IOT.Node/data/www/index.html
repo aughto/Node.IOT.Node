@@ -27,7 +27,8 @@
   <script type="text/javascript" src="script/Websockets.js"></script>	
   <script type="text/javascript" src="script/CPU.js"></script>	
   <script type="text/javascript" src="script/Assembler.js"></script>
-  <script type="text/javascript" src="script/VariableEdit.js"></script>	
+  <script type="text/javascript" src="script/VariableEdit.js"></script>
+  <script type="text/javascript" src="script/Systems.js"></script>	
   <script type="text/javascript" src="script/Config.js"></script>	
   <script type="text/javascript" src="script/Liveview.js"></script>
   <script type="text/javascript" src="script/Weblogix.js"></script>
@@ -72,6 +73,7 @@
   <li> <a href="#" onclick=main.load_module("liveview");>Live View</a></li>
   <li> <a href="#" onclick=main.load_module("weblogix");>WebLogix</a></li>
   <li> <a href="#" onclick=main.load_module("vareditor");>Variables</a></li>
+  <li> <a href="#" onclick=main.load_module("systems");>Systems</a></li>
   <li> <a href="#" onclick=main.load_module("config","ioconfig");>IO Setup</a></li>
   <li> <a href="#" onclick=main.load_module("config","mainconfig");>Config</a></li>
   <li> <a href="#" onclick=main.load_module("system");>System</a></li>
@@ -191,6 +193,12 @@
 <!-- Variable Editor -->
 <div id="vareditor_container" style="display:none">
   <div id=variablelist> </div>
+</div>
+<!-- End of Variable Editor -->
+
+<!-- Variable Editor -->
+<div id="systems_container" style="display:none">
+  <div id=systemlist>Systems </div>
 </div>
 <!-- End of Variable Editor -->
 

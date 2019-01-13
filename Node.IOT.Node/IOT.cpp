@@ -26,11 +26,106 @@
 #include "HTTP.h"
 
 
+
 IOT iot;
+
+#define SERVER_HOST_NAME "10.0.0.100"
+#define IOT_SERVER_PORT 81
+
+
+//static DNSServer DNS;
+
+static std::vector<AsyncClient*> clients; // a list to hold all clients
+
+
+AsyncServer* server = NULL;
+bool started = false;
+
+
+
+
+ /* clients events */
+static void handleError(void* arg, AsyncClient* client, int8_t error) 
+{
+  Serial.printf(MODULE "Connection error %s from client %s\n", client->errorToString(error), client->remoteIP().toString().c_str());
+}
+
+static void handleData(void* arg, AsyncClient* client, void *data, size_t len) 
+{
+  Serial.printf(MODULE "Data received from client %s \n", client->remoteIP().toString().c_str());
+
+  Serial.printf(MODULE "RX From %s (", client->remoteIP().toString().c_str());
+  Serial.write((uint8_t*)data, len);
+  Serial.printf(")\n");
+  
+
+  // reply to client
+  if (client->space() > 32 && client->canSend()) 
+  {
+    static int value = 0;
+    value++;
+    
+    char reply[32];
+    sprintf(reply, "{item:name, value=%d}", value);
+
+//    print_log("Reply: %s\n", reply);
+
+    client->write(reply, strlen(reply));
+    
+    //client->add(reply, strlen(reply));
+    //client->send();
+  }
+}
+
+static void handleDisconnect(void* arg, AsyncClient* client) {
+  Serial.printf(MODULE "client %s disconnected\n", client->remoteIP().toString().c_str());
+}
+
+static void handleTimeOut(void* arg, AsyncClient* client, uint32_t time) {
+  Serial.printf(MODULE "client ACK timeout ip: %s\n", client->remoteIP().toString().c_str());
+}
+
+
+/* server events */
+static void handleNewClient(void* arg, AsyncClient* client) {
+  Serial.printf(MODULE "New client %s\n", client->remoteIP().toString().c_str());
+
+  // add to list
+  //clients.push_back(client);
+  
+  // register events
+  client->onData(&handleData, NULL);
+  client->onError(&handleError, NULL);
+  client->onDisconnect(&handleDisconnect, NULL);
+  client->onTimeout(&handleTimeOut, NULL);
+}
+
+static void start_server()
+{
+  if (!network.get_connected()) return;
+  
+  print_log(MODULE "Starting socket server\n");
+  
+  server = new AsyncServer(IOT_SERVER_PORT); // start listening on tcp port 7050
+
+  server->onClient(&handleNewClient, server);
+  server->begin();
+  started = true;
+  
+}
+
+
+
+
+
+
+
 
 IOT::IOT()
 {
   getvars_flag = false;
+
+
 
   
 }
@@ -43,9 +138,11 @@ void IOT::init()
 }
 
 
+
   
 void IOT::update(unsigned long current)
 {
+    static unsigned long last_update = 0;
     
     // Only send data during update between cpu scans
     if (getvars_flag)
@@ -54,6 +151,13 @@ void IOT::update(unsigned long current)
       getvars_flag = false;
     }
 
+    if (current - last_update > 5000)
+    {
+      last_update = current;
+      
+      if (started == false)
+        start_server();
+    }
   
 }
 

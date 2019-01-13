@@ -32,7 +32,7 @@ void Logic::decode_next_inst(unsigned int &i, bool newline)
   unsigned char op1 = bytecode[i+1];
   unsigned char op2 = bytecode[i+2];
 
-  print_log("%4X ", i);
+  print_log(MODULE "%4X ", i);
 
   if (inst == INST_NONE)      print_log("NONE"); else
   if (inst == INST_CLEAR)     print_log("CLEAR");  else 
@@ -61,7 +61,7 @@ void Logic::show_disassembly(void)
 
   if (bytecode == NULL)
   {
-    print_log("No Bytecode loaded\n");
+    print_log(MODULE "No Bytecode loaded\n");
     return;
   }
 
@@ -80,7 +80,7 @@ void Logic::show_variables()
   print_log(MODULE "Variables\n");
 
   for (int i = 0; i < variables_size; i++)
-    print_log("%i %2x\n", i, variables[i]);  
+    print_log(MODULE "%4i %2x\n", i, variables[i]);  
 
   print_log("\n");
 }
@@ -93,7 +93,7 @@ unsigned char Logic::check_offset(unsigned int i)
   
   if (i >= variables_size)
   {
-    print_log("Invalid memory address: %d\n", i);
+    print_log(MODULE "Invalid memory address: %d\n", i);
     return true;
   }
 
@@ -286,7 +286,7 @@ void Logic::solve_logic(unsigned long dt)
     } 
     else
     { 
-      print_log(MODULE "CPU: Unknown Inst: %x\n" + inst);
+      print_log(MODULE "Unknown Inst: %x\n" + inst);
     }
     
     //print_log("     CR %d\n", cr);

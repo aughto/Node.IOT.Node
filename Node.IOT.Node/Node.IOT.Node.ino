@@ -15,6 +15,7 @@
 #include "Hardware.h"
 #include "Utility.h"
 #include "Config.h"
+#include "Systems.h"
 #include "IO.h"
 #include "Network.h"
 #include "NMQTT.h"
@@ -24,6 +25,7 @@
 #include "Filesystem.h"
 #include "Logic.h"
 #include "IOT.h"
+
 
 
 /*typedef struct 
@@ -44,6 +46,7 @@ void setup()
   hardware.init();
   filesystem.init();
   config.init();
+  systems.init();
   io.init();
   network.init();
   mqtt.init();
@@ -67,12 +70,14 @@ void loop()
   mqtt.update(current);
   aws.update(current);
   http.update(current);
+
+  systems.update(current);
   io.update(current);
 
   // Node need to split input and output updates
   logic.update(current);
   
-  iot.update(current);
+  
   iot.update(current);
   hardware.update(current);
 }

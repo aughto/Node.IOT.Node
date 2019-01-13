@@ -29,3 +29,4 @@
 {"io_output_topic":""}
 {"io_output2_name":""}
 {"io_output2_topic":""}
+{"module":"systems","cmd":"add","name":"Node_2","ip":"10.0.0.101"}

@@ -149,6 +149,25 @@ function set_html(element, text)
 }
 
 
+function get_keyvalue(k, v)
+{
+	var o = {};
+	o[k] = v;
+
+	return o;
+}
+	
+// Converts one element of an object into a json string
+// This will generate a  {"key" : "value"} string from the key and value passed
+function get_keyvalue_sring(k, v)
+{
+	//var o = {};
+	//o[k] = v;
+	
+	return JSON.stringify(get_keyvalue(k, v));
+}
+
+
 
 function get_ms()
 {

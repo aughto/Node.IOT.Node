@@ -106,7 +106,7 @@ void Network::init()
 //bool Network::set_mac_address(uint8_t m1, uint8_t m2, uint8_t m3, uint8_t m4, uint8_t m5, uint8_t m6)
 
 #ifdef NETWORK_SET_MAC
-  uint8_t tmp[6] = {0x30, 0xAE, 0xA4, 0x12, 0xBD, 0x82};
+  uint8_t tmp[6] = {0x30, 0xAE, 0xA4, 0x12, 0xBD, 0x72};
   set_mac_address(tmp);
 #endif
   
@@ -603,7 +603,15 @@ long Network::get_rssi()
 
 
 
+IPAddress Network::get_ip()
+{
 
+  if (network_type == NET_ETH) return ETH.localIP();//.toString().c_str();
+  if (network_type == NET_WIFI) return WiFi.localIP();//.toString().c_str();
+
+  return IPAddress();
+
+}
 
 
 

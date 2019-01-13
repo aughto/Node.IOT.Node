@@ -23,6 +23,8 @@
 #include "AWS.h"
 #include "NMQTT.h"
 #include "HTTP.h"
+#include "Systems.h"
+
 
 
 Config config;
@@ -96,7 +98,7 @@ bool get_name(const char *key, char *name, const unsigned int max)
 // Parse config line and apply settings
 bool Config::parse_line(char * line)
 {
-  //print_log("Parsing line (%s)\n", line);
+  print_log("Parsing line (%s)\n", line);
 
   DynamicJsonBuffer jsonBuffer(CONFIG_LINE_MAX);
 
@@ -107,6 +109,21 @@ bool Config::parse_line(char * line)
     Serial.println(F("Failed to parse config file"));
     return true;
   }
+
+
+  const char* module = root["module"];
+
+  if (module)
+  {
+    print_log("Module name: %s\n", module);
+
+    // Route config entry to module that needs it
+    // TODO Search a module list
+    if (!strcmp(module, "systems")) systems.config(root);
+  
+  }  
+      
+
 
 
   // Need to just extract key[0]
@@ -129,6 +146,8 @@ bool Config::parse_line(char * line)
       if (!strcmp(module, "aws")) aws.set_config(name, value);
       if (!strcmp(module, "mqtt")) mqtt.set_config(name, value);
       if (!strcmp(module, "http")) http.set_config(name, value);
+      //if (!strcmp(module, "system")) systems.set_config(name, value);
+      
   }
  
 }
@@ -301,6 +320,8 @@ void Config::show()
   aws.show_config();
   mqtt.show_config();  
   http.show_config();  
+  systems.show_config();  
+  
 }
 
 void Config::update(unsigned long current)

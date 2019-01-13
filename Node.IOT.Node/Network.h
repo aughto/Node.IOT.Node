@@ -62,6 +62,9 @@ class Network
   char * get_config(const char *name);
   void show_config();
 
+  IPAddress get_ip();
+
+
  private:
 
   void process_events();

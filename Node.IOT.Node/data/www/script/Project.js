@@ -44,6 +44,7 @@ var project = (function ()
 	//local.find_node = find_node;		// Get node list
 	local.toggle_node = toggle_node		// Toggle a node
 
+	
 	// Variables 
 	local.variable_exists = variable_exists;
 	local.get_sorted_variable_list = get_sorted_variable_list; // Temporary list for variable editor
@@ -53,6 +54,11 @@ var project = (function ()
 	local.remove_variable = remove_variable;	
 	local.add_variable = add_variable;
 	local.send_setvariable = send_setvariable;
+	
+	//System
+	local.get_system_list = get_system_list; 
+	local.remove_system = remove_system
+	local.add_system = add_system; 		
 	
 	// Websockets 
 	local.ws_set_command = ws_set_command;
@@ -76,6 +82,7 @@ var project = (function ()
 	
 	var main_config = {};
 	var io_config = {};
+	var system_list = [];
 	
 	var logic_mode = MODE_ONLINE;
 	
@@ -190,6 +197,9 @@ var project = (function ()
 		p.io_config = ioconfig_get_export_object();
 		p.main_config = mainconfig_get_export_object();
 		
+		p.systems = systems_get_export_object();
+		
+		
 		p.hmi = hmi.get_export_object();
 		
 		var tmp = hmi.get_export_object();
@@ -281,6 +291,8 @@ var project = (function ()
 		main_config = p.main_config;
 		io_config = p.io_config;
 		
+		system_list = p.systems;
+		
 		hmi.set_import_data(p.hmi);
 		
 		
@@ -301,14 +313,7 @@ var project = (function ()
 		Config 
 	*/
 
-	// Converts one element of an object into a json string
-	// This will generate a  {"key" : "value"} string from the key and value passed
-	function get_keyvalue_sring(k, v)
-	{
-		var o = {};
-		o[k] = v;
-		return JSON.stringify(o);
-	}
+	
 	
 	// Converts a flat json object into a string for the config file
 	// Each {"key":"value"} json string is store on it's own line
@@ -323,13 +328,15 @@ var project = (function ()
 		return str;
 	}
 	
-	// Return a string representing the entire project
+	// Return a string representing the device version of the project
 	function get_config_string()
 	{
 		var config_str = "";
 
 		config_str += get_config_json_string(mainconfig_get_export_object());
 		config_str += get_config_json_string(ioconfig_get_export_object());
+		//config_str += get_config_json_string(systems_get_export_object());
+		config_str += systems_get_config_string();
 		
 		return config_str;
 	}	
@@ -961,6 +968,7 @@ var project = (function ()
 	}
 	
 	// Return true if variable name exists
+	//TODO Need to change name to ident_exists
 	function variable_exists(name)
 	{
 		// Check existing names
@@ -969,6 +977,14 @@ var project = (function ()
 			if (variable_list.variables[i].name.toUpperCase() == name.toUpperCase())
 				return true;
 		}	
+		
+		for (var i = 0; i < system_list.length; i++)
+		{
+			if (system_list[i].name.toUpperCase() == name.toUpperCase())
+				return true;
+		}	
+		
+		
 		return false;
 	}
 	
@@ -1068,6 +1084,85 @@ var project = (function ()
 	/* 
 		End of Variables 
 	*/
+	
+	
+	/* 
+		Systems 
+	*/
+	
+	
+	
+		// Get temporaty variable list sorted by name for editing
+	function get_system_list()
+	{
+		//var tmp = {};
+		//tmp.variables = [];
+		
+		//for (var i = 0; i < variable_list.variables.length; i++)
+		//{
+//			var v = variable_list.variables[i];
+			
+			//tmp.variables.push({name:v.name, type:v.type, value:v.value, index:v.index, offset:v.offset});
+		//}
+
+		// sort variable list by name for display
+		//tmp.variables.sort(variable_compare_name);
+	
+		return system_list;
+	}
+	
+	
+	
+	function add_system(name, type, ip)
+	{
+		var s = {name:name, type:type, ip:ip};
+		
+		system_list.push(s);
+	}
+	
+	function remove_system(index)
+	{
+		system_list.splice(index, 1);
+		
+	}
+	
+	function systems_get_export_object()
+	{
+		return system_list;
+	}
+	
+
+	
+	// Return config string for project list
+	// This format is used to make loading easier on the device
+	function systems_get_config_string()
+	{
+		var s = "";
+		
+		// Generic config options up here
+		
+		// Add the systems
+		for (var i = 0; i < system_list.length; i++)
+		{
+			var o = {};
+
+			o["module"] = "systems";			// Module
+			o["cmd"] = "add";					// Add System
+			o["name"] = system_list[i].name;	// System name
+			o["ip"] = system_list[i].ip;		// System IP
+			
+			s += JSON.stringify(o) + "\n";
+		}
+
+		return s;
+	}
+	
+	
+	/* 
+		End of Systems 
+	*/
+
+	
 	
 	
 	/* 
